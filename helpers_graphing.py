@@ -11,6 +11,7 @@ import collections
 import datetime
 from datetime import datetime as dt
 
+
 ## use this in notebooks
 # %load_ext autoreload
 # %matplotlib
@@ -77,7 +78,6 @@ def toc():
     if not startTime_for_tictoc:
         print('hey you never hit start')
     else:
-        import time
         if 'startTime_for_tictoc' in globals():
             print("Elapsed time is " + str(time.time() - startTime_for_tictoc) + " seconds.")
         else:
