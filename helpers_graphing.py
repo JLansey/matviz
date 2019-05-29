@@ -14,6 +14,7 @@ from datetime import datetime as dt
 
 ## use this in notebooks
 # %load_ext autoreload
+# %autoreload 2
 # %matplotlib
 
 

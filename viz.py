@@ -189,11 +189,9 @@ def suplabel(axis,label,label_prop=None,
 # Note: this is a half-complete port of my former matlab code
 # https://www.mathworks.com/matlabcentral/fileexchange/29545-power-law-exponential-and-logarithmic-fit?s_tid=prof_contriblnk
 def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_style='--g'):
-    print(y)
     if y is  None:
         y = x
         x = np.array(range(len(y)))
-
 
     x = np.array(x).astype(float)
     y = np.array(y).astype(float)
@@ -210,13 +208,27 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
         yy = slope * ex + intercept
         return slope, intercept, ex, yy
 
+    def logyfit(x2fit, y2fit):
+        gca().set_yscale('log')
+        y2fit = np.log10(y2fit)
+        idxs = np.isfinite(y2fit)
+        y2fit = y2fit[idxs]
+        x2fit = x2fit[idxs]
+
+        slope, intercept, ex, yy = linearfit(x2fit, y2fit)
+        return slope, intercept, ex, np.power(10,yy)
+
+
     if len(x) < 3:
         return np.nan, np.nan
 
-    graph_calc = {'linear': linearfit}
+    graph_calc = {'linear': linearfit,
+                  'logy': logyfit}
     if graph_type in graph_calc:
 
         slope, intercept, ex, yy = graph_calc[graph_type](x, y)
+
+
     else:
         raise Exception("we can't do that graph type yet")
 
@@ -417,6 +429,13 @@ def nicefy(f_size=15, clean_legend=True, cur_fig=None, background = 'white'):
     ax = gca()
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+
+    plt.autoscale(enable=True, axis='x', tight=True)
+    plt.autoscale(enable=True, axis='y', tight=True)
+    # thanks
+    # https://stackoverflow.com/questions/925024/how-can-i-remove-the-top-and-right-axis-in-matplotlib
 
     plt.rcParams["figure.figsize"] = [12, 9]
     plt.rcParams['image.cmap'] = 'viridis'
