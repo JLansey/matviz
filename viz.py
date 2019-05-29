@@ -254,7 +254,7 @@ def test_logfit():
 # stream_graph
 def streamgraph(df, smooth=None, normalize=None,
                 wiggle=None, label_dict=None, color=None,
-                order=True, linewidth=0.5):
+                order=True, linewidth=0.5, round_time=False):
     # reorder a list from inside out, for use with streamgraph
     def reorder_idx(idxs):
         idxs = list(np.flip(idxs))
@@ -272,7 +272,14 @@ def streamgraph(df, smooth=None, normalize=None,
 
     #     curate the data:
     #     add stupid col for who knows why - maybe can leave it out ..
-    df['dumb'] = 'stoopid'
+
+    cur_cols = df.columns
+
+    if round_time:
+        df[cur_cols[0]] = df[cur_cols[0]].dt.round(round_time)
+
+
+    df['dumb12345'] = 'stoopid'
     cur_cols = df.columns
     df = df[[cur_cols[2], cur_cols[0], cur_cols[1]]]
     cur_datas_grouped = df.groupby([cur_cols[0], cur_cols[1]], sort=False).count().unstack()
@@ -280,8 +287,9 @@ def streamgraph(df, smooth=None, normalize=None,
 
     cur_labels = np.array([w[1] for w in list(cur_clean.index)])
 
-    if len(cur_labels) > 500:
+    if len(cur_labels) > 200:
         raise Exception("Whoa dude - you are stacking too many things (" + str(len(cur_labels)) + ")")
+
 
     # prepare that sweet sweet data
     x = list(cur_clean.columns)
@@ -295,6 +303,8 @@ def streamgraph(df, smooth=None, normalize=None,
     #     remember to set the y'lims below - or unset the autoscale y
     if normalize:
         y = normalize_y(y)
+        if wiggle == None:
+            wiggle = False
 
     # prepare the colors for plotting
     if not color:
