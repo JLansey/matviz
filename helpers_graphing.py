@@ -29,7 +29,7 @@ from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim
                               gcf, gca, close, title, legend, grid, bar, suptitle, show,\
                               xticks, yticks, hist2d, pcolor, yscale, xscale, axis
 
-from numpy import mean, log10
+from numpy import mean, log10, log, sqrt, power
 
 from viz import *
 from etl import *

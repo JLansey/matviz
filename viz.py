@@ -218,12 +218,26 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
         slope, intercept, ex, yy = linearfit(x2fit, y2fit)
         return slope, intercept, ex, np.power(10,yy)
 
+    def loglogfit(x2fit, y2fit):
+        gca().set_xscale('log')
+        gca().set_yscale('log')
+        x2fit = np.log10(x2fit)
+        y2fit = np.log10(y2fit)
+
+        idxs = np.isfinite(y2fit) & np.isfinite(x2fit)
+        y2fit = y2fit[idxs]
+        x2fit = x2fit[idxs]
+
+        slope, intercept, ex, yy = linearfit(x2fit, y2fit)
+        return slope, intercept, np.power(10,ex), np.power(10,yy)
+
 
     if len(x) < 3:
         return np.nan, np.nan
 
     graph_calc = {'linear': linearfit,
-                  'logy': logyfit}
+                  'logy': logyfit,
+                  'loglog': loglogfit}
     if graph_type in graph_calc:
 
         slope, intercept, ex, yy = graph_calc[graph_type](x, y)
@@ -247,14 +261,14 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
 
 def test_logfit():
     logfit(np.arange(10), 2 * np.random.randn(10) + np.arange(10),
-           marker_style={'color': 'r', 'marker': None},
+           marker_style={'color': 'r', 'lw':0,  'marker': 'o'},
            line_style={'color': 'g', 'lw': 3})
 
 
 # stream_graph
 def streamgraph(df, smooth=None, normalize=None,
                 wiggle=None, label_dict=None, color=None,
-                order=True, linewidth=0.5, round_time=False):
+                order=True, linewidth=0.5, round_time=False, legend_flag=True):
     # reorder a list from inside out, for use with streamgraph
     def reorder_idx(idxs):
         idxs = list(np.flip(idxs))
@@ -274,6 +288,9 @@ def streamgraph(df, smooth=None, normalize=None,
     #     add stupid col for who knows why - maybe can leave it out ..
 
     cur_cols = df.columns
+    if len(cur_cols) == 1:
+        df['fake_col'] = 'blank'
+        legend_flag = False
 
     if round_time:
         df[cur_cols[0]] = df[cur_cols[0]].dt.round(round_time)
@@ -353,8 +370,9 @@ def streamgraph(df, smooth=None, normalize=None,
     plt.autoscale(enable=True, axis='x', tight=True)
     gca().set_yticklabels(np.abs(gca().get_yticks()).astype(int))
 
-    lgnd = legend(labels_reord)
-    gca().legend(loc='center left', bbox_to_anchor=(1, 0.5), framealpha=0.0)
+    if legend_flag:
+        lgnd = legend(labels_reord)
+        gca().legend(loc='center left', bbox_to_anchor=(1, 0.5), framealpha=0.0)
 
     # nicefy()
     plt.style.use('classic')
@@ -394,7 +412,7 @@ def streamgraph(df, smooth=None, normalize=None,
 
 
 
-def nicefy(f_size=15, clean_legend=True, cur_fig=None, background = 'white'):
+def nicefy(f_size=15, clean_legend=False, cur_fig=None, background = 'white', resize=True, legend_outside=False):
     '''
     make the figure nicer in general, like ready to be printed etc.
     '''
@@ -447,11 +465,15 @@ def nicefy(f_size=15, clean_legend=True, cur_fig=None, background = 'white'):
     # thanks
     # https://stackoverflow.com/questions/925024/how-can-i-remove-the-top-and-right-axis-in-matplotlib
 
-    plt.rcParams["figure.figsize"] = [12, 9]
+    if resize:
+        plt.rcParams["figure.figsize"] = [7, 5]
     plt.rcParams['image.cmap'] = 'viridis'
 
     if clean_legend:
         plt.legend(framealpha=0.0)
+
+    # if legend_outside:
+    #     gca().legend(loc='center left', bbox_to_anchor=(1, 0.5), framealpha=0.0)
 
 
 
@@ -503,3 +525,7 @@ def format_axis_date(rot=77):
     # ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
     # plt.xticks(x,tick_labels)
     # plt.xticks(rotation=70)
+
+# def x
+# gca().set_xscale('log')
+# gca().set_yscale('log')
