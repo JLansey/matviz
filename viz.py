@@ -109,11 +109,19 @@ def plot_diag(lw=1):
     plt.plot(x,y,'--',color='.5', lw=lw)
 
 
-def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--'):
+def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):
     ax = plt.gca()
-    ex = ax.get_xlim()
-    x = ex
-    y = [lineheight, lineheight]
+    if axx == 'x':
+        ex = ax.get_xlim()
+        x = ex
+        y = [lineheight, lineheight]
+    elif axx == 'y':
+        yy = ax.get_ylim()
+        x = [lineheight, lineheight]
+        y = yy
+    else:
+        raise Exception("you can't plot zero on no axis!")
+
     return plt.plot(x,y,style, color=linecolor, lw=lw)
 
 
