@@ -319,7 +319,7 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
     # https://www.mathworks.com/matlabcentral/fileexchange/45325-efficient-2d-histogram-no-toolboxes-needed
 
     # if you just passed a timeseries, then use the x as an index
-    if y == None:
+    if not hasattr(y, '__len__'):
         y = copy.deepcopy(x)
         x = range(len(y))
 
