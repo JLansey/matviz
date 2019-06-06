@@ -345,9 +345,11 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
     if miny == -np.inf:
         miny = np.min(y)
     if maxx == np.inf:
-        minx = np.max(x)
+        maxx = np.max(x)
     if maxy == np.inf:
-        miny = np.max(y)
+        maxy = np.max(y)
+
+    print(maxy)
 
 
     # if ylims == 'auto':
