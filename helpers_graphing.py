@@ -15,6 +15,7 @@ from datetime import datetime as dt
 ## use this in notebooks
 # %load_ext autoreload
 # %autoreload 2
+
 # %matplotlib
 
 
@@ -31,9 +32,9 @@ from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim
 
 from numpy import mean, log10, log, sqrt, power
 
-from viz import *
-from etl import *
-from histogram_utils import nhist, ndhist
+from .viz import *
+from .etl import *
+from .histogram_utils import nhist, ndhist
 
 
 # import etl as etl

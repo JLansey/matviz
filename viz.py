@@ -4,7 +4,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 
-from matplotlib.pyplot import plot,hist,figure,clf,cla,hold,xlabel,ylabel,xlim,ylim,\
+from matplotlib.pyplot import plot,hist,figure,clf,cla,xlabel,ylabel,xlim,ylim,\
                               gcf,gca,close,title,legend,grid,bar,suptitle,show,\
                               xticks,yticks
 
@@ -14,7 +14,7 @@ from datetime import datetime as dt
 
 from scipy import stats
 import seaborn as sns
-from etl import nan_smooth
+from .etl import nan_smooth
 
 
 def plot_range(events,color='#0093e7',offset=0):
@@ -83,9 +83,7 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
     if type(x)!=np.ndarray:
         x = np.array(x)
 
-    plt.hold(False)
     plt.plot(x,y,marker_style)
-    plt.hold(True)
     # if
     I1 = np.logical_not(np.isnan(y))
     I2 = np.logical_not(np.isnan(x))

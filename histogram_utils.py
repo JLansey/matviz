@@ -7,8 +7,8 @@ import matplotlib.dates as md
 import datetime
 from numpy import log10
 import seaborn as sns
-from etl import handle_dates
-from etl import eps
+from .etl import handle_dates
+from .etl import eps
 from scipy.ndimage.filters import gaussian_filter
 
 

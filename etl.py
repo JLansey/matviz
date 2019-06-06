@@ -460,7 +460,7 @@ def chop(seq, size):
 
 def chopn(seq, n):
     """Chop a sequence into chunks of the given size."""
-    size = len(seq) / n
+    size = int(len(seq) / n)
     chunks = chop(seq, size)
     return [w for w in chunks if len(w) == size]
 
