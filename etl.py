@@ -453,6 +453,18 @@ def start_and_ends(logical_array):
     return list(zip(starts_shift,ends_shift))
 
 
+def chop(seq, size):
+    """Chop a sequence into chunks of the given size."""
+    chunk = lambda ii: seq[ii:ii+size]
+    return map(chunk,range(0,len(seq),size))
+
+def chopn(seq, n):
+    """Chop a sequence into chunks of the given size."""
+    size = len(seq) / n
+    chunks = chop(seq, size)
+    return [w for w in chunks if len(w) == size]
+
+
 
 def form_day(key):
     return str(key.month) + "/" + str(key.day)

@@ -286,12 +286,13 @@ and the locations of the left edges of each bin.
 
 
 
-def ndhist(x, y, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, miny=None,
+def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, miny=None,
                                     int_bins_flag=False, int_bins_flagx=False, int_bins_flagy=False,
                                     exclude_extremes=False,
                                     normy=False, normx = False,
                                     fx=1.5, fy=1.5, std_times=4, f=None,
-                                    smooth = False):
+                                    smooth = False,
+                                    markertype=None):
     """
 
     :param x: the x values of data
@@ -317,6 +318,11 @@ def ndhist(x, y, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, miny=
     # Note: this is a partial port of this matlab code (which explains some lingering non-pythonicness:
     # https://www.mathworks.com/matlabcentral/fileexchange/45325-efficient-2d-histogram-no-toolboxes-needed
 
+    # if you just passed a timeseries, then use the x as an index
+    if y == None:
+        y = copy.deepcopy(x)
+        x = range(len(y))
+
     # check for incompatable user params
     if normy & normx:
         raise Warning("you can't normalize on both x and y at the same time, so we just normalized by X")
@@ -333,7 +339,15 @@ def ndhist(x, y, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, miny=
     x = x[mask]
     y = y[mask]
 
-
+    # if your limits are infinitiy, then choose the max/min of the data
+    if minx == -np.inf:
+        minx = np.min(x)
+    if miny == -np.inf:
+        miny = np.min(y)
+    if maxx == np.inf:
+        minx = np.max(x)
+    if maxy == np.inf:
+        miny = np.max(y)
 
 
     # if ylims == 'auto':
@@ -375,9 +389,12 @@ def ndhist(x, y, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, miny=
         to_plot = (to_plot.T/(np.max(to_plot, axis=1) + eps)).T
 
 
-
     plt.pcolor(bins_x, bins_y, to_plot, cmap=plt.cm.Greens_r)
     # xlim([min(bins_x), max(bins])
+
+    if markertype != None:
+        plot(x, y, markertype)
+
     plt.axis('tight')
     return counts, bins_x, bins_y
 
