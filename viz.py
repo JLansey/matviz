@@ -4,7 +4,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 
-from matplotlib.pyplot import plot,hist,figure,clf,cla,hold,xlabel,ylabel,xlim,ylim,\
+from matplotlib.pyplot import plot,hist,figure,clf,cla,xlabel,ylabel,xlim,ylim,\
                               gcf,gca,close,title,legend,grid,bar,suptitle,show,\
                               xticks,yticks
 
@@ -14,7 +14,7 @@ from datetime import datetime as dt
 
 from scipy import stats
 import seaborn as sns
-from etl import nan_smooth
+from .etl import nan_smooth
 
 
 def plot_range(events,color='#0093e7',offset=0):
@@ -83,9 +83,7 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
     if type(x)!=np.ndarray:
         x = np.array(x)
 
-    plt.hold(False)
     plt.plot(x,y,marker_style)
-    plt.hold(True)
     # if
     I1 = np.logical_not(np.isnan(y))
     I2 = np.logical_not(np.isnan(x))
@@ -109,11 +107,19 @@ def plot_diag(lw=1):
     plt.plot(x,y,'--',color='.5', lw=lw)
 
 
-def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--'):
+def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):
     ax = plt.gca()
-    ex = ax.get_xlim()
-    x = ex
-    y = [lineheight, lineheight]
+    if axx == 'x':
+        ex = ax.get_xlim()
+        x = ex
+        y = [lineheight, lineheight]
+    elif axx == 'y':
+        yy = ax.get_ylim()
+        x = [lineheight, lineheight]
+        y = yy
+    else:
+        raise Exception("you can't plot zero on no axis!")
+
     return plt.plot(x,y,style, color=linecolor, lw=lw)
 
 
