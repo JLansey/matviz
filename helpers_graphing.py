@@ -11,6 +11,8 @@ import collections
 import datetime
 from datetime import datetime as dt
 
+import pickle
+
 
 ## use this in notebooks
 # %load_ext autoreload

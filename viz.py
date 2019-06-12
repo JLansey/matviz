@@ -15,6 +15,7 @@ from datetime import datetime as dt
 from scipy import stats
 import seaborn as sns
 from .etl import nan_smooth
+from .etl import round_time
 
 
 def plot_range(events,color='#0093e7',offset=0):

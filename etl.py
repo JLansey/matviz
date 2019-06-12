@@ -119,6 +119,11 @@ def to_tz(cur_tz,local_tz='US/Eastern'):
     naive_datetime = local_datetime.replace(tzinfo=None)
     return naive_datetime
 
+def round_time(ts, round_by='H'):
+    ts_no_tz = remove_tz(ts)
+    return pd.Series(ts_no_tz).dt.round(round_by)
+
+
 
 def average_times(time_1,time_2):
     dummy_time = datetime.datetime(2000, 1, 1, 0, 0)
