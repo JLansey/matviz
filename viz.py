@@ -419,7 +419,8 @@ def streamgraph(df, smooth=None, normalize=None,
 
 
 
-def nicefy(f_size=15, clean_legend=False, cur_fig=None, background = 'white', resize=True, legend_outside=False):
+def nicefy(f_size=15, clean_legend=False, cur_fig=None, background = 'white', resize=True, legend_outside=False,
+           expand_y=True, expand_x=True):
     '''
     make the figure nicer in general, like ready to be printed etc.
     '''
@@ -469,6 +470,22 @@ def nicefy(f_size=15, clean_legend=False, cur_fig=None, background = 'white', re
 
     plt.autoscale(enable=True, axis='x', tight=True)
     plt.autoscale(enable=True, axis='y', tight=True)
+
+    def expand_the_bounds(cur_bounds):
+        cur_range = np.diff(cur_bounds)
+        return cur_bounds + cur_range * 0.02 * np.array([-1, 1])
+
+    def expand_the_top(cur_bounds):
+        cur_range = np.diff(cur_bounds)
+        return cur_bounds + cur_range * 0.02 * np.array([0, 1])
+
+    if expand_y==True:
+        ylim(expand_the_bounds(ylim()))
+    elif str(expand_y) == 'top':
+        ylim(expand_the_top(ylim()))
+    if expand_x:
+        xlim(expand_the_bounds(xlim()))
+
     # thanks
     # https://stackoverflow.com/questions/925024/how-can-i-remove-the-top-and-right-axis-in-matplotlib
 
