@@ -425,6 +425,8 @@ def nicefy(f_size=15, clean_legend=False, cur_fig=None, background = 'white', re
     make the figure nicer in general, like ready to be printed etc.
     '''
 
+    #todo: check if you are log scale, and do expandx or expandy to be top
+
     if cur_fig:
         fig = cur_fig
     else:
@@ -483,8 +485,10 @@ def nicefy(f_size=15, clean_legend=False, cur_fig=None, background = 'white', re
         ylim(expand_the_bounds(ylim()))
     elif str(expand_y) == 'top':
         ylim(expand_the_top(ylim()))
-    if expand_x:
+    if expand_x == True:
         xlim(expand_the_bounds(xlim()))
+    elif str(expand_x) == 'top':
+        xlim(expand_the_top(xlim()))
 
     # thanks
     # https://stackoverflow.com/questions/925024/how-can-i-remove-the-top-and-right-axis-in-matplotlib
