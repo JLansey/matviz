@@ -374,7 +374,7 @@ def streamgraph(df, smooth=None, normalize=None,
     ax = plt.stackplot(x, y[idxs], labels=labels_reord,
                        baseline=cur_base, colors=cur_palette, lw=linewidth, edgecolor='k')
 
-    plt.autoscale(enable=True, axis='x', tight=True)
+
     gca().set_yticklabels(np.abs(gca().get_yticks()).astype(int))
 
     if legend_flag:
@@ -557,3 +557,10 @@ def format_axis_date(rot=77):
 # def x
 # gca().set_xscale('log')
 # gca().set_yscale('log')
+
+
+# pcolor on a log scale, with zero values marked
+def logpcolor(x, y, C):
+    C = np.log10(C)
+    C[C == -np.inf] = -np.max(C)
+    return plt.pcolor(x, y, C)
