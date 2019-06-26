@@ -195,7 +195,8 @@ def suplabel(axis,label,label_prop=None,
 
 # Note: this is a half-complete port of my former matlab code
 # https://www.mathworks.com/matlabcentral/fileexchange/29545-power-law-exponential-and-logarithmic-fit?s_tid=prof_contriblnk
-def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_style='--g'):
+def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_style='--g',
+           skip_begin = 0):
     if y is  None:
         y = x
         x = np.array(range(len(y)))
@@ -246,8 +247,7 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
                   'logy': logyfit,
                   'loglog': loglogfit}
     if graph_type in graph_calc:
-
-        slope, intercept, ex, yy = graph_calc[graph_type](x, y)
+        slope, intercept, ex, yy = graph_calc[graph_type](x[skip_begin:], y[skip_begin:])
 
 
     else:
@@ -420,7 +420,7 @@ def streamgraph(df, smooth=None, normalize=None,
 
 
 def nicefy(f_size=15, clean_legend=False, cur_fig=None, background = 'white', resize=True, legend_outside=False,
-           expand_y=True, expand_x=True):
+           expand_y=False, expand_x=False):
     '''
     make the figure nicer in general, like ready to be printed etc.
     '''
