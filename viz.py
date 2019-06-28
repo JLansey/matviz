@@ -196,7 +196,7 @@ def suplabel(axis,label,label_prop=None,
 # Note: this is a half-complete port of my former matlab code
 # https://www.mathworks.com/matlabcentral/fileexchange/29545-power-law-exponential-and-logarithmic-fit?s_tid=prof_contriblnk
 def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_style='--g',
-           skip_begin = 0):
+           skip_begin = 0, skip_end = 0):
     if y is  None:
         y = x
         x = np.array(range(len(y)))
@@ -247,7 +247,10 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
                   'logy': logyfit,
                   'loglog': loglogfit}
     if graph_type in graph_calc:
-        slope, intercept, ex, yy = graph_calc[graph_type](x[skip_begin:], y[skip_begin:])
+        if skip_end > 0:
+            slope, intercept, ex, yy = graph_calc[graph_type](x[skip_begin:-skip_end], y[skip_begin:-skip_end])
+        else:
+            slope, intercept, ex, yy = graph_calc[graph_type](x[skip_begin:], y[skip_begin:])
 
 
     else:
@@ -546,6 +549,8 @@ def plot_endpoints(endpoints):
 
 
 
+def linspecer(n, color='muted'):
+    return sns.color_palette(color, n_colors=n)
 
 
 def format_axis_date(rot=77):
