@@ -477,3 +477,11 @@ def form_day(key):
 
 def form_year(key):
     return str(key.year) + "-" + str(key.month)
+
+
+
+
+def find_dom_freq(x, ds, window = 'hann'):
+    freq, power = signal.periodogram(x, 1 / ds, window=window)
+    peak_freq = freq[power == np.max(power)].mean()
+    return peak_freq

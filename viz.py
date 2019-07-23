@@ -546,7 +546,8 @@ def plot_endpoints(endpoints):
 
 
 
-
+def linspecer(n):
+    return sns.color_palette("Set1", n)
 
 def format_axis_date(rot=77):
     plt.xticks(rotation=rot)
