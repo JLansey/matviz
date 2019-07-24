@@ -334,13 +334,13 @@ def nan_smooth(y,n=5,ens=[],ignore_nans=True):
 
 
 # normalized version of cross correlation - mimiking matlabs'
-def xcorr(a, b, dt):
+def xcorr(a, b, ds):
     S = len(a)
     a_norm = (a - np.mean(a)) / np.std(a)
     b_norm = (b - np.mean(b)) / np.std(b)
     corrs = np.correlate(a_norm, b_norm / S, 'full')
 
-    lags_half = np.arange(0, dt * S, dt)
+    lags_half = np.arange(0, ds * S, ds)
     lags = np.concatenate([-np.flip(lags_half[1:]), lags_half])
 
     return corrs, lags
