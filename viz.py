@@ -422,11 +422,15 @@ def streamgraph(df, smooth=None, normalize=None,
 
 
 
-def nicefy(f_size=15, clean_legend=False, cur_fig=None, background = 'white', resize=True, legend_outside=False,
+def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background = 'white', resize=True, legend_outside=False,
            expand_y=False, expand_x=False):
     '''
     make the figure nicer in general, like ready to be printed etc.
     '''
+
+    # backwards compatability for this change
+    if f_size != False:
+        fsize = f_size
 
     #todo: check if you are log scale, and do expandx or expandy to be top
 
@@ -461,11 +465,11 @@ def nicefy(f_size=15, clean_legend=False, cur_fig=None, background = 'white', re
         ax.yaxis.set_label_text(make_title(ax.yaxis.label.get_text()))
         ax.set_title(make_title(ax.title.get_text()))
 
-        [w.set_fontsize(f_size) for w in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+        [w.set_fontsize(fsize) for w in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
                                           ax.get_xticklabels() +
                                           ax.get_yticklabels())]
 
-    [plt.setp(ax.get_legend().get_texts(), fontsize=f_size) for ax in axes if ax.get_legend()]
+    [plt.setp(ax.get_legend().get_texts(), fontsize=fsize) for ax in axes if ax.get_legend()]
 
     ax = gca()
     ax.spines['top'].set_visible(False)

@@ -47,7 +47,7 @@ import matplotlib.patches as patches
 
 
 def fig_sizer(a, b):
-    plt.rcParams["figure.figsize"] = [a, b]
+    plt.rcParams["figure.figsize"] = [b, a]
 
 def display_pnct(cnt,N):
     print("%"+ str(round(100*cnt/N)) + ", " + str(cnt) + "/" + str(N))
