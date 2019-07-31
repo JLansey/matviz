@@ -477,3 +477,7 @@ def form_day(key):
 
 def form_year(key):
     return str(key.year) + "-" + str(key.month)
+
+
+def rolling_diff(w, n=1):
+    return w - np.roll(w,n)
