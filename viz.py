@@ -133,15 +133,29 @@ def bar_centered(y,**kwargs):
 
 
 
-def subplotter(x,y,n):
+def subplotter(x,y,n, xlbl=None, ylbl=None):
     # a subplotter function that works like the matlab one does but with index starting at 0
     tupp = (x,y)
     cnt = 0
     for ii in range(tupp[0]):
         for jj in range(tupp[1]):
+
             if cnt==n:
-                return plt.subplot2grid(tupp, (ii, jj))
+                print("y: " + str(y) + ", ii: " + str(ii) + ", jj: " + str(jj))
+
+                ax = plt.subplot2grid(tupp, (ii, jj))
+                if jj == 0:
+                    if ylbl:
+                        ylabel(ylbl)
+                if ii - 1 == y:
+                    if xlbl:
+                        xlabel(xlbl)
+
+                return ax
             cnt+=1
+
+
+
     raise Exception("You have only " + str(x*y) + " subplots, but you asked for the " + str(n) + "'th")
 
 
