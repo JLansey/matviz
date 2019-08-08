@@ -200,8 +200,13 @@ def write_csv2(name,array,param='w'): # a for append
 
 
 # accept a data frame with only two columns, and make first the key and second the value
+# Unsure when one or both of these functions work ..
 def dictify_cols(df):
     return df.set_index(df.columns[0])[df.columns[1]].to_dict()
+
+def dictify_cols2(df):
+    return df.groupby(df.columns[0])[df.columns[1]].apply(lambda w: w.values).to_dict()
+
 
 def dictify_csv(weird_array,headers = None):
     # turns a csv into a dictionary with long columns
@@ -479,6 +484,13 @@ def form_year(key):
     return str(key.year) + "-" + str(key.month)
 
 
+def rolling_diff(w, n=1):
+    return w - np.roll(w,n)
+
+
+
+def most_common(cur_list):
+    return collections.Counter(cur_list).most_common()
 
 
 def find_dom_freq(x, ds, window = 'hann'):
