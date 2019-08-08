@@ -139,10 +139,7 @@ def subplotter(x,y,n, xlbl=None, ylbl=None):
     cnt = 0
     for ii in range(tupp[0]):
         for jj in range(tupp[1]):
-
             if cnt==n:
-                print("y: " + str(y) + ", ii: " + str(ii) + ", jj: " + str(jj))
-
                 ax = plt.subplot2grid(tupp, (ii, jj))
                 if jj == 0:
                     if ylbl:
