@@ -479,6 +479,13 @@ def form_year(key):
     return str(key.year) + "-" + str(key.month)
 
 
+def rolling_diff(w, n=1):
+    return w - np.roll(w,n)
+
+
+
+def most_common(cur_list):
+    return collections.Counter(cur_list).most_common()
 
 
 def find_dom_freq(x, ds, window = 'hann'):
