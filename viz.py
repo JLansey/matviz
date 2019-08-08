@@ -552,7 +552,6 @@ def plot_endpoints(endpoints):
 def linspecer(n, color='muted'):
     return sns.color_palette(color, n_colors=n)
 
-
 def format_axis_date(rot=77):
     plt.xticks(rotation=rot)
     # ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
