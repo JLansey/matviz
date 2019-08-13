@@ -8,6 +8,7 @@ import collections
 from collections import defaultdict
 from collections import Sequence
 from itertools import chain, count
+from operator import itemgetter
 import glob
 import json
 
@@ -497,3 +498,7 @@ def find_dom_freq(x, ds, window = 'hann'):
     freq, power = signal.periodogram(x, 1 / ds, window=window)
     peak_freq = freq[power == np.max(power)].mean()
     return peak_freq
+
+
+def sort_dict_list(dict_list, k, reverse_param = True):
+    return sorted(dict_list, key=itemgetter(k), reverse=reverse_param)
