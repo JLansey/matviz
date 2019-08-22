@@ -18,7 +18,7 @@ from .etl import nan_smooth
 from .etl import round_time
 
 
-def plot_range(events,color='#0093e7',offset=0):
+def plot_range(events, color='#0093e7',offset=0):
     # Fill registered cur_event times
     for cur_event in events:
         plt.fill_between([cur_event[0], cur_event[1]],
@@ -434,7 +434,7 @@ def streamgraph(df, smooth=None, normalize=None,
 
 
 def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background = 'white', resize=True, legend_outside=False,
-           expand_y=False, expand_x=False):
+           expand_y=False, expand_x=False, touch_limits=True):
     '''
     make the figure nicer in general, like ready to be printed etc.
     '''
@@ -488,8 +488,6 @@ def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background 
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
 
-    plt.autoscale(enable=True, axis='x', tight=True)
-    plt.autoscale(enable=True, axis='y', tight=True)
 
     def expand_the_bounds(cur_bounds):
         cur_range = np.diff(cur_bounds)
@@ -499,19 +497,21 @@ def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background 
         cur_range = np.diff(cur_bounds)
         return cur_bounds + cur_range * 0.02 * np.array([0, 1])
 
-    if expand_y==True:
-        ylim(expand_the_bounds(ylim()))
-    elif str(expand_y) == 'top':
-        ylim(expand_the_top(ylim()))
-    if expand_x == True:
-        xlim(expand_the_bounds(xlim()))
-    elif str(expand_x) == 'top':
-        xlim(expand_the_top(xlim()))
-
+    if touch_limits:
+        plt.autoscale(enable=True, axis='x', tight=True)
+        plt.autoscale(enable=True, axis='y', tight=True)
+        if expand_y == True:
+            ylim(expand_the_bounds(ylim()))
+        elif str(expand_y) == 'top':
+            ylim(expand_the_top(ylim()))
+        if expand_x == True:
+            xlim(expand_the_bounds(xlim()))
+        elif str(expand_x) == 'top':
+            xlim(expand_the_top(xlim()))
     # thanks
     # https://stackoverflow.com/questions/925024/how-can-i-remove-the-top-and-right-axis-in-matplotlib
 
-    if resize:
+    if resize and (not touch_limits):
         plt.rcParams["figure.figsize"] = [7, 5]
     plt.rcParams['image.cmap'] = 'viridis'
 
@@ -525,7 +525,7 @@ def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background 
 
 
 
-def plot_endpoints(endpoints):
+def plot_endpoints(endpoints, color='#0093e7'):
 
         x_starts = [w[0] for w in endpoints]
         x_ends = [w[1] for w in endpoints]
@@ -546,7 +546,7 @@ def plot_endpoints(endpoints):
             plt.fill_between(
                 [event[0], event[1]],
                 [1, 1],
-                color='#0093e7', label='Event')
+                color=color, label='Event')
 
         plt.ylim((0, 1))
         plt.xlim((x_start, x_end))
@@ -556,11 +556,11 @@ def plot_endpoints(endpoints):
 
         # Create color patches for the legend
         # Is this right???
-        red_patch = plt.patches.Patch(color='#0093e7', label='Detected')
+        # red_patch = plt.patches.Patch(color='#0093e7', label='Detected')
 
         # Plot legend on the bottom subplot
-        plt.legend(loc='lower left', borderaxespad=0., prop={'size': 12},
-                   ncol=3, fancybox=True, shadow=True, handles=[red_patch])
+        # plt.legend(loc='lower left', borderaxespad=0., prop={'size': 12},
+        #            ncol=3, fancybox=True, shadow=True, handles=[red_patch])
 
 
 

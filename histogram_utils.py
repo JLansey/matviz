@@ -392,12 +392,17 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
 
 
     plt.pcolor(bins_x, bins_y, to_plot, cmap=plt.cm.Greens_r)
-    # xlim([min(bins_x), max(bins])
+
+    plt.xlim(np.array(bins_x)[[1, -2]])
+    plt.ylim(np.array(bins_y)[[1, -2]])
+    # print([np.nanmin(bins_x[np.logical_not(np.isfinite(bins_x))]), np.nanmax(bins_x[np.logical_not(np.isfinite(bins_x))])])
+    # plt.xlim([np.nanmin(bins_x[np.logical_not(np.isfinite(bins_x))]), np.nanmax(bins_x[np.logical_not(np.isfinite(bins_x))])])
+    # plt.ylim([np.nanmin(bins_y[np.logical_not(np.isfinite(bins_y))]), np.nanmax(bins_y[np.logical_not(np.isfinite(bins_y))])])
 
     if markertype != None:
-        plot(x, y, markertype)
+        plt.plot(x, y, markertype)
 
-    plt.axis('tight')
+    # plt.axis('tight')
     return counts, bins_x, bins_y
 
 
