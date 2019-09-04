@@ -502,3 +502,7 @@ def find_dom_freq(x, ds, window = 'hann'):
 
 def sort_dict_list(dict_list, k, reverse_param = True):
     return sorted(dict_list, key=itemgetter(k), reverse=reverse_param)
+
+def robust_mkdir(cur_dir):
+    if not os.path.exists(cur_dir):
+        os.mkdir(cur_dir)
