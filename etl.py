@@ -506,3 +506,11 @@ def sort_dict_list(dict_list, k, reverse_param = True):
 def robust_mkdir(cur_dir):
     if not os.path.exists(cur_dir):
         os.mkdir(cur_dir)
+
+def load_json(file_path):
+    with open(file_path) as json_file:
+        return json.load(json_file)
+
+def dump_json(data_dict, file_path):
+    with open(file_path, 'w') as f:
+        json.dump(data_dict, f)
