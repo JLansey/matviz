@@ -349,6 +349,16 @@ def xcorr(a, b, ds):
     lags_half = np.arange(0, ds * S, ds)
     lags = np.concatenate([-np.flip(lags_half[1:]), lags_half])
 
+
+    if len(corrs) > len(lags):
+        corrs = corrs[:len(lags)]
+        print("warning corrs != logs")
+    if len(corrs) < len(lags):
+        lags = lags[:len(corrs)]
+        print("warning corrs != logs")
+
+
+
     return corrs, lags
 
 
