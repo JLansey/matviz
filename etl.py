@@ -199,6 +199,14 @@ def write_csv2(name,array,param='w'): # a for append
         writer.writerows(array)
     return True
 
+def read_string(name):
+    with open(name, 'r') as file:
+        return file.read()
+
+def write_string(name, txt):
+    with open(name, 'w') as file:
+        return file.write(txt)
+
 
 # accept a data frame with only two columns, and make first the key and second the value
 # Unsure when one or both of these functions work ..
