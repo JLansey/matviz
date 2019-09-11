@@ -530,5 +530,8 @@ def load_json(file_path):
         return json.load(json_file)
 
 def dump_json(data_dict, file_path):
-    with open(file_path, 'w') as f:
-        json.dump(data_dict, f)
+    txt = json.dumps(data_dict)
+    write_string(file_path, txt)
+    return True
+    # with open(file_path, 'w') as f:
+    #     json.dump(data_dict, f)
