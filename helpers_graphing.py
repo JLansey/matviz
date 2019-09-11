@@ -32,7 +32,8 @@ from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim
                               gcf, gca, close, title, legend, grid, bar, suptitle, show,\
                               xticks, yticks, hist2d, pcolor, yscale, xscale, axis, pcolor
 
-from numpy import mean, log10, log, sqrt, power, linspace, sin, cos, tan, arcsin, arccos, arctan
+from numpy import mean, log10, log, sqrt, power, linspace, sin, cos, tan,\
+                        arcsin, arccos, arctan, inf
 
 from .viz import *
 from .etl import *

@@ -18,11 +18,14 @@ from .etl import nan_smooth
 from .etl import round_time
 
 
-def plot_range(events, color='#0093e7',offset=0):
+def plot_range(events, color='#0093e7',offset=0, height=1):
+    if not hasattr(events[0], "__len__"):
+        events = [events]
     # Fill registered cur_event times
     for cur_event in events:
         plt.fill_between([cur_event[0], cur_event[1]],
-                         [1+offset,1+offset],[offset,offset],
+                         [height + offset, height + offset],
+                         [offset,offset],
                          color=color, label='Event',alpha=0.5)
 
 
