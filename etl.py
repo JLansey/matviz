@@ -360,10 +360,10 @@ def xcorr(a, b, ds):
 
     if len(corrs) > len(lags):
         corrs = corrs[:len(lags)]
-        print("warning corrs != logs")
+        print("corrs not equal lags")
     if len(corrs) < len(lags):
         lags = lags[:len(corrs)]
-        print("warning corrs != logs")
+        print("corrs not equal lags")
 
 
 
