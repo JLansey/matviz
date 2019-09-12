@@ -535,3 +535,12 @@ def dump_json(data_dict, file_path):
     return True
     # with open(file_path, 'w') as f:
     #     json.dump(data_dict, f)
+
+#Useful in Python 2, (or 3.4 or lower)
+# https://stackoverflow.com/questions/38987/how-to-merge-two-dictionaries-in-a-single-expression
+def merge_two_dicts(x, y):
+    z = x.copy()   # start with x's keys and values
+    z.update(y)    # modifies z with y's keys and values & returns None
+    return z
+
+
