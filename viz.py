@@ -147,9 +147,10 @@ def subplotter(x,y,n, xlbl=None, ylbl=None):
                 if jj == 0:
                     if ylbl:
                         ylabel(ylbl)
-                if ii - 1 == y:
+                if ii + 1 == y:
                     if xlbl:
                         xlabel(xlbl)
+
 
                 return ax
             cnt+=1
