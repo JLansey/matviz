@@ -37,7 +37,7 @@ def set_fontsize(f_size=15):
     return ax
 
 
-def print_fig_fancy(fpathh,dpi=300):
+def print_fig_fancy(fpathh, dpi=300):
     plt.savefig(fpathh, dpi=dpi, facecolor=[0, 0, 0, 0])
 
 
