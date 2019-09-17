@@ -38,7 +38,7 @@ def set_fontsize(f_size=15):
 
 
 def print_fig_fancy(fpathh,dpi=300):
-    plt.savefig(fpathh, dpi=dpi)
+    plt.savefig(fpathh, dpi=dpi, facecolor=[0, 0, 0, 0])
 
 
 def make_title(title_str,format=False):
