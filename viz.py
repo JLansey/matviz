@@ -212,12 +212,20 @@ def suplabel(axis,label,label_prop=None,
 # https://www.mathworks.com/matlabcentral/fileexchange/29545-power-law-exponential-and-logarithmic-fit?s_tid=prof_contriblnk
 def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_style='--g',
            skip_begin = 0, skip_end = 0):
+
+    # check if you only passes one var in
     if y is  None:
         y = x
         x = np.array(range(len(y)))
 
+    # convert to floats
     x = np.array(x).astype(float)
     y = np.array(y).astype(float)
+
+    # remove any nans
+    I = np.logical_not(np.isnan(x)) & np.logical_not(np.isnan(y))
+    x = x[I]
+    y = y[I]
 
     def linearfit(x2fit, y2fit):
 
