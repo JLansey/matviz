@@ -110,7 +110,7 @@ def plot_diag(lw=1):
         x=ex
     plt.plot(x,y,'--',color='.5', lw=lw)
 
-
+# plot a horizontal line, or a vertical line
 def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):
     ax = plt.gca()
     if axx == 'x':

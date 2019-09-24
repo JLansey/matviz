@@ -10,7 +10,8 @@ from collections import Sequence
 from itertools import chain, count
 from operator import itemgetter
 import glob
-import json
+# import json
+import simplejson as json
 
 
 # datetime related things
@@ -18,6 +19,7 @@ from dateutil.parser import parse as dateutil_parse
 import matplotlib.dates as md # for handledates
 import datetime
 from pytz import timezone
+import pickle
 
 
 # regular anaconda stuff
@@ -525,16 +527,48 @@ def robust_mkdir(cur_dir):
     if not os.path.exists(cur_dir):
         os.mkdir(cur_dir)
 
+
+
+# ***** MOVE THIS OVER TO ETL PLZ
+# https://stackoverflow.com/questions/32935232/python-apply-function-to-values-in-nested-dictionary
+def map_nested_dicts(ob, func):
+    if isinstance(ob, collections.Mapping):
+        return {k: map_nested_dicts(v, func) for k, v in ob.items()}
+    else:
+        return func(ob)
+
+
+#  these two functions are for dumping and loading arrays of complex numbers
+def complex_load(txt):
+    complex_key = "<<complex np stored as hex>>"
+    if isinstance(txt, str):
+        splitted = txt.split(complex_key)
+        if len(splitted) == 2:
+            return pickle.loads(bytes.fromhex(splitted[1]))
+    return txt
+
+def complex_dump(x):
+    if hasattr(x, 'dtype') and x.dtype == 'complex128':
+        complex_key = "<<complex np stored as hex>>"
+        return complex_key + np.array(x).dumps().hex()
+    else:
+        return x
+
 def load_json(file_path):
     with open(file_path) as json_file:
-        return json.load(json_file)
+        data_dict = json.load(json_file)
+    #     convert any stored complex numbers back into native format
+    data_dict = map_nested_dicts(data_dict, complex_load)
+    return data_dict
 
 def dump_json(data_dict, file_path):
-    txt = json.dumps(data_dict)
-    write_string(file_path, txt)
+    # pickle any complex numbers into strings
+    data_dict = map_nested_dicts(data_dict, complex_dump)
+    with open(file_path, 'w') as json_file:
+        json.dump(data_dict, json_file)
+    # txt = json.dumps(data_dict)
+    # write_string(file_path, txt)
     return True
-    # with open(file_path, 'w') as f:
-    #     json.dump(data_dict, f)
 
 #Useful in Python 2, (or 3.4 or lower)
 # https://stackoverflow.com/questions/38987/how-to-merge-two-dictionaries-in-a-single-expression
@@ -542,5 +576,4 @@ def merge_two_dicts(x, y):
     z = x.copy()   # start with x's keys and values
     z.update(y)    # modifies z with y's keys and values & returns None
     return z
-
 
