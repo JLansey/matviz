@@ -318,6 +318,10 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
     # Note: this is a partial port of this matlab code (which explains some lingering non-pythonicness:
     # https://www.mathworks.com/matlabcentral/fileexchange/45325-efficient-2d-histogram-no-toolboxes-needed
 
+    if np.array(x).dtype == 'complex128':
+        y = x.imag
+        x = x.real
+
     # if you just passed a timeseries, then use the x as an index
     if not hasattr(y, '__len__'):
         y = copy.deepcopy(x)

@@ -33,18 +33,24 @@ from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim
                               xticks, yticks, hist2d, pcolor, yscale, xscale, axis, pcolor
 
 from numpy import mean, log10, log, sqrt, power, linspace, sin, cos, tan,\
-                        arcsin, arccos, arctan, inf
+                        arcsin, arccos, arctan, inf, nan
 
 from .viz import *
 from .etl import *
 from .histogram_utils import nhist, ndhist
-
+import mpld3
 
 # import etl as etl
 # from etl import flatten_list,recurse_func,list_depth
 # from toolbox.interactive_computing import *
 
 import matplotlib.patches as patches
+
+def zoom_plot(enable = True):
+    if enable:
+        mpld3.enable_notebook()
+    else:
+        mpld3.disable_notebook()
 
 
 def fig_sizer(a, b):
