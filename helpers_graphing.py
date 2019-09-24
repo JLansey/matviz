@@ -40,6 +40,9 @@ from .viz import *
 from .etl import *
 from .histogram_utils import nhist, ndhist
 
+
+# If you get JSON serilization errors because of zoomplot, then you might need this
+# python -m pip install --user "git+https://github.com/javadba/mpld3@display_fix"
 def zoom_plot(enable = True):
     if enable:
         mpld3.enable_notebook()
