@@ -5,29 +5,29 @@ functions imported so you don't need to worry about typing 'plt.' beforehand. It
 
 import matplotlib
 # matplotlib.use('Agg')
+import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import collections
 import datetime
 from datetime import datetime as dt
-
 import pickle
 import glob
+import mpld3
+import time # used in tic() toc()
 
-# # use this in notebooks
+
+# # use these in notebooks
 # %load_ext autoreload
 # %autoreload 2
-
 # %matplotlib
-
 
 # should we filter warnings by default? probably not
 # import warnings
 # warnings.filterwarnings('ignore')
 
-
-import time # used in tic() toc()
-
+# import directly a bunch of useful functions from matplotlib and numpy
+import matplotlib.patches as patches
 from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim, \
                               gcf, gca, close, title, legend, grid, bar, suptitle, show,\
                               xticks, yticks, hist2d, pcolor, yscale, xscale, axis, pcolor
@@ -35,16 +35,10 @@ from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim
 from numpy import mean, log10, log, sqrt, power, linspace, sin, cos, tan,\
                         arcsin, arccos, arctan, inf, nan
 
+# load in all the specialized functions.
 from .viz import *
 from .etl import *
 from .histogram_utils import nhist, ndhist
-import mpld3
-
-# import etl as etl
-# from etl import flatten_list,recurse_func,list_depth
-# from toolbox.interactive_computing import *
-
-import matplotlib.patches as patches
 
 def zoom_plot(enable = True):
     if enable:
@@ -112,7 +106,6 @@ def silent_toc():
             return time.time() - startTime_for_tictoc
         else:
             return None
-
 
 
 # set some nice defaults for plotting
