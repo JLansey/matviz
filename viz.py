@@ -4,9 +4,9 @@
 import matplotlib
 import matplotlib.pyplot as plt
 
-from matplotlib.pyplot import plot,hist,figure,clf,cla,xlabel,ylabel,xlim,ylim,\
-                              gcf,gca,close,title,legend,grid,bar,suptitle,show,\
-                              xticks,yticks
+from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim,\
+                              gcf, gca, close, title, legend, grid, bar, suptitle, show,\
+                              xticks, yticks, axis
 
 import numpy as np
 import datetime
@@ -100,6 +100,34 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
 # plot complex numbers in an argand diagram
 def cplot(z, *args, **kargs):
     plot(np.real(z), np.imag(z), *args, **kargs)
+
+# add a bulls-eye to the graph, polar grid lines
+def polar_grid(lw=1, r=False, linecolor='.3', style=':', nrings=2, nrays = 6):
+    ax = plt.gca()
+    axis('equal')
+    ex = ax.get_xlim()
+    yy = ax.get_ylim()
+
+    to_plot = []
+    if not r:
+        r = np.min(np.abs(np.concatenate([ex, yy])))
+    t = np.linspace(0, 2 * np.pi, nrays +1)[:-1]
+    z = 100 * r * np.exp(1j * t)
+    for cur in z:
+        to_plot.append(0)
+        to_plot.append(cur)
+        to_plot.append(np.nan)
+
+    t = np.linspace(0, 2 * np.pi, 200)
+    for cur_r in np.linspace(r/nrings, r, nrings):
+        circz = cur_r * np.exp(1j * t)
+        to_plot = to_plot + [np.nan] + list(circz)
+
+    cur_plt = cplot(np.array(to_plot), style, color=linecolor, lw=lw)
+    xlim(ex)
+    ylim(yy)
+    return cur_plt
+
 
 # plot a diagonal line with x=y to see if your predictions are biased
 def plot_diag(lw=1):
@@ -449,8 +477,8 @@ def streamgraph(df, smooth=None, normalize=None,
 
 
 
-def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background = 'white', resize=True, legend_outside=False,
-           expand_y=False, expand_x=False, touch_limits=True):
+def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background = 'white', resize=False, legend_outside=False,
+           expand_y=False, expand_x=False, touch_limits=False):
     '''
     make the figure nicer in general, like ready to be printed etc.
     '''
