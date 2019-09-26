@@ -606,8 +606,8 @@ def plot_endpoints(endpoints, color='#0093e7'):
         # plt.legend(loc='lower left', borderaxespad=0., prop={'size': 12},
         #            ncol=3, fancybox=True, shadow=True, handles=[red_patch])
 
-
-
+# fix it to depend on N like this:
+# https://www.mathworks.com/matlabcentral/fileexchange/42673-beautiful-and-distinguishable-line-colors-colormap
 def linspecer(n, color='muted'):
     return sns.color_palette(color, n_colors=n)
 

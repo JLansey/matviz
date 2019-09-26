@@ -553,6 +553,9 @@ def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False
     return bins, bin_widths
 
 
+def dictify_cols2(df):
+    return df.groupby(df.columns[0])[df.columns[1]].apply(lambda w: w.values).to_dict()
+
 
 # This will tell if the data is an integer or not.
 # first it will check if the variable is integer, but even so, they

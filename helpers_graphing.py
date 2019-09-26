@@ -50,7 +50,7 @@ def zoom_plot(enable = True):
         mpld3.disable_notebook()
 
 
-def fig_sizer(a, b):
+def fig_sizer(a=10, b=15):
     plt.rcParams["figure.figsize"] = [b, a]
 
 def display_pnct(cnt,N):
