@@ -292,7 +292,8 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
                                     normy=False, normx = False,
                                     fx=1.5, fy=1.5, std_times=4, f=None,
                                     smooth = False,
-                                    markertype=None):
+                                    markertype=None,
+                                    normr = False):
     """
 
     :param x: the x values of data
@@ -387,12 +388,18 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
         to_plot[to_plot == -np.inf] = -np.max(counts) / len(x)
     #     else:
     #         to_plot[to_plot==-np.inf] = -np.max(counts) / len(x)
-
     # normalize by x or y
     if normx:
         to_plot = to_plot / (eps + np.max(to_plot, axis=0))
     elif normy:
         to_plot = (to_plot.T/(np.max(to_plot, axis=1) + eps)).T
+
+    if normr:
+        # R2 = X. ^ 2 + Y. ^ 2; % R. ^ 2
+        X, Y = np.meshgrid(binsx, binsy)
+        R2 = np.power(X, 2) + np.power(Y, 2)
+        R = np.sqrt(R2)# R^2
+        to_plot = to_plot * R
 
 
     plt.pcolor(bins_x, bins_y, to_plot, cmap=plt.cm.Greens_r)

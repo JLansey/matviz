@@ -4,7 +4,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 
-from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim,\
+from matplotlib.pyplot import plot, scatter, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim,\
                               gcf, gca, close, title, legend, grid, bar, suptitle, show,\
                               xticks, yticks, axis
 
@@ -100,6 +100,9 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
 # plot complex numbers in an argand diagram
 def cplot(z, *args, **kargs):
     plot(np.real(z), np.imag(z), *args, **kargs)
+
+def cscatter(z, *args, **kargs):
+    scatter(np.real(z), np.imag(z), *args, **kargs)
 
 # add a bulls-eye to the graph, polar grid lines
 def polar_grid(lw=1, r=False, linecolor='.3', style=':', nrings=2, nrays = 6):
