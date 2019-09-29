@@ -27,6 +27,9 @@ import numpy as np
 from scipy import signal
 import pandas as pd
 
+# for geometric median
+from scipy.spatial.distance import cdist, euclidean
+
 
 # useful stuffs:
 from numpy import diff
@@ -379,23 +382,23 @@ def reverse_dict(tmp_dict):
 
 def recurse_func(my_list,my_func,stop_level=False):
     """
-    Will compute some function, at some level down.
+    Will compute some function, at some level down. or all the way down
     Args:
-        my_list:
-        my_func:
-        stop_level:
+        my_list: a list or list of lists
+        my_func: the function to apply
+        stop_level: the level inside the list that you want to apply the function, default
+                    the very bottom of the list
 
-    Returns:
+    Returns: list in the same shape as my_list but with the function applied
 
     """
-    if list_depth(my_list) == stop_level:
-        return my_func(my_list)
-    elif hasattr(my_list,"__len__"):
+    if hasattr(my_list,"__len__"):
+        if list_depth(my_list) == stop_level:
+            return my_func(my_list)
         return [recurse_func(w,my_func,stop_level) for w in my_list]
     else:
         return my_func(my_list)
 # http://stackoverflow.com/questions/6039103/counting-deepness-or-the-deepest-level-a-nested-list-goes-to
-
 def list_depth(seq):
     seq = iter(seq)
     try:
@@ -405,17 +408,41 @@ def list_depth(seq):
     except StopIteration:
         return level
 
-def flatten_list(my_list):
-    return list(flatten(my_list))
 
-def flatten(my_list):
-    for el in my_list:
-        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes)):
-            for sub in flatten(el):
-                yield sub
+# reversably flatten - then uflatten lists
+# https://stackoverflow.com/questions/27982432/flattening-and-unflattening-a-nested-list-of-numpy-arrays/48008710#48008710
+def flatten(values):
+    if isinstance(values, list):
+        values = np.array(values)
+    def _flatten(values):
+        if isinstance(values, np.ndarray):
+            yield values.flatten()
         else:
-            yield el
-# http://stackoverflow.com/questions/2158395/flatten-an-irregular-list-of-lists-in-python/2158532#2158532
+            for value in values:
+                yield from _flatten(value)
+    # flatten nested lists of np.ndarray to np.ndarray
+    return np.concatenate(list(_flatten(values)))
+
+
+def unflatten(flat_values, prototype):
+    if isinstance(prototype, list):
+        prototype = np.array(prototype)
+    def _unflatten(flat_values, prototype, offset):
+        if isinstance(prototype, np.ndarray):
+            shape = prototype.shape
+            new_offset = offset + np.product(shape)
+            value = flat_values[offset:new_offset].reshape(shape)
+            return value, new_offset
+        else:
+            result = []
+            for value in prototype:
+                value, offset = _unflatten(flat_values, value, offset)
+                result.append(value)
+            return result, offset
+    # unflatten np.ndarray to nested lists with structure of prototype
+    result, offset = _unflatten(flat_values, prototype, 0)
+    assert(offset == len(flat_values))
+    return result
 
 
 # convert dates to numbers, probably needs improvement or a complete overhaul, maybe moved to etl
@@ -526,6 +553,64 @@ def sort_dict_list(dict_list, k, reverse_param = True):
 def robust_mkdir(cur_dir):
     if not os.path.exists(cur_dir):
         os.mkdir(cur_dir)
+
+# compute the complex dot product of a list of imaginary vectors
+def complex_dot(a,b):
+    return np.array([z1.real * z2.real + z1.imag * z2.imag for z1, z2 in zip(a,b)])
+
+
+
+def find_percentile(value, percentiles):
+    """
+    Find the index where youy value appears in a list of percentiles
+    :param value:
+    :param percentiles:
+    :return:
+
+
+
+    example:
+
+
+
+    """
+    diffs = abs(value - percentiles)
+    ii = np.argmin(diffs)
+    percentile = ii
+
+    return percentile
+
+
+# kind of like a median in 2D
+# https://stackoverflow.com/a/30305181/3417198
+def geometric_median(X, eps=1e-5):
+    y = np.mean(X, 0)
+
+    while True:
+        D = cdist(X, [y])
+        nonzeros = (D != 0)[:, 0]
+
+        Dinv = 1 / D[nonzeros]
+        Dinvs = np.sum(Dinv)
+        W = Dinv / Dinvs
+        T = np.sum(W * X[nonzeros], 0)
+
+        num_zeros = len(X) - np.sum(nonzeros)
+        if num_zeros == 0:
+            y1 = T
+        elif num_zeros == len(X):
+            return y
+        else:
+            R = (T - y) * Dinvs
+            r = np.linalg.norm(R)
+            rinv = 0 if r == 0 else num_zeros / r
+            y1 = max(0, 1 - rinv) * T + min(1, rinv) * y
+
+        if euclidean(y, y1) < eps:
+            return y1
+
+        y = y1
+
 
 
 

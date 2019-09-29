@@ -296,8 +296,8 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
                                     normr = False):
     """
 
-    :param x: the x values of data
-    :param y: the y values of data
+    :param x: the x values of data, or y values if no y is passed, or complex numbers where x=real and y=imag
+    :param y: the y values of data, leave blank for timeseries without x
     :param log_colorbar_flag: boolean, set the colorbar scale to log
     :param maxx: the maximum x axis limit
     :param maxy: the maximum y axis limit
@@ -310,9 +310,12 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
     :param exclude_extremes: beyond std_times the data is cut off, and bunched into the edge. exclude_extremes=True will exclude this edge data
     :param normy: normalize the color scale so that the max and min color appears in every 'y' slice
     :param normx: normalize the color scale so that the max and min color appears in every 'x' slice
+    :param normr: todo: normalize around a ring
     :param f: float, the factor applied to Scotts normal reference rule, higher numbers means more bins
     :param fx: only chnage the bin factor for x bins
     :param fy: only chnage the bin factor for y bins
+    :param smooth: number of pixels over which to apply a gaussian filter over the counts, 0 for no filtering
+    :markertype: add markers for each point, '*'
 
     :return: counts, bins_x, bins_y
     """
@@ -383,6 +386,7 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
 
     to_plot = counts.transpose()
     if log_colorbar_flag:
+        # todo: change this to be actually adjusting the colorbar, not the counts
         to_plot = log10(1 + to_plot)
         # maybe this isn't needed? Counts cant be less than 0, so the log10(1) must be zero
         to_plot[to_plot == -np.inf] = -np.max(counts) / len(x)
@@ -401,7 +405,7 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
         R = np.sqrt(R2)# R^2
         to_plot = to_plot * R
 
-
+    # fig, ax = plt.subplots()
     plt.pcolor(bins_x, bins_y, to_plot, cmap=plt.cm.Greens_r)
 
     plt.xlim(np.array(bins_x)[[1, -2]])
@@ -593,6 +597,26 @@ def test_nhist_dict():
     _ = nhist(A, f=4)
     _ = nhist(A, same_bins_flag=True)
     _ = nhist(A, noerror=True)
+
+# Use ndhist without specifying an x axis.
+def test_ndhist_timeseries():
+    n = 10000
+    y = np.cumsum(np.random.randn(n)) + 15 * np.random.randn(n)
+    _ = ndhist(y, fx=5)
+    plt.xlabel('sample number')
+
+# This one looks kind of like a black hole
+def test_ndhist_complex():
+    n = 10000
+    z = (5 + np.random.randn(n)) * np.exp(1j * (np.random.randn(n) + np.pi / 4))
+    _ = ndhist(z, smooth=1)
+    plt.colorbar()
+
+# use the log colorbar to manage varying
+def test_ndhist():
+    x = np.concatenate([np.ones(500), np.random.randn(100000), 4 + np.random.randn(1000) / 2])
+    y = np.concatenate([np.ones(500), np.random.randn(100000), 3 + np.random.randn(1000) / 2])
+    counts, bins_x, bins_y = ndhist(x, y, log_colorbar_flag=True)
 
 
 
