@@ -9,6 +9,7 @@ from numpy import log10
 import seaborn as sns
 from .etl import handle_dates
 from .etl import eps
+from .etl import flatten, unflatten
 from scipy.ndimage.filters import gaussian_filter
 
 
@@ -293,7 +294,9 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
                                     fx=1.5, fy=1.5, std_times=4, f=None,
                                     smooth = False,
                                     markertype=None,
-                                    normr = False):
+                                    normr = False,
+                                    colors = 'none',
+                                    levels=False):
     """
 
     :param x: the x values of data, or y values if no y is passed, or complex numbers where x=real and y=imag
@@ -318,9 +321,60 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
     :markertype: add markers for each point, '*'
 
     :return: counts, bins_x, bins_y
-    """
-    # Note: this is a partial port of this matlab code (which explains some lingering non-pythonicness:
-    # https://www.mathworks.com/matlabcentral/fileexchange/45325-efficient-2d-histogram-no-toolboxes-needed
+
+    Note: log-colorbar flag renders the bin counting non-percentages
+
+    Note: this is a partial port of this matlab code (which explains some lingering non-pythonicness:
+    https://www.mathworks.com/matlabcentral/fileexchange/45325-efficient-2d-histogram-no-toolboxes-needed
+"""
+
+    # convertes the counts into percentages
+    def counts_to_pcnts(counts):
+        flat_counts = flatten(counts)
+        flat_norms = np.zeros(flat_counts.shape)
+        cum_summ = 0
+        for w in sorted(np.unique(flat_counts), reverse=True):
+            I = (w == flat_counts)
+            flat_norms[I] = cum_summ
+            cum_summ += w * sum(I)
+        flat_norms = 100 * flat_norms / cum_summ
+        norms = unflatten(flat_norms, counts)
+
+        return norms
+
+    class nf(float):
+        def __repr__(self):
+            s = f'{self:.1f}'
+            return f'{self:.0f}' if s[-1] == '0' else s
+
+    # this version of the algorithm is very fast - but will artificially include differences in colors
+    # could rewrite it somehow to use this and be faster:
+    # etl.start_and_ends(diff(counts_ordered) < 0)
+    def count_to_pcnts_fast(counts):
+        flat_counts = flatten(counts)
+        # sort the counts,            [in reverese]
+        idxs = np.argsort(flat_counts)[::-1]
+        idxs_undo = np.argsort(idxs)
+        # flip from greatest to smallest
+        counts_ordered = flat_counts[idxs]
+        # this is counting the contents of the bins in order from fullest to least full
+        counts_summed = np.cumsum(counts_ordered)
+        # convert the counts to a percent of the total N items histogrammed
+        flat_norms = 100 * counts_summed / sum(counts_ordered)
+        # reverse the operations to get back to our original orders and shape
+        norms_unsorted = flat_norms[idxs_undo]
+        norms = unflatten(norms_unsorted, counts)
+        return norms
+
+    if colors == 'none':
+        if levels:
+            if type(levels) == bool:
+                colors = plt.cm.Greens
+            else:
+                colors = 'gray'
+
+        else:
+            colors = plt.cm.Greens_r
 
     if np.array(x).dtype == 'complex128':
         y = x.imag
@@ -405,14 +459,32 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
         R = np.sqrt(R2)# R^2
         to_plot = to_plot * R
 
-    # fig, ax = plt.subplots()
-    plt.pcolor(bins_x, bins_y, to_plot, cmap=plt.cm.Greens_r)
+
+    # eventually have this be the default if it can be sped up
+    if levels:
+        to_plot = counts_to_pcnts(to_plot)
+        dsx = np.diff(bins_x)[1]
+        dsy = np.diff(bins_y)[1]
+
+        bx = np.append(bins_x[1:-1] - dsx / 2, np.array([bins_x[-2] + dsx / 2]))
+        by = np.append(bins_y[1:-1] - dsy / 2, np.array([bins_y[-2] + dsy / 2]))
+
+        if type(levels) == bool:
+
+            plt.contourf(bx, by, to_plot, cmap=colors, levels=100)
+        else:
+            fig, ax = plt.subplots()
+            CS = plt.contour(bx, by, to_plot, colors=colors, levels=levels)
+            CS.levels = [nf(val) for val in CS.levels]
+            ax.clabel(CS, CS.levels, inline=True, fmt='%r %%', fontsize=10, colors = 'k')
+
+        # fig, ax = plt.subplots()
+
+    else:
+        plt.pcolor(bins_x, bins_y, to_plot, cmap=colors)
 
     plt.xlim(np.array(bins_x)[[1, -2]])
     plt.ylim(np.array(bins_y)[[1, -2]])
-    # print([np.nanmin(bins_x[np.logical_not(np.isfinite(bins_x))]), np.nanmax(bins_x[np.logical_not(np.isfinite(bins_x))])])
-    # plt.xlim([np.nanmin(bins_x[np.logical_not(np.isfinite(bins_x))]), np.nanmax(bins_x[np.logical_not(np.isfinite(bins_x))])])
-    # plt.ylim([np.nanmin(bins_y[np.logical_not(np.isfinite(bins_y))]), np.nanmax(bins_y[np.logical_not(np.isfinite(bins_y))])])
 
     if markertype != None:
         plt.plot(x, y, markertype)
