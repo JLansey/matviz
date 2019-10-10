@@ -568,8 +568,9 @@ def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background 
     # if legend_outside:
     #     gca().legend(loc='center left', bbox_to_anchor=(1, 0.5), framealpha=0.0)
 
-
-
+def xylim(w):
+    xlim(w)
+    ylim(w)
 
 
 def plot_endpoints(endpoints, color='#0093e7'):
