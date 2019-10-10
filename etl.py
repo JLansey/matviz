@@ -1,6 +1,6 @@
 
 import os,sys,csv
-
+import hashlib
 
 # regular pythong stuff
 # redundant form interactive computing
@@ -661,4 +661,11 @@ def merge_two_dicts(x, y):
     z = x.copy()   # start with x's keys and values
     z.update(y)    # modifies z with y's keys and values & returns None
     return z
+
+# source: https://stackoverflow.com/questions/13259691/convert-string-to-md5/13259879
+def computeMD5hash(my_string):
+    m = hashlib.md5()
+    m.update(my_string.encode('utf-8'))
+    return m.hexdigest()
+
 
