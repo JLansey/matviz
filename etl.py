@@ -276,6 +276,15 @@ def nan_smooth(y,n=5,ens=[],ignore_nans=True):
 
     """
 
+    if np.array(y).dtype == 'complex128':
+        x = y.real
+        y = y.imag
+        return       nan_smooth(x, n=n, ens=ens, ignore_nans=ignore_nans) + \
+                1j * nan_smooth(y, n=n, ens=ens, ignore_nans=ignore_nans)
+
+
+
+
     # just in case you didn't pass in a numpy datatype
     y = np.array(y)
     ens = np.array(ens)
@@ -625,16 +634,16 @@ def map_nested_dicts(ob, func):
 
 #  these two functions are for dumping and loading arrays of complex numbers
 def complex_load(txt):
-    complex_key = "<<complex np stored as hex>>"
+    complex_key = "<<numpy type stored as hex>>"
     if isinstance(txt, str):
         splitted = txt.split(complex_key)
         if len(splitted) == 2:
             return pickle.loads(bytes.fromhex(splitted[1]))
     return txt
 
-def complex_dump(x):
-    if hasattr(x, 'dtype') and x.dtype == 'complex128':
-        complex_key = "<<complex np stored as hex>>"
+def complex_dump(x):       # change this to dump anything numpy into pickle
+    if hasattr(x, 'dtype'):# and x.dtype == 'complex128':
+        complex_key = "<<numpy type stored as hex>>"
         return complex_key + np.array(x).dumps().hex()
     else:
         return x

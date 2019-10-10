@@ -444,6 +444,10 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
         to_plot = log10(1 + to_plot)
         # maybe this isn't needed? Counts cant be less than 0, so the log10(1) must be zero
         to_plot[to_plot == -np.inf] = -np.max(counts) / len(x)
+        if levels:
+            levels = 'none'
+            print("ToDo: Make % bins work with log colorbar, switching back to regular plot")
+
     #     else:
     #         to_plot[to_plot==-np.inf] = -np.max(counts) / len(x)
     # normalize by x or y
@@ -473,7 +477,8 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
 
             plt.contourf(bx, by, to_plot, cmap=colors, levels=100)
         else:
-            fig, ax = plt.subplots()
+            # fig, ax = plt.subplots()
+            ax = plt.gca()
             CS = plt.contour(bx, by, to_plot, colors=colors, levels=levels)
             CS.levels = [nf(val) for val in CS.levels]
             ax.clabel(CS, CS.levels, inline=True, fmt='%r %%', fontsize=10, colors = 'k')
