@@ -18,15 +18,33 @@ from .etl import nan_smooth
 from .etl import round_time
 
 
-def plot_range(events, color='#0093e7',offset=0, height=1):
+def plot_range(t, events='none', color='#0093e7', y_offset='none', height='none'):
+
+    # if it is a series, get the values
+    if str(type(t)) == "<class 'pandas.core.series.Series'>":
+        t = t.values
+
+    if events == 'none':
+        events = t
+        t = np.arange(0, max(events[-1]) + 1)
+    else:
+        #       last element + ds
+        t = np.append(t, [t[-1] + (t[-1] - t[-2])])
+
+    yy = ylim()
+    if y_offset == 'none':
+        y_offset = yy[0]
+    if height == 'none':
+        height = yy[1] - yy[0]
+
     if not hasattr(events[0], "__len__"):
         events = [events]
     # Fill registered cur_event times
     for cur_event in events:
-        plt.fill_between([cur_event[0], cur_event[1]],
-                         [height + offset, height + offset],
-                         [offset,offset],
-                         color=color, label='Event',alpha=0.5)
+        plt.fill_between([t[cur_event[0]], t[cur_event[1]]],
+                         [height + y_offset, height + y_offset],
+                         [y_offset, y_offset],
+                         color=color, label='Event', alpha=0.5)
 
 
 def set_fontsize(f_size=15):
@@ -613,7 +631,7 @@ def plot_endpoints(endpoints, color='#0093e7'):
 # fix it to depend on N like this:
 # https://www.mathworks.com/matlabcentral/fileexchange/42673-beautiful-and-distinguishable-line-colors-colormap
 def linspecer(n, color='muted'):
-    return sns.color_palette(color, n_colors=n)
+    return np.array(sns.color_palette(color, n_colors=n))
 
 def format_axis_date(rot=77):
     plt.xticks(rotation=rot)
@@ -631,3 +649,9 @@ def logpcolor(x, y, C):
     C = np.log10(C)
     C[C == -np.inf] = -np.max(C)
     return plt.pcolor(x, y, C)
+
+
+# brighten a color c
+# the smaller the frac, the brighter it will be
+def brighten(c, frac = .5):
+    return c * frac + 1 - frac
