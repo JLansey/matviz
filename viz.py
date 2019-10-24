@@ -654,4 +654,4 @@ def logpcolor(x, y, C):
 # brighten a color c
 # the smaller the frac, the brighter it will be
 def brighten(c, frac = .5):
-    return c * frac + 1 - frac
+    return np.array(c) * frac + 1 - frac
