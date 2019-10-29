@@ -18,33 +18,68 @@ from .etl import nan_smooth
 from .etl import round_time
 
 
-def plot_range(t, events='none', color='#0093e7', y_offset='none', height='none'):
-
-    # if it is a series, get the values
-    if str(type(t)) == "<class 'pandas.core.series.Series'>":
-        t = t.values
-
-    if events == 'none':
-        events = t
-        t = np.arange(0, max(events[-1]) + 1)
+# mini function to change a [a, b] into [[a,b]] for use in the for loop later
+def list_ize(w):
+    if hasattr(w[0], "__len__"):
+        return w
     else:
-        #       last element + ds
-        t = np.append(t, [t[-1] + (t[-1] - t[-2])])
+        return [w]
 
+
+
+
+def plot_range(events, color='#0093e7', y_offset='none', height='none'):
+    """
+    This function has two ways to call it:
+    With passing timeseries 't' and list of indices 'events'
+
+    OR passing in event times directly
+    :param events: x positions where the range should be plotted
+    :param color:
+    :param y_offset:
+    :param height:
+    :return:
+    """
+    events = list_ize(events)
     yy = ylim()
     if y_offset == 'none':
         y_offset = yy[0]
     if height == 'none':
         height = yy[1] - yy[0]
 
-    if not hasattr(events[0], "__len__"):
-        events = [events]
     # Fill registered cur_event times
     for cur_event in events:
-        plt.fill_between([t[cur_event[0]], t[cur_event[1]]],
+        plt.fill_between([cur_event[0], cur_event[1]],
                          [height + y_offset, height + y_offset],
                          [y_offset, y_offset],
                          color=color, label='Event', alpha=0.5)
+
+
+
+
+def plot_range_idx(t, events, **varargs):
+    """
+    Plot range - for timeseries t, and events=indexed points in t
+
+    :param t: timeseries
+    :param events: indexes in that series
+    :return:
+    """
+    # if it is a series, get the values
+    if str(type(t)) == "<class 'pandas.core.series.Series'>":
+        t = t.values
+
+    events = list_ize(events)
+
+    #                 last element + ds
+    t = np.append(t, [t[-1] + (t[-1] - t[-2])])
+
+    event_times = [[t[a], t[b]] for a, b in events]
+
+    plot_range(event_times, **varargs)
+
+
+
 
 
 def set_fontsize(f_size=15):
