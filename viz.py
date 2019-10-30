@@ -690,3 +690,22 @@ def logpcolor(x, y, C):
 # the smaller the frac, the brighter it will be
 def brighten(c, frac = .5):
     return np.array(c) * frac + 1 - frac
+
+
+
+# manually add a colorbar, definitely not the best way to go about this
+# but was really tricky to do otherwise
+def example_add_colobar():
+    Y = np.linspace(0, 10.5, 100)
+    scale_func = lambda w: (w * 100 / 10.5).astype(int)
+    C = linspecer(101, "coolwarm")
+    add_colorbar(Y, C, scale_func)
+
+
+def add_colorbar(Y, C, scale_func):
+#     Y = np.linspace(0, .8, 100)
+    c = [C[w] for w in scale_func(Y)]
+    for ii, y in enumerate(Y):
+        plot([0, 1], [y, y], lw=4, color=c[ii])
+    xticks([])
+    gca().yaxis.tick_right()
