@@ -28,7 +28,7 @@ def list_ize(w):
 
 
 
-def plot_range(events, color='#0093e7', y_offset='none', height='none'):
+def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None):
     """
     This function has two ways to call it:
     With passing timeseries 't' and list of indices 'events'
@@ -52,7 +52,7 @@ def plot_range(events, color='#0093e7', y_offset='none', height='none'):
         plt.fill_between([cur_event[0], cur_event[1]],
                          [height + y_offset, height + y_offset],
                          [y_offset, y_offset],
-                         color=color, label='Event', alpha=0.5)
+                         color=color, label='Event', alpha=0.5, zorder=zorder)
 
 
 
