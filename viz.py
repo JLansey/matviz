@@ -625,6 +625,22 @@ def xylim(w):
     xlim(w)
     ylim(w)
 
+def xyscale(w):
+    plt.xscale(w)
+    plt.yscale(w)
+
+
+def set_axis_ticks_pctn(cur_axis = 'x'):
+    fmt = '%.0f%%'  # Format you want the ticks, e.g. '40%'
+    ticker_obj = matplotlib.ticker.FormatStrFormatter(fmt)
+    if cur_axis.lower() == 'x':
+        cur_axis_h = gca().xaxis
+    elif cur_axis.lower() == 'y':
+        cur_axis_h = gca().yaxis
+    else:
+        raise Exception("You must pass either x or y, you passed: " + str(cur_axis))
+    cur_axis_h.set_major_formatter(ticker_obj)
+
 
 def plot_endpoints(endpoints, color='#0093e7'):
 
