@@ -1,4 +1,8 @@
 .DS_Store
+*.pyc
+build/
 __pycache__
 .idea
 *.pyc
+dist/
+matviz.egg-info/
