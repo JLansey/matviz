@@ -22,7 +22,7 @@ MAINTAINER_EMAIL = 'jonathan@lansey.net'
 URL = 'https://github.com/JLansey/matviz'
 LICENSE = 'BSD (3-clause)'
 DOWNLOAD_URL = 'https://github.com/JLansey/matviz'
-VERSION = '0.0.0.dev'
+VERSION = '0.0.1.dev'
 
 INSTALL_REQUIRES = [
     'numpy>=1.9.3',
