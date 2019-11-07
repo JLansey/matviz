@@ -29,7 +29,8 @@ INSTALL_REQUIRES = [
     'scipy>=0.14.0',
     'pandas>=0.15.2',
     'matplotlib>=1.4.3',
-    'seaborn>=0.5.1'
+    'seaborn>=0.5.1',
+    'simplejson'
 ]
 
 PACKAGES = [

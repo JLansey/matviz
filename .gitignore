@@ -6,3 +6,4 @@ __pycache__
 *.pyc
 dist/
 matviz.egg-info/
+examples/.ipynb_checkpoints/

@@ -10,8 +10,8 @@ from collections import Sequence
 from itertools import chain, count
 from operator import itemgetter
 import glob
-# import json
-import simplejson as json
+import json
+# import simplejson as json
 
 
 # datetime related things
