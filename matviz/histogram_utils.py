@@ -12,7 +12,7 @@ from .etl import eps
 from .etl import flatten, unflatten
 from scipy.ndimage.filters import gaussian_filter
 
-
+import logging
 
 
 
@@ -88,7 +88,7 @@ and the locations of the left edges of each bin.
     # if you passed a dictionary, turn it into a list
     if isinstance(X,dict):
         if legend:
-            print('passed in legend is being ignored. Since you passed a dict there ' + \
+            logging.warning('passed in legend is being ignored. Since you passed a dict there ' + \
                   'would be no way for us to enforce that the order be the same')
         labels = list(X.keys())
         X = list(X.values())
@@ -149,9 +149,10 @@ and the locations of the left edges of each bin.
                                       sameBinsFlag=same_bins_flag,maxx=maxx,minx=minx,int_bins_flag=int_bins_flag,
                                       exclude_extremes=exclude_extremes)
 
+    # todo: change the error here to a warning, and set labels to the default
     if labels:
         if len(labels) != S:
-            print('your labels are the wrong number of things')
+            logging.error("Your labels list length " + str(len(labels)) + " doesn't equal the number of elements in your data: " + str(S))
     else:
         labels = [str(w) for w in range(S)]
 
@@ -411,9 +412,6 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
     if maxy == np.inf:
         maxy = np.max(y)
 
-    print(maxy)
-
-
     # if ylims == 'auto':
     #     cur_std = np.std(y)
     #     cur_mean = np.mean(y)
@@ -445,8 +443,9 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
         # maybe this isn't needed? Counts cant be less than 0, so the log10(1) must be zero
         to_plot[to_plot == -np.inf] = -np.max(counts) / len(x)
         if levels:
+            #ToDo: Make % bins work with log colorbar, switching back to regular plot
+            logging.warning("Your chosen levels are being ignored because of the log_colorbar_flag")
             levels = 'none'
-            print("ToDo: Make % bins work with log colorbar, switching back to regular plot")
 
     #     else:
     #         to_plot[to_plot==-np.inf] = -np.max(counts) / len(x)
@@ -532,8 +531,8 @@ def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False
             if minx < np.max(Values):
                 minS[k] = minx
             else: # ooh man, even your biggest value is smaller than your min
+                logging.warning(['user parameter minx=' + str(minx) + ' is being overriden since it put all your data out of bounds'])
                 minS[k] = np.min(Values)
-                # print(['user parameter minx=' num2str(minX) ' override since it put all your data out of bounds']);
 
     # set x MAX values
         if maxx is None:

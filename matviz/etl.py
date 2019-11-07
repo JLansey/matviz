@@ -12,7 +12,7 @@ from operator import itemgetter
 import glob
 import json
 # import simplejson as json
-
+import logging
 
 # datetime related things
 from dateutil.parser import parse as dateutil_parse
@@ -49,8 +49,7 @@ def time_delta_to_days(w):
 
 def get_object_size(obj):
     the_size = sys.getsizeof(obj)*1e-6
-    print("Object size in MB: {0:.2f}".format(the_size))
-    # return the_size
+    return "Object size in MB: {0:.2f}".format(the_size)
 
 
 def pprint_entire_df(df):
@@ -374,10 +373,10 @@ def xcorr(a, b, ds):
 
     if len(corrs) > len(lags):
         corrs = corrs[:len(lags)]
-        print("corrs not equal lags")
+        logging.warning("corrs not equal lags")
     if len(corrs) < len(lags):
         lags = lags[:len(corrs)]
-        print("corrs not equal lags")
+        logging.warning("corrs not equal lags")
 
 
 
