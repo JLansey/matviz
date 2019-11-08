@@ -22,7 +22,7 @@ MAINTAINER_EMAIL = 'jonathan@lansey.net'
 URL = 'https://github.com/JLansey/matviz'
 LICENSE = 'BSD (3-clause)'
 DOWNLOAD_URL = 'https://github.com/JLansey/matviz'
-VERSION = '0.0.1.dev'
+VERSION = 'v0.0.2'
 
 INSTALL_REQUIRES = [
     'numpy>=1.9.3',
@@ -30,7 +30,8 @@ INSTALL_REQUIRES = [
     'pandas>=0.15.2',
     'matplotlib>=1.4.3',
     'seaborn>=0.5.1',
-    'simplejson'
+    'simplejson',
+    'mpld3'
 ]
 
 PACKAGES = [
