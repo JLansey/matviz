@@ -48,6 +48,11 @@ def time_delta_to_days(w):
 
 
 def get_object_size(obj):
+    """
+    Get the number of megabytes bytes that the object is
+    :param obj:
+    :return:
+    """
     the_size = sys.getsizeof(obj)*1e-6
     return "Object size in MB: {0:.2f}".format(the_size)
 
