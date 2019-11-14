@@ -342,10 +342,10 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
 
         return norms
 
-    class nf(float):
-        def __repr__(self):
-            s = f'{self:.1f}'
-            return f'{self:.0f}' if s[-1] == '0' else s
+    # class nf(float):
+    #     def __repr__(self):
+    #         s = f'{self:.1f}'
+    #         return f'{self:.0f}' if s[-1] == '0' else s
 
     # this version of the algorithm is very fast - but will artificially include differences in colors
     # could rewrite it somehow to use this and be faster:
@@ -573,6 +573,11 @@ def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False
         int_bins = [int_bins_flag for x in X]
     else:
         int_bins = [isdiscrete(x) for x in X]
+
+    for cur_int_bins in int_bins:
+        if cur_int_bins:
+            x_min = np.floor(x_min)
+
 
     bin_widths = [3.5*np.std(x)/(bin_factor*np.power(len(x),1.0/3)) for x in X]
 

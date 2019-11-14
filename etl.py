@@ -428,7 +428,8 @@ def flatten(values):
             yield values.flatten()
         else:
             for value in values:
-                yield from _flatten(value)
+                1
+                # yield from _flatten(value)
     # flatten nested lists of np.ndarray to np.ndarray
     return np.concatenate(list(_flatten(values)))
 
