@@ -295,7 +295,7 @@ def nan_smooth(y,n=5,ens=[],ignore_nans=True):
 
     # handle weird cases
     if len(y)<3:
-        raise Warning('Sorry bud, you can''t smooth less than 3 points, thats silly')
+        logging.warning('Sorry bud, you can''t smooth less than 3 points, thats silly')
         return y
 
     if len(ens)==0:
@@ -319,11 +319,11 @@ def nan_smooth(y,n=5,ens=[],ignore_nans=True):
     else:
         window = n
         if round(sum(window)*100000)/100000 != 1:
-            raise Warning('the sum of your window does not equal to one. Your smoother will be biased')
+            logging.warning('the sum of your window does not equal to one. Your smoother will be biased')
         n = len(window)
 
     if len(y)<=n:
-        raise Warning('Sorry bud, you can''t smooth that, pick a smaller n')
+        logging.warning('Sorry bud, you can''t smooth that, pick a smaller n')
         return y
 
     # ignore those nans
