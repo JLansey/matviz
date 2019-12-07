@@ -29,7 +29,7 @@ import pandas as pd
 
 # for geometric median
 from scipy.spatial.distance import cdist, euclidean
-
+from scipy import interpolate
 
 # useful stuffs:
 from numpy import diff
@@ -558,6 +558,24 @@ def find_dom_freq(x, ds, window = 'hann'):
     freq, power = signal.periodogram(x, 1 / ds, window=window)
     peak_freq = freq[power == np.max(power)].mean()
     return peak_freq
+
+
+
+def interp_nans(t, y):
+    """
+    Interpolate t and y between any nans, and resample to consistent sampling rate
+    :param t: time
+    :param y: key variable
+    :return:
+    """
+    I = np.logical_not(np.isnan(y))
+    t = t[I]
+    y = y[I]
+    ds = np.nanmedian(np.diff(t))
+    f = interpolate.PchipInterpolator(t, y)
+    t_i = np.arange(min(t), max(t), ds)
+    y_i = f(t_i)
+    return t_i, y_i
 
 
 def sort_dict_list(dict_list, k, reverse_param = True):
