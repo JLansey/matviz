@@ -150,7 +150,7 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
         plt.plot(x, m*np.array(x) + b,**line_styles)
 
 
-# plot complex numbers in an argand diagram
+# plot complex numbers in an arg and diagram
 def cplot(z, *args, **kargs):
     plot(np.real(z), np.imag(z), *args, **kargs)
 
