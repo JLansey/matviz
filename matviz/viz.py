@@ -235,7 +235,6 @@ def subplotter(x,y,n, xlbl=None, ylbl=None):
     """
     # a subplotter function that works like the matlab one does but with index starting at 0
     kwargs = {}
-    print(n)
     if type(n) != int:
         # note special case y == 1, where rowspan should be used
         if n[1] == n[0] + 1 and y > 1:
