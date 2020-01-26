@@ -225,13 +225,31 @@ def bar_centered(y,**kwargs):
 
 
 def subplotter(x,y,n, xlbl=None, ylbl=None):
+    """
+    :param x: number of rows
+    :param y: number of columns
+    :param n: order, if you pass a list then it spans multiple rows or columns
+    :param xlbl: xlabel, if you want it to appear way on the bottom
+    :param ylbl: ylabel, if you want it to appear way on the left only
+    :return:
+    """
     # a subplotter function that works like the matlab one does but with index starting at 0
+    kwargs = {}
+    print(n)
+    if type(n) != int:
+        # note special case y == 1, where rowspan should be used
+        if n[1] == n[0] + 1 and y > 1:
+            kwargs = {'colspan': len(n)}
+        else:
+            kwargs = {'rowspan': len(n)}
+        n = n[0]
+
     tupp = (x,y)
     cnt = 0
     for ii in range(tupp[0]):
         for jj in range(tupp[1]):
             if cnt==n:
-                ax = plt.subplot2grid(tupp, (ii, jj))
+                ax = plt.subplot2grid(tupp, (ii, jj), **kwargs)
                 if jj == 0:
                     if ylbl:
                         ylabel(ylbl)
