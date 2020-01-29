@@ -583,6 +583,9 @@ def sort_dict_list(dict_list, k, reverse_param = True):
 
 def robust_mkdir(cur_dir):
     if not os.path.exists(cur_dir):
+        lower_dir = os.path.dirname(cur_dir)
+        if not os.path.exists(lower_dir):
+            robust_mkdir(lower_dir)
         os.mkdir(cur_dir)
 
 # compute the complex dot product of a list of imaginary vectors
