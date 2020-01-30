@@ -588,6 +588,10 @@ def robust_mkdir(cur_dir):
             robust_mkdir(lower_dir)
         os.mkdir(cur_dir)
 
+def robust_rmdir(cur_dir):
+    if os.path.exists(cur_dir):
+        os.rmdir(cur_dir)
+
 # compute the complex dot product of a list of imaginary vectors
 def complex_dot(a,b):
     return np.array([z1.real * z2.real + z1.imag * z2.imag for z1, z2 in zip(a,b)])
