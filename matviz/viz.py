@@ -131,7 +131,7 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
 
     '''
 
-    if line_styles==None:
+    if line_styles is None:
         line_styles = {'color':'0.4','lw':3}
 
     # check that these are not regular lists, so that we can use logical indexing later
@@ -458,7 +458,7 @@ def streamgraph(df, smooth=None, normalize=None,
     #     remember to set the y'lims below - or unset the autoscale y
     if normalize:
         y = normalize_y(y)
-        if wiggle == None:
+        if wiggle is None:
             wiggle = False
 
     # prepare the colors for plotting
@@ -474,7 +474,7 @@ def streamgraph(df, smooth=None, normalize=None,
     elif type(color) == dict:
         pallet_dict = color
 
-    if wiggle == None:
+    if wiggle is None:
         wiggle = True
 
     #   prepare the idxs (if you'll wiggle)
