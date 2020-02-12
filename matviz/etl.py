@@ -707,3 +707,14 @@ def computeMD5hash(my_string):
     return m.hexdigest()
 
 
+def complex_noise(n, func=np.random.randn):
+    """
+    create a random complex number.
+    todo: make it accept more integers for more dimensions
+    :param n: number of random complex numbers you need
+    :param func: the type of random that you want
+    :return:
+    """
+    noise = func(2, n)
+    noise = 1j * noise[0] + noise[1]
+    return noise
