@@ -718,3 +718,12 @@ def complex_noise(n, func=np.random.randn):
     noise = func(2, n)
     noise = 1j * noise[0] + noise[1]
     return noise
+
+
+def array_pop(X, idx):
+    x_list = list(X)
+    x_list.pop(idx)
+    return np.array(x_list)
+
+
+
