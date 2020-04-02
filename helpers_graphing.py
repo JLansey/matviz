@@ -31,7 +31,7 @@ import matplotlib.patches as patches
 from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim, \
                               gcf, gca, close, title, legend, grid, bar, suptitle, show,\
                               xticks, yticks, hist2d, pcolor, yscale, xscale, axis, pcolor,\
-                              contour, colorbar, scatter
+                              contour, colorbar, scatter, boxplot
 
 from numpy import mean, log10, log, sqrt, power, linspace, sin, cos, tan,\
                         arcsin, arccos, arctan, inf, nan
