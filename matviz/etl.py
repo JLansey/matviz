@@ -600,7 +600,7 @@ def complex_dot(a,b):
 
 def find_percentile(value, percentiles):
     """
-    Find the index where youy value appears in a list of percentiles
+    Find the index where your value appears in a list of percentiles
     :param value:
     :param percentiles:
     :return:
