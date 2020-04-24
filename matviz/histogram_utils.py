@@ -465,7 +465,7 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
 
     # eventually have this be the default if it can be sped up
     if levels:
-        to_plot = counts_to_pcnts(to_plot)
+        to_plot = count_to_pcnts_fast(to_plot)
         dsx = np.diff(bins_x)[1]
         dsy = np.diff(bins_y)[1]
 
