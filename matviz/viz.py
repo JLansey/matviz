@@ -214,6 +214,9 @@ def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):
 
     return plt.plot(x,y,style, color=linecolor, lw=lw)
 
+def plot_axes(color='.5'):
+    plot_zero(axx='x', linecolor=color)
+    plot_zero(axx='y', linecolor=color)
 
 def bar_centered(y,**kwargs):
 #     its like a regular bar plot, except that it is centered on 1:N integers
