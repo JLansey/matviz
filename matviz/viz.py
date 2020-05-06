@@ -186,7 +186,7 @@ def polar_grid(lw=1, r=False, linecolor='.3', style=':', nrings=2, nrays = 6):
 
 
 # plot a diagonal line with x=y to see if your predictions are biased
-def plot_diag(lw=1):
+def plot_diag(lw=1, color='.5'):
     ax = plt.gca()
     ex = ax.get_xlim()
     yy = ax.get_ylim()
@@ -196,7 +196,7 @@ def plot_diag(lw=1):
     else:
         y=ex
         x=ex
-    plt.plot(x,y,'--',color='.5', lw=lw)
+    plt.plot(x,y,'--',color=color, lw=lw)
 
 # plot a horizontal line, or a vertical line
 def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):

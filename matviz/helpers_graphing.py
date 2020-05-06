@@ -68,10 +68,15 @@ def return_pnct(cnt,N):
 
 
 # display the status every so often
-def count_helper(cnt, S, freq=10):
-    if cnt % freq == 0:
-        print(str(cnt) + " / " + str(S))
+def count_helper(cnt, S, freq=10, pcnt=False):
+    if pcnt:
+        freq = np.round(S * freq / 100)
 
+    if cnt % freq == 0:
+        if pcnt:
+            print(str(100.0 * cnt / S) + "% complete")
+        else:
+            print(str(cnt) + " / " + str(S))
 
 def tic():
     """
