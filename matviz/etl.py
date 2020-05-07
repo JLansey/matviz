@@ -677,12 +677,33 @@ def complex_dump(x):       # change this to dump anything numpy into pickle
     else:
         return x
 
+
+
 def load_json(file_path):
+    """
+    Load a json file - including complex numpy numbers
+
+    :param file_path:
+    :return:
+    """
     with open(file_path) as json_file:
         data_dict = json.load(json_file)
     #     convert any stored complex numbers back into native format
     data_dict = map_nested_dicts(data_dict, complex_load)
     return data_dict
+
+def loads_json(json_str):
+    """
+    Convert string back to dictionary - including complex numpy numbers
+    :param json_str:
+    :return:
+    """
+    data_dict = json.loads(json_str)
+    #     convert any stored complex numbers back into native format
+    data_dict = map_nested_dicts(data_dict, complex_load)
+    return data_dict
+
+
 
 def dump_json(data_dict, file_path):
     # pickle any complex numbers into strings
