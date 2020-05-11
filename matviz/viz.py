@@ -145,7 +145,7 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
     I1 = np.logical_not(np.isnan(y))
     I2 = np.logical_not(np.isnan(x))
     I = np.logical_and(I1,I2)
-    if sum(I)>3:
+    if sum(I) > 3:
         m, b = np.polyfit(x[I], y[I], 1)
         plt.plot(x, m*np.array(x) + b,**line_styles)
 
@@ -190,13 +190,13 @@ def plot_diag(lw=1, color='.5'):
     ax = plt.gca()
     ex = ax.get_xlim()
     yy = ax.get_ylim()
-    if np.diff(ex)[0]>np.diff(yy)[0]:
+    if np.diff(ex)[0] > np.diff(yy)[0]:
         y = yy
         x = yy
     else:
-        y=ex
-        x=ex
-    plt.plot(x,y,'--',color=color, lw=lw)
+        y = ex
+        x = ex
+    plt.plot(x, y, '--', color=color, lw=lw)
 
 # plot a horizontal line, or a vertical line
 def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):
@@ -703,6 +703,7 @@ def plot_endpoints(endpoints, color='#0093e7'):
 # https://www.mathworks.com/matlabcentral/fileexchange/42673-beautiful-and-distinguishable-line-colors-colormap
 def linspecer(n, color='muted'):
     return np.array(sns.color_palette(color, n_colors=n))
+
 
 def format_axis_date(rot=77):
     plt.xticks(rotation=rot)
