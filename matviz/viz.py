@@ -227,7 +227,7 @@ def bar_centered(y,**kwargs):
 
 
 
-def subplotter(x,y,n, xlbl=None, ylbl=None):
+def subplotter(x, y, n, xlbl=None, ylbl=None):
     """
     :param x: number of rows
     :param y: number of columns
@@ -240,13 +240,22 @@ def subplotter(x,y,n, xlbl=None, ylbl=None):
     kwargs = {}
     if type(n) != int:
         # note special case y == 1, where rowspan should be used
-        if n[1] == n[0] + 1 and y > 1:
-            kwargs = {'colspan': len(n)}
+        if len(n) > x:
+            kwargs = {'colspan': x,
+                      'rowspan': int(len(n) / y)}
+
+            if int(kwargs['rowspan']) != kwargs['rowspan']:
+                raise Exception("this isn't supported yet")
+
         else:
-            kwargs = {'rowspan': len(n)}
+            if n[1] == n[0] + 1 and y > 1:
+                kwargs = {'colspan': len(n)}
+            else:
+                kwargs = {'rowspan': len(n)}
+
         n = n[0]
 
-    tupp = (x,y)
+    tupp = (x, y)
     cnt = 0
     for ii in range(tupp[0]):
         for jj in range(tupp[1]):

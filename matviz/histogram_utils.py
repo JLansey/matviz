@@ -191,7 +191,7 @@ and the locations of the left edges of each bin.
                 N[k]=N[k]/(bin_widths[k]*num_points[k])
 
     # current_palette = sns.color_palette("Set2",5)
-    if color:
+    if color is not None:
         if type(color) == str:
             current_palette = sns.color_palette(color, S)
         else:
@@ -215,9 +215,9 @@ and the locations of the left edges of each bin.
 
     for k in range(S):
         # add a zero to the end here for that last non-bin
-        plt.bar(bins_to_plot[k],np.append(N[k],0), width=bin_widths[k], \
-                label=labels[k],alpha=alpha, \
-                lw=0,color=current_palette[k], \
+        plt.bar(bins_to_plot[k], np.append(N[k],0), width=bin_widths[k], \
+                label=labels[k], alpha=alpha, \
+                lw=0, color=current_palette[k], \
                 align='edge')
         # plt.bar(np.append(0,bins_in[k]),np.append(np.append(N[k],0),0), width=bin_widths[k], \
         #         label=labels[k],alpha=.5, \
@@ -226,8 +226,8 @@ and the locations of the left edges of each bin.
 
         # add a zero to the beginning here so that the line completes down to the bottom
         # and on the other end too.
-        plt.step(np.append(bins_to_plot[k],bins_in[k][-1]),np.append(np.append(0,N[k]),0), \
-                 lw=2,color=current_palette[k], \
+        plt.step(np.append(bins_to_plot[k],bins_in[k][-1]), np.append(np.append(0, N[k]), 0), \
+                 lw=2, color=current_palette[k], \
                  )
 
 
