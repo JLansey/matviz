@@ -218,6 +218,19 @@ def plot_axes(color='.5'):
     plot_zero(axx='x', linecolor=color)
     plot_zero(axx='y', linecolor=color)
 
+
+def plot_pin(x, y, color='k'):
+    """
+    Plot a pin at a specific point on the x axis
+    :param x: position of the pin on the x axis
+    :param y: height of the pin
+    :param color: color of the line and marker
+    :return:
+    """
+    plot([x, x], [0, y], linewidth=3, color=color)
+    plot([x], [y], 'o', color=color, markersize=10)
+
+
 def bar_centered(y,**kwargs):
 #     its like a regular bar plot, except that it is centered on 1:N integers
     x = np.arange(len(y))+1
