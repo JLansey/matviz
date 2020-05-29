@@ -696,6 +696,71 @@ def test_ndhist():
 
 
 
+
+def errorb(X, legend=None):
+
+    if isinstance(X,dict):
+        if legend is not None:
+            logging.warning('passed in legend is being ignored. Since you passed a dict there ' + \
+                  'would be no way for us to enforce that the order be the same')
+        labels = list(X.keys())
+        X = list(X.values())
+
+    # in case we only have one item total to graph
+    if not hasattr(X[0], "__len__"):
+        X = [X]
+
+    X = [list(x) for x in X]
+
+
+    # do we really want to have redundant labels?
+    if legend is not None:
+        labels = legend
+    # else labels =
+
+
+    # if you passed a pandas DataFrame:
+    if str(type(X)) == "<class 'pandas.core.frame.DataFrame'>":
+        X = X.to_dict('list')
+
+    # if you passed a dictionary, turn it into a list
+    if isinstance(X,dict):
+        if legend:
+            logging.warning('passed in legend is being ignored. Since you passed a dict there ' + \
+                  'would be no way for us to enforce that the order be the same')
+        labels = list(X.keys())
+        X = list(X.values())
+
+    # in case we only have one item total to graph
+    if not hasattr(X[0], "__len__"):
+        X = [X]
+
+    X = [list(x) for x in X]
+
+
+    X, datetime_flag, date_formatting = handle_dates(X)
+
+    # remove nones or nans
+    X = [[x1 for x1 in x if x1 is not None and not np.isnan(x1)] for x in X]
+
+    # count and remove -infs and infs
+    inf_counts = [ [sum(np.array(x) == -np.inf), sum(np.array(x) == np.inf)] for x in X]
+    X = [[x1 for x1 in x if np.isfinite(x1)] for x in X]
+
+
+    S = len(X)
+
+    # b    num_points = [len(x) for x in X]
+    X_std = [np.std(x) for x in X]
+    X_mean = [np.mean(x) for x in X]
+
+
+    for k in range(S):
+        plt.errorbar(X_mean[k], k, xerr=X_std[k], fmt='o', color=current_palette[k], alpha=1, lw=3)
+
+
+
+
 if __name__=='main':
     pass
 
