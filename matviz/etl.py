@@ -582,6 +582,11 @@ def sort_dict_list(dict_list, k, reverse_param = True):
     return sorted(dict_list, key=itemgetter(k), reverse=reverse_param)
 
 def robust_mkdir(cur_dir):
+    """
+    Create a directory - if it doesn't exist. AND do so recursively if you are creating a folder and subfolder together
+    :param cur_dir:
+    :return:
+    """
     if not os.path.exists(cur_dir):
         lower_dir = os.path.dirname(cur_dir)
         if not os.path.exists(lower_dir):
@@ -589,6 +594,7 @@ def robust_mkdir(cur_dir):
         os.mkdir(cur_dir)
 
 def robust_rmdir(cur_dir):
+    # will remove a directory ONLY if it *does* exist
     if os.path.exists(cur_dir):
         os.rmdir(cur_dir)
 
