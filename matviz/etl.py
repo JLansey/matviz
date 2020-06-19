@@ -581,6 +581,9 @@ def interp_nans(t, y):
 def sort_dict_list(dict_list, k, reverse_param = True):
     return sorted(dict_list, key=itemgetter(k), reverse=reverse_param)
 
+def sort_dict_alphabetically(cur_dict):
+    return {k: cur_dict[k] for k in sorted(cur_dict.keys())}
+
 def robust_mkdir(cur_dir):
     if not os.path.exists(cur_dir):
         lower_dir = os.path.dirname(cur_dir)
