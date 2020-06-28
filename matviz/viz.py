@@ -30,10 +30,7 @@ def list_ize(w):
 
 def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None):
     """
-    This function has two ways to call it:
-    With passing timeseries 't' and list of indices 'events'
 
-    OR passing in event times directly
     :param events: x positions where the range should be plotted
     :param color:
     :param y_offset:
@@ -47,12 +44,15 @@ def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=N
     if height == 'none':
         height = yy[1] - yy[0]
 
+    to_label = 'none'
     # Fill registered cur_event times
     for cur_event in events:
         plt.fill_between([cur_event[0], cur_event[1]],
                          [height + y_offset, height + y_offset],
                          [y_offset, y_offset],
-                         color=color, label='Event', alpha=0.5, zorder=zorder)
+                         color=color, alpha=0.5, zorder=zorder, label=to_label)
+        # make sure only one legend item appears for this event series
+        to_label = '_nolegend_'
 
 
 
@@ -689,6 +689,7 @@ def set_axis_ticks_pctn(cur_axis = 'x'):
     else:
         raise Exception("You must pass either x or y, you passed: " + str(cur_axis))
     cur_axis_h.set_major_formatter(ticker_obj)
+
 
 
 def plot_endpoints(endpoints, color='#0093e7'):
