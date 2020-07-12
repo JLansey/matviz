@@ -12,6 +12,12 @@ import numpy as np
 import datetime
 from datetime import datetime as dt
 
+# std library
+from itertools import chain
+
+# typing
+from typing import List, Dict, Union, Any, Iterable
+
 from scipy import stats
 import seaborn as sns
 from .etl import nan_smooth
@@ -776,3 +782,29 @@ def add_colorbar(Y, C, scale_func):
         plot([0, 1], [y, y], lw=4, color=c[ii])
     xticks([])
     gca().yaxis.tick_right()
+
+
+
+def legend_helper(fig: Union[plt.Figure, plt.Axes],
+                  *args: Iterable[plt.Axes]) -> Dict[str, Any]:
+    """
+    Provides handles and labels of all provided axes.
+
+    David S. Fulford
+
+    https://towardsdatascience.com/easy-matplotlib-legends-with-functional-programming-64615b529118
+    """
+    if isinstance(fig, plt.Figure):
+        handles, labels = [list(chain.from_iterable(seq)) for seq in zip(*(
+            ax.get_legend_handles_labels() for ax in fig.axes
+        ))]
+
+    else:
+        handles, labels = [list(chain.from_iterable(seq)) for seq in zip(*(
+            ax.get_legend_handles_labels() for ax in chain([fig], args)
+        ))]
+
+    return {
+        'handles': handles,
+        'labels': labels,
+    }
