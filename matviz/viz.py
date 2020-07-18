@@ -34,7 +34,7 @@ def list_ize(w):
 
 
 
-def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None):
+def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None, **varargs):
     """
 
     :param events: x positions where the range should be plotted
@@ -56,7 +56,7 @@ def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=N
         plt.fill_between([cur_event[0], cur_event[1]],
                          [height + y_offset, height + y_offset],
                          [y_offset, y_offset],
-                         color=color, alpha=0.5, zorder=zorder, label=to_label)
+                         color=color, alpha=0.5, zorder=zorder, label=to_label, **varargs)
         # make sure only one legend item appears for this event series
         to_label = '_nolegend_'
 
@@ -266,9 +266,9 @@ def subplotter(x, y, n, xlbl=None, ylbl=None):
     kwargs = {}
     if type(n) != int:
         # note special case y == 1, where rowspan should be used
-        if len(n) > x:
-            kwargs = {'colspan': x,
-                      'rowspan': int(len(n) / y)}
+        if len(n) > y:
+            kwargs = {'colspan': y,
+                      'rowspan': int(len(n) / x)}
 
             if int(kwargs['rowspan']) != kwargs['rowspan']:
                 raise Exception("this isn't supported yet")
