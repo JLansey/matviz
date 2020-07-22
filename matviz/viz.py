@@ -735,7 +735,7 @@ def linspecer(n, color='muted'):
 
 
 def format_axis_date(rot=77):
-    plt.xticks(rotation=rot)
+    plt.xticks(rotation=rot, rotation_mode="anchor", ha='right')
     # ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
     # plt.xticks(x,tick_labels)
     # plt.xticks(rotation=70)
