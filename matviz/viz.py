@@ -12,6 +12,12 @@ import numpy as np
 import datetime
 from datetime import datetime as dt
 
+# std library
+from itertools import chain
+
+# typing
+from typing import List, Dict, Union, Any, Iterable
+
 from scipy import stats
 import seaborn as sns
 from .etl import nan_smooth
@@ -28,12 +34,9 @@ def list_ize(w):
 
 
 
-def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None):
+def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None, **varargs):
     """
-    This function has two ways to call it:
-    With passing timeseries 't' and list of indices 'events'
 
-    OR passing in event times directly
     :param events: x positions where the range should be plotted
     :param color:
     :param y_offset:
@@ -47,12 +50,15 @@ def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=N
     if height == 'none':
         height = yy[1] - yy[0]
 
+    to_label = 'none'
     # Fill registered cur_event times
     for cur_event in events:
         plt.fill_between([cur_event[0], cur_event[1]],
                          [height + y_offset, height + y_offset],
                          [y_offset, y_offset],
-                         color=color, label='Event', alpha=0.5, zorder=zorder)
+                         color=color, alpha=0.5, zorder=zorder, label=to_label, **varargs)
+        # make sure only one legend item appears for this event series
+        to_label = '_nolegend_'
 
 
 
@@ -260,9 +266,9 @@ def subplotter(x, y, n, xlbl=None, ylbl=None):
     kwargs = {}
     if type(n) != int:
         # note special case y == 1, where rowspan should be used
-        if len(n) > x:
-            kwargs = {'colspan': x,
-                      'rowspan': int(len(n) / y)}
+        if len(n) > y:
+            kwargs = {'colspan': y,
+                      'rowspan': int(len(n) / x)}
 
             if int(kwargs['rowspan']) != kwargs['rowspan']:
                 raise Exception("this isn't supported yet")
@@ -691,6 +697,7 @@ def set_axis_ticks_pctn(cur_axis = 'x'):
     cur_axis_h.set_major_formatter(ticker_obj)
 
 
+
 def plot_endpoints(endpoints, color='#0093e7'):
 
         x_starts = [w[0] for w in endpoints]
@@ -775,3 +782,29 @@ def add_colorbar(Y, C, scale_func):
         plot([0, 1], [y, y], lw=4, color=c[ii])
     xticks([])
     gca().yaxis.tick_right()
+
+
+
+def legend_helper(fig: Union[plt.Figure, plt.Axes],
+                  *args: Iterable[plt.Axes]) -> Dict[str, Any]:
+    """
+    Provides handles and labels of all provided axes.
+
+    David S. Fulford
+
+    https://towardsdatascience.com/easy-matplotlib-legends-with-functional-programming-64615b529118
+    """
+    if isinstance(fig, plt.Figure):
+        handles, labels = [list(chain.from_iterable(seq)) for seq in zip(*(
+            ax.get_legend_handles_labels() for ax in fig.axes
+        ))]
+
+    else:
+        handles, labels = [list(chain.from_iterable(seq)) for seq in zip(*(
+            ax.get_legend_handles_labels() for ax in chain([fig], args)
+        ))]
+
+    return {
+        'handles': handles,
+        'labels': labels,
+    }
