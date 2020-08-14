@@ -12,10 +12,9 @@ MatViz is an usefull libraries to help data scientists with data visualization.
 
 Matviz include:
 
-* `histogram_utils` includes awesome functions for making nice 1D and 2D histograms.
+* **histogram_utils** includes awesome functions for making nice 1D and 2D histograms.
 
-* `viz` includes small helpful scripts to change figure sizes and a few longer scripts like `streamgraph` and `logfit`.
-
+* **viz** includes small helpful scripts to change figure sizes and a few longer scripts like `streamgraph` .
 
 
 .. toctree::
@@ -26,12 +25,11 @@ Matviz include:
    histogram_utils
    viz
 
-
 You can download MatViz on `GitHub <http://github.com/JLansey/matviz>`_
 
 
 Indices and tables
-==================
+--------------------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
