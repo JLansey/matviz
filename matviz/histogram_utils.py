@@ -256,7 +256,7 @@ and the locations of the left edges of each bin.
         plt.legend(loc='upper right')
         plt.legend(framealpha=0.0)
 
-    plt.autoscale(enable=True, axis='x', tight=True)
+    # plt.autoscale(enable=True, axis='y', tight=True)
 
     # plot those ***s
     # get those legend colors - and plot them only if
