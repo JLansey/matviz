@@ -14,68 +14,78 @@ from scipy.ndimage.filters import gaussian_filter
 
 import logging
 
-
-
-
 # exclude extremes will ignore the things outside the bounds,
 def nhist(X,f=1.2,title=None,xlabel=None,ylabel=None,labels=None,legend=None,noerror=False,
           max_bins=175,std_times=4,color=None,normalize=False,same_bins_flag=False,int_bins_flag=None,
           maxx=None, minx=None, exclude_extremes=False, alpha = .4):
+
     """
-Summary of what function does:
-    1) Automatically sets the number and range of the bins to be appropriate for the data.
-    2) Compares multiple sets of data on one plots, with legend or titles. It also graphs the mean and standard deviations.
-    3) Input can be a list, dictionary or pandas dataframe
-    4) Allows for changing many more parameters
+    Plots 1D histograms with standard deviation of data.
 
-Note: this is a partial port of this matlab code (which explains some lingering non-pythonicness:
-https://www.mathworks.com/matlabcentral/fileexchange/27388-plot-and-compare-histograms-pretty-by-default
-Highlighted features (see below for details)
-
-Syntax:
-t = nhist(Y) bins the elements of Y into equally spaced containers
-If Y is a dictionary nhist will make graph the
-binned (discrete) probability density function of each data
-set for comparison on the same graph. It will return A list with the bins
-
-[ax, N, X]= nhist(...) also returns the number of items in each bin, N,
-and the locations of the left edges of each bin.
-
-% Examples
-    A = {'mu_is_Zero': np.random.randn(10 ** 5), 'mu_is_Two': np.random.randn(10 ** 3) + 2}
-    _ = nhist(A)
-    _ = nhist(A, color='viridis')
-    _ = nhist(A, f=4)
-    _ = nhist(A, same_bins_flag=True)
-    _ = nhist(A, noerror=True)
-
-    :param X: the data, list, dict or pandas dataframe
-    :param f: float, the factor applied to Scotts normal reference rule, higher numbers means more bins
-    :param title: the title of the polot
-    :param xlabel: xlabel
-    :param ylabel: ylabel, default is interpreted from the other settings
-    :param legend: list, also add a legend if multiple plots are used
-    :param labels: list ,also adds a legend - but more intuitive name maybe?
-    :param noerror: boolean, set to True to turn off the default setting that includes error bars
-    :param max_bins: the most bins that could be set, 175 default
-    :param std_times: the number of times the standard deviation that the axis will be shown for, beyond this ->
-    :param exclude_extremes: beyond std_times the data is cut off, and bunched into a single bar. exclude_extremes=True will exclude this last bar
-    :param color: list of RGB colors, or sns.pallete or string for seaborn colors
-    :param normalize: decides the y axis. default for single plots is number, default for multiple bins is pdf
+    :param X: the data, *list*, *dict* or *pandas dataframe*.
+    :param f: float. The factor applied to Scotts normal reference rule, higher numbers means more bins.
+    :param title: the title of the plot.
+    :param xlabel: xlabel.
+    :param ylabel: ylabel. Default is interpreted from the other settings.
+    :param legend: list. Also add a legend if multiple plots are used.
+    :param labels: list. Also adds a legend, but more intuitive name.
+    :param noerror: boolean. Set to True to turn off the default setting that includes error bars.
+    :param max_bins: the most bins that could be set, 175 default.
+    :param std_times: the number of times the standard deviation that the axis will be shown for beyond this.
+    :param exclude_extremes: beyond std_times the data is cut off, and bunched into a single bar. *exclude_extremes=True* will exclude this last bar.
+    :param color: list of RGB colors, or sns.pallete or string for seaborn colors.
+    :param normalize: decides the y axis. Default for single plots is number, default for multiple bins is pdf.
                      Other options include:
-                     'frac','proportion', 'prop': the fraction of the data, so 0.25 means 1/4 of the data points in that bin
-                     'percent': the percentage of points, so %25 means 1/4 of the data in that bin
-    :param same_bins_flag: force the bins to be the same exact bins for all data in the list, both width and location
-    :param int_bins_flag: force the bins to be on integers. Great if your data are integers (automatic checks are in place)
-    :param maxx: the maximum x axis limit
-    :param minx: the minimum x axis limit
-    :param alpha: how transparent the face is
-    :return:
-            ax: the plt.axis
-            N: the counts scaled according to the choices
-            bins_in: the bins for each data in the set
+                     1.'frac','proportion', 'prop': the fraction of the data, so 0.25 means 1/4 of the data points in that bin.
+                     2.'percent': the percentage of points, so %25 means 1/4 of the data in that bin.
+    :param same_bins_flag: force the bins to be the same exact bins for all data in the list, both width and location.
+    :param int_bins_flag: force the bins to be on integers. Great if your data are integers (automatic checks are in place).
+    :param maxx: the maximum x axis limit.
+    :param minx: the minimum x axis limit.
+    :param alpha: how transparent the face is.
+    :return:    1. ax: the plt.axis.
+                2. N: the counts scaled according to the choices.
+                3. bins_in: the bins for each data in the set.
+
+    Summary of what function does:
+
+        1. Automatically sets the number and range of the bins to be appropriate for the data.
+        2. Compares multiple sets of data on one plots, with legend or titles. It also graphs the mean and standard deviations.
+        3. Input can be a list, dictionary or pandas dataframe.
+        4. Allows for changing many more parameters.
+
+    .. Note:: this is a partial port of this matlab code (which explains some lingering non-pythonicness: https://www.mathworks.com/matlabcentral/fileexchange/27388-plot-and-compare-histograms-pretty-by-default . Highlighted features (see below for details).
+
+    Syntax:
+
+        * **t = nhist(Y)** bins the elements of Y into equally spaced containers. If Y is a dictionary nhist will make graph the binned (discrete) probability density function of each dataset for comparison on the same graph. It will return A list with the bins.
+
+        * **[ax, N, X]= nhist(...)** also returns the number of items in each bin, N, and the locations of the left edges of each bin.
+
+    Example::
+    
+    >>A = {'mu_is_Zero': np.random.randn(10 ** 5), 'mu_is_Two': np.random.randn(10 ** 3) + 2}
+    >>_ = nhist(A)
+    >>plt.show()
+    
+    .. figure::  images/Figure_1.png
+        :align:   center
+        :scale: 60%
+
+    
+"""
 
     """
+    Another Examples::
+
+    _ = nhist(A, color='viridis')
+
+    _ = nhist(A, f=4)
+
+    _ = nhist(A, same_bins_flag=True)
+
+    _ = nhist(A, noerror=True)
+"""
 
     # do we really want to have redundant labels?
     if legend:
@@ -99,7 +109,6 @@ and the locations of the left edges of each bin.
 
     X = [list(x) for x in X]
 
-
     X, datetime_flag, date_formatting = handle_dates(X)
 
     # remove nones or nans
@@ -109,12 +118,9 @@ and the locations of the left edges of each bin.
     inf_counts = [ [sum(np.array(x) == -np.inf), sum(np.array(x) == np.inf)] for x in X]
     X = [[x1 for x1 in x if np.isfinite(x1)] for x in X]
 
-
-
     S = len(X)
 
     bin_factor = f
-
 
     multiple_flag = len(X)>1 # normal is separate hists for each guy you plot instead of them all on the same bit.
     fracylabel_flag = False
@@ -131,7 +137,6 @@ and the locations of the left edges of each bin.
             #     fracylabel_flag = False
         else:
             normalize_flag = normalize
-
 
     elif normalize == False:
         normalize_flag = multiple_flag
@@ -165,8 +170,6 @@ and the locations of the left edges of each bin.
         for ii, cur_counts in enumerate(inf_counts):
             N[ii][0] += cur_counts[0]
             N[ii][-1] += cur_counts[1]
-
-
 
     def adjust_bins_to_plot(bins, bin_width):
         bins[0] = bins[1] - bin_width
@@ -230,7 +233,6 @@ and the locations of the left edges of each bin.
                  lw=2, color=current_palette[k], \
                  )
 
-
         # plt.bar(bins_in[k][:-1], N[k], width=bin_widths[k], alpha=alpha, \
         #         fc=current_palette[k],label=labels[k], \
         #         lw=0,\
@@ -240,7 +242,6 @@ and the locations of the left edges of each bin.
     if not noerror:
         for k in range(S):
             plt.errorbar(X_mean[k],N_max*(1+.1*(S-k+1)),xerr=X_std[k],fmt='o',color=current_palette[k],alpha=1,lw=3)
-
 
     if not ylabel:
         if normalize_flag:
@@ -262,7 +263,6 @@ and the locations of the left edges of each bin.
     # get those legend colors - and plot them only if
     # for each thingy the N[0] is not zero, on the left, or if the N[-1] is not zero on the right
 
-
     if title:
         plt.title(title)
     if xlabel:
@@ -274,7 +274,6 @@ and the locations of the left edges of each bin.
         ax.xaxis.set_major_formatter(xfmt)
         [tick.set_rotation(70) for tick in ax.get_xticklabels()]
         plt.subplots_adjust(bottom=0.3)
-
 
 
     # clean up things a bit
@@ -298,37 +297,57 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
                                     normr = False,
                                     colors = 'none',
                                     levels=False):
+
     """
+    Plots the visual density distribution of data points.
 
-    :param x: the x values of data, or y values if no y is passed, or complex numbers where x=real and y=imag
-    :param y: the y values of data, leave blank for timeseries without x
-    :param log_colorbar_flag: boolean, set the colorbar scale to log
-    :param maxx: the maximum x axis limit
-    :param maxy: the maximum y axis limit
-    :param minx: the minimum x axis limit
-    :param miny: the minimum y axis limit
-    :param int_bins_flag: force the bins edgest in x and y to be integers
-    :param int_bins_flagx: only set the x bins to int
-    :param int_bins_flagy: only set the y bins to int
-    :param std_times: the number of times the standard deviation that the axis will be shown for, beyond this ->
-    :param exclude_extremes: beyond std_times the data is cut off, and bunched into the edge. exclude_extremes=True will exclude this edge data
-    :param normy: normalize the color scale so that the max and min color appears in every 'y' slice
-    :param normx: normalize the color scale so that the max and min color appears in every 'x' slice
-    :param normr: todo: normalize around a ring
-    :param f: float, the factor applied to Scotts normal reference rule, higher numbers means more bins
-    :param fx: only chnage the bin factor for x bins
-    :param fy: only chnage the bin factor for y bins
-    :param smooth: number of pixels over which to apply a gaussian filter over the counts, 0 for no filtering
-    :markertype: add markers for each point, '*'
+    :param x: the x values of data, or y values if no y is passed, or complex numbers where x=real and y=imag.
+    :param y: the y values of data, leave blank for timeseries without x.
+    :param log_colorbar_flag: boolean. Set the colorbar scale to log.
+    :param maxx: the maximum x axis limit.
+    :param maxy: the maximum y axis limit.
+    :param minx: the minimum x axis limit.
+    :param miny: the minimum y axis limit.
+    :param int_bins_flag: force the bins edgest in x and y to be integers.
+    :param int_bins_flagx: only set the x bins to int.
+    :param int_bins_flagy: only set the y bins to int.
+    :param exclude_extremes: beyond std_times the data is cut off, and bunched into the edge. *exclude_extremes=True* will exclude this edge data.
+    :param normy: normalize the color scale so that the max and min color appears in every 'y' slice.
+    :param normx: normalize the color scale so that the max and min color appears in every 'x' slice.
+    :param fx: only change the bin factor for x bins.
+    :param fy: only change the bin factor for y bins.
+    :param std_times: the number of times the standard deviation that the axis will be shown for, beyond this.
+    :param f: float. The factor applied to Scotts normal reference rule, higher numbers means more bins.
+    :param smooth: number of pixels over which to apply a gaussian filter over the counts, 0 for no filtering.
+    :markertype: add markers for each point, '*'.    
+    :param normr: normalize around a ring.
+    :param colors: Colormap style color (Example: 'Blues', 'Blues_r','icefire', etc )
 
-    :return: counts, bins_x, bins_y
+    
 
-    Note: log-colorbar flag renders the bin counting non-percentages
 
-    Note: this is a partial port of this matlab code (which explains some lingering non-pythonicness:
-    https://www.mathworks.com/matlabcentral/fileexchange/45325-efficient-2d-histogram-no-toolboxes-needed
+    :return: counts, bins_x, bins_y .
+
+    .. note::
+
+        *log-colorbar flag renders the bin counting non-percentages.
+
+        *this is a partial port of this matlab code (which explains some lingering non-pythonicness:
+        https://www.mathworks.com/matlabcentral/fileexchange/45325-efficient-2d-histogram-no-toolboxes-needed .
+    
+    Example::
+    
+    >>n = 10000
+    >>A=np.random.randn(n)
+    >>B=np.random.randn(n)
+    >>ndhist(A,B, colors='Blues_r')
+    >>plt.show()
+    
+    .. figure::  images/Figure_12_ndhist.png
+        :align:   center
+        :scale: 60%
+
 """
-
     # convertes the counts into percentages
     def counts_to_pcnts(counts):
         flat_counts = flatten(counts)
@@ -562,8 +581,8 @@ def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False
     x_min = np.min(minS)
     x_max = np.max(maxS)
 
-# % note that later there will be a bit added to maxS of SXRange
-# % This below is to get estimates for appropriate binsizes
+# % note that later there will be a bit added to maxS of SXRange.
+# % This below is to get estimates for appropriate binsizes.
 # totalRange=diff(SXRange); % if the range is zero, then make it eps instead.
 
 
@@ -695,7 +714,5 @@ def test_ndhist():
     counts, bins_x, bins_y = ndhist(x, y, log_colorbar_flag=True)
 
 
-
 if __name__=='main':
     pass
-
