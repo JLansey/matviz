@@ -24,25 +24,36 @@ from .etl import nan_smooth
 from .etl import round_time
 
 
-# mini function to change a [a, b] into [[a,b]] for use in the for loop later
+# Mini function to change a [a, b] into [[a,b]] for use in the for loop later.
 def list_ize(w):
     if hasattr(w[0], "__len__"):
         return w
     else:
         return [w]
 
-
-
-
 def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None, **varargs):
-    """
 
-    :param events: x positions where the range should be plotted
-    :param color:
-    :param y_offset:
-    :param height:
-    :return:
     """
+    Given a [a,b] range, plots a box covering a to b.
+
+    :param events: X positions where the range [a,b] should be plotted.
+    :param color: Bakground color (Default color: #0093e7).
+    :param y_offset: Y distance from X axis.
+    :param height: Height in Y direction.
+
+    Example::
+
+    >>A = {'mu_is_Zero': np.random.randn(10 ** 5)}
+    >>nhist(A)
+    >>plot_range([-1.5,1.5], color='r', height=1500)
+    >>plt.show()
+
+    .. figure::  images/Figure_2_plot_range.png
+        :align:   center
+        :scale: 50%
+
+
+"""
     events = list_ize(events)
     yy = ylim()
     if y_offset == 'none':
@@ -60,24 +71,36 @@ def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=N
         # make sure only one legend item appears for this event series
         to_label = '_nolegend_'
 
-
-
-
 def plot_range_idx(t, events, **varargs):
     """
-    Plot range - for timeseries t, and events=indexed points in t
+    Plot range - for timeseries t, and events=indexed points in t.
 
-    :param t: timeseries
-    :param events: indexes in that series
-    :return:
-    """
+    :param t: timeseries.
+    :param events: indexes in that series.
+
+
+
+    Example::
+
+    >>A=np.sort(np.random.randn(10))
+    >>T=range(10)
+    >>plt.plot(T,A)
+    >>plot_range_idx(T,[[1,4],[7,8]])   
+    >>plt.show()
+
+
+    .. figure::  images/Figure_7_plot_range_idx.png
+        :align:   center
+        :scale: 50%
+
+
+"""
     # if it is a series, get the values
     if str(type(t)) == "<class 'pandas.core.series.Series'>":
         t = t.values
 
     events = list_ize(events)
-
-    #                 last element + ds
+    # last element + ds
     t = np.append(t, [t[-1] + (t[-1] - t[-2])])
 
     event_times = [[t[a], t[b]] for a, b in events]
@@ -85,14 +108,28 @@ def plot_range_idx(t, events, **varargs):
     plot_range(event_times, **varargs)
 
 
-
 def plot_cdf(data):
+    """
+    Plot the cumulative distribution function (cdf).
+
+
+    :param data: A 1D vector.
+
+    Example::
+    >>A=np.random.randn(100)
+    >>plot_cdf(A)
+    >>plt.show()
+
+    .. figure::  images/Figure_5_plot_cdf.png
+        :align:   center
+        :scale: 50%
+
+
+"""
     x = sorted(data)
     y = 100 * np.arange(len(data)) / len(data)
     plt.plot(x, y, '.-')
     plt.ylim([0,100])
-
-
 
 
 def set_fontsize(f_size=15):
@@ -163,9 +200,26 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
         plt.plot(x, m*np.array(x) + b,**line_styles)
 
 
-# plot complex numbers in an arg and diagram
+
 def cplot(z, *args, **kargs):
+    """
+    Plot complex numbers in an arg and diagram.
+
+    Example::
+
+    >>n = 10
+    >>z = (np.sort(np.random.randn(n))+np.sort(np.random.randn(n)* np.exp(1j)))
+    >>cplot(z)
+    >>plt.show()
+
+    .. figure::  images/Figure_11_cplot.png
+        :align:   center
+        :scale: 60%
+
+
+"""
     plot(np.real(z), np.imag(z), *args, **kargs)
+    
 
 def cscatter(z, *args, **kargs):
     scatter(np.real(z), np.imag(z), *args, **kargs)
@@ -197,9 +251,27 @@ def polar_grid(lw=1, r=False, linecolor='.3', style=':', nrings=2, nrays = 6):
     ylim(yy)
     return cur_plt
 
-
-# plot a diagonal line with x=y to see if your predictions are biased
 def plot_diag(lw=1, color='.5'):
+    """
+    Plot a diagonal line with x=y to see if your predictions are biased.
+
+
+    :param lw: Linewidth (Default Lw=1).
+    :param color: Line color (Default 0.5).
+
+    Example::
+
+    >>A=np.sort(np.random.randn(100))
+    >>B=np.sort(np.random.randn(100))
+    >>plt.plot(A,B)
+    >>plot_diag()
+    >>plt.show()
+
+    .. figure::  images/Figure_6_plot_diag.png
+        :align:   center
+        :scale: 60%
+
+"""
     ax = plt.gca()
     ex = ax.get_xlim()
     yy = ax.get_ylim()
@@ -211,8 +283,36 @@ def plot_diag(lw=1, color='.5'):
         x = ex
     plt.plot(x, y, '--', color=color, lw=lw)
 
-# plot a horizontal line, or a vertical line
+
 def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):
+    """
+    Plot a horizontal line, or a vertical line.
+
+
+    :param lw: Linewidth (Default Lw=1).
+    :param lineheight: Vertical line distance from x-axis.
+    :param linecolor: Default 0.5.
+    :param style: Line style (Default style='--').
+    :param axx: Plot line in x or y axis (Default axx='x').
+
+
+
+    Example::
+
+    >>A=np.sort(np.random.randn(10))
+    >>T=range(10)
+    >>plt.plot(T,A)
+    >>plot_zero(lineheight=1)
+    >>plot_zero(lineheight=1,linecolor='r',axx='y')
+    >>plt.show()
+
+    .. figure::  images/Figure_8_plot_zero.png
+        :align:   center
+        :scale: 60%
+
+
+"""
+
     ax = plt.gca()
     if axx == 'x':
         ex = ax.get_xlim()
@@ -251,18 +351,32 @@ def bar_centered(y,**kwargs):
     plt.xticks(x)
     return h
 
-
-
 def subplotter(x, y, n, xlbl=None, ylbl=None):
     """
-    :param x: number of rows
-    :param y: number of columns
-    :param n: order, if you pass a list then it spans multiple rows or columns
-    :param xlbl: xlabel, if you want it to appear way on the bottom
-    :param ylbl: ylabel, if you want it to appear way on the left only
-    :return:
-    """
-    # a subplotter function that works like the matlab one does but with index starting at 0
+    A subplotter function that works like the matlab one does but with index (n) starting at 0.
+
+    
+    :param x: number of rows.
+    :param y: number of columns.
+    :param n: order, if you pass a list then it spans multiple rows or columns.
+    :param xlbl: xlabel, if you want it to appear way on the bottom.
+    :param ylbl: ylabel, if you want it to appear way on the left only.
+
+
+    Example::
+
+    >>B=np.sort(np.random.randn(10))
+    >>C=np.sort(np.random.randn(10))
+    >>subplotter(2,1,0, ylbl='Data 1')
+    >>plt.plot(A,B)
+    >>subplotter(2,1,1, ylbl='Data 2')
+    >>plt.plot(A,C)
+    >>plt.show()
+
+    .. figure::  images/Figure_9_subplotter.png
+        :align:   center
+        :scale: 60 %
+"""
     kwargs = {}
     if type(n) != int:
         # note special case y == 1, where rowspan should be used
@@ -298,16 +412,13 @@ def subplotter(x, y, n, xlbl=None, ylbl=None):
                 return ax
             cnt+=1
 
-
-
     raise Exception("You have only " + str(x*y) + " subplots, but you asked for the " + str(n) + "'th")
 
-
 def pop_all():
-    '''
-    bring all the figures hiding in the background to the foreground
-    useful when using ipython in the terminal
-    '''
+    """
+Bring all the figures hiding in the background to the foreground.
+Useful when using ipython in the terminal.
+"""
     all_figures=[manager.canvas.figure for manager in matplotlib.\
         _pylab_helpers.Gcf.get_all_fig_managers()]
     [fig.canvas.manager.show() for fig in all_figures]
@@ -316,15 +427,17 @@ def pop_all():
 def suplabel(axis,label,label_prop=None,
              labelpad=5,
              ha='center',va='center'):
-    ''' Add super ylabel or xlabel to the figure
-    Similar to matplotlib.suptitle
-    axis       - string: "x" or "y"
-    label      - string
-    label_prop - keyword dictionary for Text
-    labelpad   - padding from the axis (default: 5)
-    ha         - horizontal alignment (default: "center")
-    va         - vertical alignment (default: "center")
-    '''
+    """
+    Add super ylabel or xlabel to the figure. Similar to matplotlib.suptitle .
+
+    :param axis: string: "x" or "y" .
+    :param label: string .
+    :param label_prop: keyword dictionary for Text .
+    :param labelpad: padding from the axis (default: 5).
+    :param ha: horizontal alignment (default: "center").
+    :param va: vertical alignment (default: "center").
+
+"""
     fig = plt.gcf()
     xmin = []
     ymin = []
@@ -349,7 +462,6 @@ def suplabel(axis,label,label_prop=None,
                transform=fig.transFigure,
                ha=ha,va=va,
                **label_prop)
-
 
 # Note: this is a half-complete port of my former matlab code
 # https://www.mathworks.com/matlabcentral/fileexchange/29545-power-law-exponential-and-logarithmic-fit?s_tid=prof_contriblnk
@@ -418,7 +530,6 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
         else:
             slope, intercept, ex, yy = graph_calc[graph_type](x[skip_begin:], y[skip_begin:])
 
-
     else:
         raise Exception("we can't do that graph type yet")
 
@@ -445,6 +556,31 @@ def test_logfit():
 def streamgraph(df, smooth=None, normalize=None,
                 wiggle=None, label_dict=None, color=None,
                 order=True, linewidth=0.5, round_time=False, legend_flag=True):
+    """
+    Plot a Streamgraph, a type of stacked area graph which is displaced around a central axis, resulting in a flowing, organic shape.
+
+
+    :param df: Two columns dataframe. First column with the class. Second column with labels.
+    :param smooth: Smoothed values, centered, and same dimension as input.
+    :param normalize: Normalize class values, so everything sums to 1.
+    :param wiggle: Method used to calculate the baseline. Expected 'zero', 'sym', 'wiggle' or 'weighted_wiggle'.
+    :param color: Colormap, sns.pallete or string for seaborn colors. Palette names examples: 'Accent','Blues', 'Greys', ect.
+    :param order: Label ordering.
+    :param linewidth: Linewidth (Default linewidth=0.5)
+    :param round_time: round time data, to avoid decimal places in axis labels.
+    :param legend_flag: Plots the legend (Default=True)
+
+    Example::
+    
+    >>df=df[['FTR','HomeTeam']]
+    >>streamgraph(df)
+    >>plt.show()
+
+    .. figure::  images/Figure_4_streamgraph.png
+        :align:   center
+
+"""
+
     # reorder a list from inside out, for use with streamgraph
     def reorder_idx(idxs):
         idxs = list(np.flip(idxs))
@@ -571,11 +707,6 @@ def streamgraph(df, smooth=None, normalize=None,
 
 
 
-
-
-
-
-
 # Does this work? can it be used inside nicefy?
 # def set_fontsize(f_size=15, ax='none'):
 #     if ax == 'none':
@@ -590,9 +721,21 @@ def streamgraph(df, smooth=None, normalize=None,
 
 def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background = 'white', resize=False, legend_outside=False,
            expand_y=False, expand_x=False, touch_limits=False):
-    '''
-    make the figure nicer in general, like ready to be printed etc.
-    '''
+    """
+    Make the figure nicer in general, like ready to be printed etc.
+
+    :param fsize: Default font size.
+    :param f_size: Font size.
+    :param clean_legend: Adjust lengend to figure.
+    :param cur_fig: Get the current figure.
+    :param background:  Background color figure.
+    :param resize: Resize figure.
+    :param legend_outside: Set legend outside framework axis.
+    :param expand_y: Expand Y axis.
+    :param expand_x: Expand X axis.
+    :param touch_limits: Touch framework limits.
+   
+"""
 
     # backwards compatability for this change
     if f_size != False:
@@ -673,14 +816,30 @@ def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background 
     if clean_legend:
         plt.legend(framealpha=0.0)
 
-    # if legend_outside:
+    #if legend_outside:
     #     gca().legend(loc='center left', bbox_to_anchor=(1, 0.5), framealpha=0.0)
 
 def xylim(w):
+    """
+    Set the minimun axis limit number (w), equal for both x-y axis. 
+
+"""
     xlim(w)
     ylim(w)
 
 def xyscale(w):
+    """
+    Set axes type (linear, log, symlog or logit).
+
+    Example::
+    
+    
+    >>xyscale('log')
+    >>plt.show()
+
+"""
+
+
     plt.xscale(w)
     plt.yscale(w)
 
