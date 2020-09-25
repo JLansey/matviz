@@ -1,12 +1,8 @@
 numpy
+scipy
 pandas
 matplotlib
 seaborn
-glob
+typing
 mpld3
-time
-glob
-json
-dateutil
 pytz
-scipy
