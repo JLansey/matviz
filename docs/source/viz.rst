@@ -9,7 +9,7 @@ Graphic functions that are helpful.
     >>from viz import *
 
 
-.. automodule:: viz
+.. automodule:: matviz.viz
    :members: plot_range, plot_range_idx , plot_cdf , cplot , plot_diag , plot_zero , subplotter , pop_all , suplabel , streamgraph , nicefy  ,xylim , xyscale
    :undoc-members:
    :show-inheritance:
