@@ -1,7 +1,7 @@
 helpers\_graphing module
 ========================
 
-.. automodule:: helpers_graphing
+.. automodule:: matviz.helpers_graphing
    :members:
    :undoc-members:
    :show-inheritance:
