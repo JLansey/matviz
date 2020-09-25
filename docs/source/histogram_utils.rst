@@ -11,7 +11,7 @@ Includes awesome functions for making nice 1D and 2D histograms.
 
 
 
-.. automodule:: histogram_utils
+.. automodule:: matviz.histogram_utils
    :members: ndhist, nhist
    :undoc-members:
    :show-inheritance:
