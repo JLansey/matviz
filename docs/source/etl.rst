@@ -1,7 +1,7 @@
 etl module
 ==========
 
-.. automodule:: etl
+.. automodule:: matviz.etl
    :members:
    :undoc-members:
    :show-inheritance:
