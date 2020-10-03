@@ -43,6 +43,11 @@ eps = np.spacing(1)
 
 
 def time_delta_to_days(w):
+    """
+    Convert a time_delta data-type with ms units, into number of days
+    :param w:
+    :return:
+    """
     return w / np.timedelta64(1, 'D')
 
 
@@ -58,31 +63,13 @@ def get_object_size(obj):
 
 
 def pprint_entire_df(df):
+    """
+    Print an entire pandas dataframe to the console
+    :param df:
+    :return:
+    """
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
         print(df)
-
-
-
-def sql(query, db):
-    """
-    Parameters:
-        query: A sql query written in normal sql language inside quotes,
-            type = string
-        db: from_db.sql_connection()
-
-    Returns:
-        a dictof sql data
-    """
-    db.execute(query)
-    results = db.fetchall()
-
-    return results
-
-def sql_redshift(query,db,array):
-    db.execute(query,array)
-    results = db.fetchall()
-    db.close()
-    return results
 
 
 def subsetter(results,vars):
@@ -101,6 +88,11 @@ def subsetter(results,vars):
 
 
 def remove_tz(cur_datetime):
+    """
+    removes timezone information from a datetime
+    :param cur_datetime:
+    :return:
+    """
     if hasattr(cur_datetime,"__len__"):
         naive_datetime = [w.replace(tzinfo=None) for w in cur_datetime]
     else:
@@ -108,6 +100,13 @@ def remove_tz(cur_datetime):
     return naive_datetime
 
 def tz_to_utc(cur_datetime,local_tz='US/Eastern',native=True):
+    """
+    converts a datetime data-type with or without specified time-zone information, into UTC time
+    :param cur_datetime:
+    :param local_tz:
+    :param native:
+    :return:
+    """
     local_datetime = timezone(local_tz).localize(cur_datetime)
     utc_datetime = local_datetime.astimezone(timezone('UTC'))
 
@@ -130,6 +129,12 @@ def to_tz(cur_tz,local_tz='US/Eastern'):
     return naive_datetime
 
 def round_time(ts, round_by='H'):
+    """
+    round a date-time data type to Hours or other
+    :param ts:
+    :param round_by:
+    :return:
+    """
     ts_no_tz = remove_tz(ts)
     return pd.Series(ts_no_tz).dt.round(round_by)
 
@@ -168,6 +173,11 @@ def parse_min_sec(time_str):
 
 
 def clean_whitespace(my_str):
+    """
+
+    :param my_str:
+    :return:
+    """
 
     my_str = my_str.replace('\n','')
     my_str = my_str.replace('\r','')
@@ -195,6 +205,8 @@ def full_group_by(l, key=lambda x: x):
 def read_csv(name,qt = 1):
   return list(csv.reader(open(name),quoting = qt))
 
+
+# todo: just choose one of these functions
 def write_csv(name,array,param='w'):
     with open(name, param) as f:
         writer = csv.writer(f,quoting =1)
@@ -265,7 +277,7 @@ def csvify_dict(weird_dict):
     return [headers]+csvo
 
 
-
+# todo: create some example graphs for this function, and possibly highlight it near the top
 def nan_smooth(y,n=5,ens=[],ignore_nans=True):
     """
     Args:
@@ -490,7 +502,7 @@ def handle_dates(X):
     return X, datetime_flag, date_formatting
 
 
-
+# todo: put this near the top
 def start_and_ends(logical_array):
     """
      Return the starts and end times for when the logical
