@@ -6,7 +6,7 @@ import hashlib
 # redundant form interactive computing
 import collections
 from collections import defaultdict
-from collections import Sequence
+#from collections import Sequence
 from itertools import chain, count
 from operator import itemgetter
 import glob
@@ -44,15 +44,24 @@ eps = np.spacing(1)
 
 def time_delta_to_days(w):
     return w / np.timedelta64(1, 'D')
+    """
+    Convert 'timedelta64' generic time units to days units (float64 format).
+    timedelta object represents a duration, the difference between two dates or times ('datetime types <https://docs.python.org/3/library/datetime.html/>'_)
 
+    :param w: class numpy time delta (generic time units). Type: 'timedelta64'.
+    :return: class 'numpy.float64'
+
+"""
 
 
 def get_object_size(obj):
     """
-    Get the number of megabytes bytes that the object is
-    :param obj:
-    :return:
-    """
+    Get the number of megabytes bytes that the object is.
+
+    :param obj: Any object type. 
+    :return: Print the size object in MB.
+
+"""
     the_size = sys.getsizeof(obj)*1e-6
     return "Object size in MB: {0:.2f}".format(the_size)
 
@@ -61,24 +70,36 @@ def pprint_entire_df(df):
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
         print(df)
 
+    """
+    Print entire data lines of a pandas Dataframe.
+
+    :param df: pandas dataframe.
+    :return: print all DataFrame lines on screen. 
+
+"""
 
 
 def sql(query, db):
     """
     Parameters:
-        query: A sql query written in normal sql language inside quotes,
-            type = string
-        db: from_db.sql_connection()
 
-    Returns:
-        a dictof sql data
-    """
+    :param query: A sql query written in normal sql language inside quotes. type = string. 
+    :param db: from_db.sql_connection()
+
+    :returns: a dict of sql data.
+"""
+
     db.execute(query)
     results = db.fetchall()
 
     return results
 
 def sql_redshift(query,db,array):
+    """
+
+
+"""
+
     db.execute(query,array)
     results = db.fetchall()
     db.close()
@@ -101,6 +122,15 @@ def subsetter(results,vars):
 
 
 def remove_tz(cur_datetime):
+    """
+    Remove the time zone (tz) information attribute from a datetime or time object (aware objects).
+
+    :param cur_time: datetime or time object.
+    :return: a date type (naive object).
+
+
+"""
+
     if hasattr(cur_datetime,"__len__"):
         naive_datetime = [w.replace(tzinfo=None) for w in cur_datetime]
     else:
@@ -108,6 +138,17 @@ def remove_tz(cur_datetime):
     return naive_datetime
 
 def tz_to_utc(cur_datetime,local_tz='US/Eastern',native=True):
+
+    """
+    Convert a local datetime or time object (aware objects) to UTC time zone as naive object (i.e. without the time zone (tz) information attribute).
+
+
+    :param cur_datetime: current datetime or time object.
+    :param loca_tz: local time zone (Default='US/Eastern').
+    :param native: remove time zone information attribute (Default=True)
+    :return: datetime or time object in UTC time zone.
+
+"""
     local_datetime = timezone(local_tz).localize(cur_datetime)
     utc_datetime = local_datetime.astimezone(timezone('UTC'))
 
@@ -117,6 +158,15 @@ def tz_to_utc(cur_datetime,local_tz='US/Eastern',native=True):
         return utc_datetime
 
 def utc_to_tz(cur_utc,local_tz='US/Eastern'):
+    """
+    Convert UTC time zone in datetime or time object (aware objects) to UTC time zone as naive object (i.e. without the time zone (tz) information attribute).
+
+    :param cur_utc: current UTC time in datetime or time object format.
+    :param loca_tz: local time zone (Default='US/Eastern').
+    :return: UTC time as naive object.
+    
+"""
+
     # this is a UTC time but without timezone information
     utc_datetime = timezone('UTC').localize(cur_utc)
     local_datetime = utc_datetime.astimezone(timezone(local_tz))
@@ -124,36 +174,64 @@ def utc_to_tz(cur_utc,local_tz='US/Eastern'):
     return naive_datetime
 
 def to_tz(cur_tz,local_tz='US/Eastern'):
+    """
+    Convert current datetime object to naive object (i.e. without the time zone (tz) information attribute)
+    :param cur_tz: current time zone.
+    :param loca_tz: local time zone (Default='US/Eastern').
+    :return: current time as naive object.
+
+"""
     # if there is already time zone information associated here, then just go with it
     local_datetime = cur_tz.astimezone(timezone(local_tz))
     naive_datetime = local_datetime.replace(tzinfo=None)
     return naive_datetime
 
 def round_time(ts, round_by='H'):
+
+    """
+    Convert a datetime or time object (aware objects) to naive object and round the time by hour (default).
+
+    :param ts: datetime or time object.
+    :param round_by: round by hour ()
+    :param round_by: Default 'H' (round by hour).
+    :return: time rounded by round_by parameter.
+
+"""
     ts_no_tz = remove_tz(ts)
     return pd.Series(ts_no_tz).dt.round(round_by)
 
-
-
 def average_times(time_1,time_2):
+    """
+    :param time_1: firts datetime.
+    :param time_2: second datetime.
+
+    :return: datetime average.
+
+
+"""
     dummy_time = datetime.datetime(2000, 1, 1, 0, 0)
     return dummy_time + datetime.timedelta(seconds=((time_1-dummy_time).total_seconds()+(time_2-dummy_time).total_seconds())/2)
 
-
-
-
 def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
+    """
+   Yield successive n-sized chunks from l.
+
+"""
     for i in range(0, len(l), n):
         yield l[i:i+n]
 
-
 def parse_min_sec(time_str):
-    '''
-    convert normal times into seconds
+    """
+    Convert normal times into seconds.
+
+"""
+    """
+
     gosh, surprising that there wasn't already some way to do this robustly
     in python. Note that this does not work if you've got hours
-    '''
+
+"""
+
     min_sec = time_str.split(":")
     if len(min_sec)>2:
         raise Exception("we don't do hours yet folks")
@@ -166,8 +244,11 @@ def parse_min_sec(time_str):
     return minn + float(secc)
 
 
-
 def clean_whitespace(my_str):
+    """
+    Remove the blank space between lines or strings.
+
+"""
 
     my_str = my_str.replace('\n','')
     my_str = my_str.replace('\r','')
@@ -186,23 +267,45 @@ def clean_whitespace(my_str):
 # This essentially splits a giant list by
 # some function.
 def full_group_by(l, key=lambda x: x):
+
+    """
+    Given a list l, this function create a dict were items in l are grouped by class.
+"""
+
+
     d = defaultdict(list)
     for item in l:
         d[key(item)].append(item)
     return d
 
-
 def read_csv(name,qt = 1):
+    """
+    Open a .csv file and place data into a list.
+"""
+
   return list(csv.reader(open(name),quoting = qt))
 
 def write_csv(name,array,param='w'):
+    """
+    Given an array, save data into a .csv file.
+
+    :param name: name and path of new .csv file.
+    :param array: array of data.
+
+"""
     with open(name, param) as f:
         writer = csv.writer(f,quoting =1)
         writer.writerows(array)
     return True
 
-
 def write_csv2(name,array,param='w'): # a for append
+    """
+    Given an array, append data into a existing .csv file.
+
+    :param name: name and path of new .csv file.
+    :param array: array of data.
+
+"""
     with open(name, param) as f:
         writer = csv.writer(f,quoting =1)
         writer.writerows(array)
@@ -493,8 +596,7 @@ def handle_dates(X):
 
 def start_and_ends(logical_array):
     """
-     Return the starts and end times for when the logical
-     array True
+     Return the starts and end times for when the logical array is True
     :param logical_array:
     :return:
     list of (start,end) tuples of the indexes
@@ -506,7 +608,7 @@ def start_and_ends(logical_array):
           then you get [(0,1),...]
     #
 
-    """
+"""
 
     # Padd the array with Falses to get the ends
     padded_array = np.concatenate(([False],logical_array,[False]))
@@ -733,12 +835,13 @@ def computeMD5hash(my_string):
 
 def complex_noise(n, func=np.random.randn):
     """
-    create a random complex number.
+    Create a random complex number.
     todo: make it accept more integers for more dimensions
-    :param n: number of random complex numbers you need
-    :param func: the type of random that you want
-    :return:
-    """
+
+    :param n: number of random complex numbers you need.
+    :param func: the type of random that you want.
+    :return: 
+"""
     noise = func(2, n)
     noise = 1j * noise[0] + noise[1]
     return noise
@@ -750,4 +853,6 @@ def array_pop(X, idx):
     return np.array(x_list)
 
 
+print(complex_noise(10))
 
+print(time_delta_to_days(0.1))
