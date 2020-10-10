@@ -269,10 +269,11 @@ def subplotter(x, y, n, xlbl=None, ylbl=None):
         # note special case y == 1, where rowspan should be used
         if len(n) > y:
             kwargs = {'colspan': y,
-                      'rowspan': int(len(n) / x)}
-
+                      'rowspan': len(n) / y}
             if int(kwargs['rowspan']) != kwargs['rowspan']:
                 raise Exception("this isn't supported yet")
+            else:
+                kwargs['rowspan'] = int(kwargs['rowspan'])
 
         else:
             if n[1] == n[0] + 1 and y > 1:
@@ -281,7 +282,6 @@ def subplotter(x, y, n, xlbl=None, ylbl=None):
                 kwargs = {'rowspan': len(n)}
 
         n = n[0]
-
     tupp = (x, y)
     cnt = 0
     for ii in range(tupp[0]):
