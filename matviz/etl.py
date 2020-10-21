@@ -50,7 +50,6 @@ def time_delta_to_days(w):
 
     :param w: class numpy time delta (generic time units). Type: 'timedelta64'.
     :return: class 'numpy.float64'
-
 """
 
 
@@ -60,23 +59,22 @@ def get_object_size(obj):
 
     :param obj: Any object type. 
     :return: Print the size object in MB.
-
 """
     the_size = sys.getsizeof(obj)*1e-6
     return "Object size in MB: {0:.2f}".format(the_size)
 
 
 def pprint_entire_df(df):
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-        print(df)
-
     """
     Print entire data lines of a pandas Dataframe.
 
     :param df: pandas dataframe.
     :return: print all DataFrame lines on screen. 
-
 """
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(df)
+
+
 
 
 def sql(query, db):
@@ -96,10 +94,11 @@ def sql(query, db):
 
 def sql_redshift(query,db,array):
     """
-
+    :param query: A sql query written in normal sql language inside quotes. type = string. 
+    :param db: from_db.sql_connection() .
+    :param array:
 
 """
-
     db.execute(query,array)
     results = db.fetchall()
     db.close()
@@ -120,14 +119,12 @@ def subsetter(results,vars):
         return []
 
 
-
 def remove_tz(cur_datetime):
     """
     Remove the time zone (tz) information attribute from a datetime or time object (aware objects).
 
     :param cur_time: datetime or time object.
     :return: a date type (naive object).
-
 
 """
 
@@ -138,10 +135,8 @@ def remove_tz(cur_datetime):
     return naive_datetime
 
 def tz_to_utc(cur_datetime,local_tz='US/Eastern',native=True):
-
     """
     Convert a local datetime or time object (aware objects) to UTC time zone as naive object (i.e. without the time zone (tz) information attribute).
-
 
     :param cur_datetime: current datetime or time object.
     :param loca_tz: local time zone (Default='US/Eastern').
@@ -187,7 +182,6 @@ def to_tz(cur_tz,local_tz='US/Eastern'):
     return naive_datetime
 
 def round_time(ts, round_by='H'):
-
     """
     Convert a datetime or time object (aware objects) to naive object and round the time by hour (default).
 
@@ -206,7 +200,6 @@ def average_times(time_1,time_2):
     :param time_2: second datetime.
 
     :return: datetime average.
-
 
 """
     dummy_time = datetime.datetime(2000, 1, 1, 0, 0)
@@ -272,7 +265,6 @@ def full_group_by(l, key=lambda x: x):
     Given a list l, this function create a dict were items in l are grouped by class.
 """
 
-
     d = defaultdict(list)
     for item in l:
         d[key(item)].append(item)
@@ -281,13 +273,16 @@ def full_group_by(l, key=lambda x: x):
 def read_csv(name,qt = 1):
     """
     Open a .csv file and place data into a list.
+    :param name: .csv path.
+    :return: list.
+
 """
 
   return list(csv.reader(open(name),quoting = qt))
 
 def write_csv(name,array,param='w'):
     """
-    Given an array, save data into a .csv file.
+    Given an array, this function save data into a .csv file.
 
     :param name: name and path of new .csv file.
     :param array: array of data.
@@ -296,8 +291,8 @@ def write_csv(name,array,param='w'):
     with open(name, param) as f:
         writer = csv.writer(f,quoting =1)
         writer.writerows(array)
-    return True
 
+    return True
 def write_csv2(name,array,param='w'): # a for append
     """
     Given an array, append data into a existing .csv file.
@@ -312,10 +307,21 @@ def write_csv2(name,array,param='w'): # a for append
     return True
 
 def read_string(name):
+    """
+    Read string from text file. Return all characters as string. 
+    
+"""
     with open(name, 'r') as file:
         return file.read()
 
 def write_string(name, txt):
+    """
+    Write a string into a new .txt file.
+
+    :param name: name and path of new .txt file.
+    :param txt: Text (string) to be added to new .txt file.
+
+"""
     with open(name, 'w') as file:
         return file.write(txt)
 
@@ -323,21 +329,28 @@ def write_string(name, txt):
 # accept a data frame with only two columns, and make first the key and second the value
 # Unsure when one or both of these functions work ..
 def dictify_cols(df):
+    """
+    Given a data frame (df )with only two columns, this make the first column as the key of a dict, and second column as the value.
+
+"""
     return df.set_index(df.columns[0])[df.columns[1]].to_dict()
 
 def dictify_cols2(df):
+    """
+    Given a data frame (df )with only two columns, this make the first column as the key of a dict, and second column as the value (in numpy arrar format)
+
+"""
     return df.groupby(df.columns[0])[df.columns[1]].apply(lambda w: w.values).to_dict()
 
 
 def dictify_csv(weird_array,headers = None):
-    # turns a csv into a dictionary with long columns
-    '''
-    Args:
-        weird_array: just an array with items in the rows
+    """
+    Turns a csv into a dictionary with long columns.
 
-    Returns:
-        a dictionary where the header row becomes the keys for the dict
-    '''
+    :param weird_array: just an array with items in the rows.
+    :param headers: header row (Deafult= None).
+    :return: a dictionary, where the header row becomes the keys for the dict.
+"""
     if headers:
         dicto = dictify_csv([headers]+weird_array)
     else:
@@ -347,16 +360,12 @@ def dictify_csv(weird_array,headers = None):
 
 
 def csvify_dict(weird_dict):
-    '''
-    # turn a dictionary with long columns into a thing you can print
-    Args:
-        weird_dict:
-         just a dictionary
+    """
+    Turn a dictionary with long columns into a thing you can print.
 
-    Returns:
-        a list of lists ready to be turned into a csv
-
-    '''
+    :param weird_dict: just a dictionary
+    :return: a list of lists ready to be turned into a csv
+"""
     # initialize it to be on more
     headers = []
     csvo = [[] for w in next(iter(weird_dict.values()))] # [[]]+
@@ -371,17 +380,17 @@ def csvify_dict(weird_dict):
 
 def nan_smooth(y,n=5,ens=[],ignore_nans=True):
     """
-    Args:
-        y: your timeseries (don't need x)
-        n: int-> window is hanning length n
-           list-> window is exactly the list you pass,[1,1,1,1]/4 for moving average
-        ens: weighting of the points in 'y' in
-        ignore_nans: if you want to ignore nans, or exclude data that has nans in it
+    Given a timeseries y, this function return smoothed values.
 
-    Returns:
-        Smoothed values, centered, and same dimension as input
+    :param y: your timeseries (don't need x). Class 'numpy.ndarray'.
+    :param n:   1. int-> window is hanning length n.
+                2. list-> window is exactly the list you pass,[1,1,1,1]/4 for moving average.
+    :param ens: weighting of the points in 'y' in.
+    ´param ignore_nans: if you want to ignore nans, or exclude data that has nans in it.
 
-    """
+    :return: Smoothed values, centered, and same dimension as input. Class 'numpy.ndarray'.
+
+"""
 
     if np.array(y).dtype == 'complex128':
         x = y.real
@@ -467,9 +476,16 @@ def nan_smooth(y,n=5,ens=[],ignore_nans=True):
     return outt
 
 
-
-# normalized version of cross correlation - mimiking matlabs'
 def xcorr(a, b, ds):
+    """
+    Gives the normalized cross-correlation of two discrete-time sequences. Normalized version of cross correlation - mimiking matlabs. 
+
+    :param a: Input vector a.
+    :param b: Input vector b (lagged).
+    :param ds: Maximum lag. Integer scalar. This put ranges from -ds to ds. 
+    :return: array with [correlation, lag] form. Class 'tuple'.
+
+"""
     S = len(a)
     a_norm = (a - np.mean(a)) / np.std(a)
     b_norm = (b - np.mean(b)) / np.std(b)
@@ -486,36 +502,42 @@ def xcorr(a, b, ds):
         lags = lags[:len(corrs)]
         logging.warning("corrs not equal lags")
 
-
-
     return corrs, lags
 
 
-
 def reverse_dict(tmp_dict):
+    """
+    Given a dict, this function exchange keys and values with each other. 
+"""
     return {v: k for k, v in tmp_dict.items()}
 
 
 def recurse_func(my_list,my_func,stop_level=False):
     """
-    Will compute some function, at some level down. or all the way down
-    Args:
-        my_list: a list or list of lists
-        my_func: the function to apply
-        stop_level: the level inside the list that you want to apply the function, default
-                    the very bottom of the list
+    Will compute some function, at some level down, or all the way down.
 
-    Returns: list in the same shape as my_list but with the function applied
+    :param my_list: a list or list of lists.
+    :param my_func: the function to apply.
+    :param stop_level: the level inside the list that you want to apply the function. Default:  the very bottom of the list.
 
-    """
+    :return: list in the same shape as my_list but with the function applied.
+
+"""
+
     if hasattr(my_list,"__len__"):
         if list_depth(my_list) == stop_level:
             return my_func(my_list)
         return [recurse_func(w,my_func,stop_level) for w in my_list]
     else:
         return my_func(my_list)
+
+
 # http://stackoverflow.com/questions/6039103/counting-deepness-or-the-deepest-level-a-nested-list-goes-to
 def list_depth(seq):
+    """
+    Given a list, this function returns the "maximun" depth or the deepest level a nested list it goes to.
+    From `Stackoverflow.com <http://stackoverflow.com/questions/6039103/counting-deepness-or-the-deepest-level-a-nested-list-goes-to>`_
+"""
     seq = iter(seq)
     try:
         for level in count():
@@ -528,6 +550,9 @@ def list_depth(seq):
 # reversably flatten - then uflatten lists
 # https://stackoverflow.com/questions/27982432/flattening-and-unflattening-a-nested-list-of-numpy-arrays/48008710#48008710
 def flatten(values):
+    """
+    Flatten nested lists of numpy.ndarray to another numpy.ndarray.
+"""
     if isinstance(values, list):
         values = np.array(values)
     def _flatten(values):
@@ -541,6 +566,13 @@ def flatten(values):
 
 
 def unflatten(flat_values, prototype):
+    """
+    Unflatten numpy.ndarray to nested lists with structure of prototype shape.
+
+    :param flat_values: numpy.ndarray .
+    :param prototype: ??? (final structure?)
+    :return: nested list of numpy.ndarray .
+"""
     if isinstance(prototype, list):
         prototype = np.array(prototype)
     def _unflatten(flat_values, prototype, offset):
@@ -555,15 +587,18 @@ def unflatten(flat_values, prototype):
                 value, offset = _unflatten(flat_values, value, offset)
                 result.append(value)
             return result, offset
-    # unflatten np.ndarray to nested lists with structure of prototype
+    #unflatten np.ndarray to nested lists with structure of prototype 
     result, offset = _unflatten(flat_values, prototype, 0)
     assert(offset == len(flat_values))
     return result
 
 
 # convert dates to numbers, probably needs improvement or a complete overhaul, maybe moved to etl
-
 def handle_dates(X):
+    """
+    Convert dates to numbers.
+
+"""
     # in case you passed a date object better convert that
     if isinstance(X[0][0],datetime.time):
         start_day = datetime.date(2000, 1, 1)
@@ -596,18 +631,12 @@ def handle_dates(X):
 
 def start_and_ends(logical_array):
     """
-     Return the starts and end times for when the logical array is True
+     Return the starts and end times for when the logical array is True.
+
     :param logical_array:
-    :return:
-    list of (start,end) tuples of the indexes
+    :return: list of (start,end) tuples of the indexes
 
-    Note: if the array starts with a [True, False], you completely
-          miss it because it technically *ended at that point
-          and started before the logical array began
-          If the array starts with [True,True, False]
-          then you get [(0,1),...]
-    #
-
+    .. Note:: if the array starts with a [True, False], you completely miss it because it technically *ended at that point and started before the logical array began. If the array starts with [True,True, False] then you get [(0,1),...].
 """
 
     # Padd the array with Falses to get the ends
@@ -628,7 +657,10 @@ def start_and_ends(logical_array):
 
 
 def chop(seq, size):
-    """Chop a sequence into chunks of the given size."""
+    """Chop a sequence into chunks of the given size.
+
+
+"""
     chunk = lambda ii: seq[ii:ii+size]
     return map(chunk,range(0,len(seq),size))
 
@@ -665,11 +697,12 @@ def find_dom_freq(x, ds, window = 'hann'):
 
 def interp_nans(t, y):
     """
-    Interpolate t and y between any nans, and resample to consistent sampling rate
+    Interpolate t and y between any nans, and resample to consistent sampling rate.
+
     :param t: time
     :param y: key variable
     :return:
-    """
+"""
     I = np.logical_not(np.isnan(y))
     t = t[I]
     y = y[I]
@@ -705,18 +738,15 @@ def complex_dot(a,b):
 
 def find_percentile(value, percentiles):
     """
-    Find the index where your value appears in a list of percentiles
+    Find the index where your value appears in a list of percentiles.
+
     :param value:
     :param percentiles:
     :return:
 
-
-
     example:
 
-
-
-    """
+"""
     diffs = abs(value - percentiles)
     ii = np.argmin(diffs)
     percentile = ii
@@ -776,6 +806,9 @@ def complex_load(txt):
     return txt
 
 def complex_dump(x):       # change this to dump anything numpy into pickle
+    """
+    
+"""
     if hasattr(x, 'dtype'):# and x.dtype == 'complex128':
         complex_key = "<<numpy type stored as hex>>"
         return complex_key + np.array(x).dumps().hex()
@@ -783,14 +816,14 @@ def complex_dump(x):       # change this to dump anything numpy into pickle
         return x
 
 
-
 def load_json(file_path):
     """
-    Load a json file - including complex numpy numbers
+    Load a json file, including complex numpy numbers.
 
-    :param file_path:
+    :param file_path: path of .json file.
     :return:
-    """
+
+"""
     with open(file_path) as json_file:
         data_dict = json.load(json_file)
     #     convert any stored complex numbers back into native format
@@ -799,18 +832,23 @@ def load_json(file_path):
 
 def loads_json(json_str):
     """
-    Convert string back to dictionary - including complex numpy numbers
+    Convert string back to dictionary, including complex numpy numbers.
+
     :param json_str:
     :return:
-    """
+
+"""
     data_dict = json.loads(json_str)
     #     convert any stored complex numbers back into native format
     data_dict = map_nested_dicts(data_dict, complex_load)
     return data_dict
 
-
-
 def dump_json(data_dict, file_path):
+    """
+    :param data_dict:
+    :param file_path:
+    :return:
+"""
     # pickle any complex numbers into strings
     data_dict = map_nested_dicts(data_dict, complex_dump)
     with open(file_path, 'w') as json_file:
@@ -822,12 +860,28 @@ def dump_json(data_dict, file_path):
 #Useful in Python 2, (or 3.4 or lower)
 # https://stackoverflow.com/questions/38987/how-to-merge-two-dictionaries-in-a-single-expression
 def merge_two_dicts(x, y):
+    """
+    Given two dicts, merge then into a single one.
+
+    :param x: frist dict.
+    :param y: second dict.
+    :return: a new dict with x and y information.
+
+    From  `Stackoverflow <https://stackoverflow.com/questions/38987/how-to-merge-two-dictionaries-in-a-single-expression>`_
+
+
+"""
     z = x.copy()   # start with x's keys and values
     z.update(y)    # modifies z with y's keys and values & returns None
     return z
 
 # source: https://stackoverflow.com/questions/13259691/convert-string-to-md5/13259879
 def computeMD5hash(my_string):
+    """
+    Convert a string to md5 hash code.
+    From `Stackoverflow <https://stackoverflow.com/questions/13259691/convert-string-to-md5/13259879>`_
+
+"""
     m = hashlib.md5()
     m.update(my_string.encode('utf-8'))
     return m.hexdigest()
@@ -836,12 +890,12 @@ def computeMD5hash(my_string):
 def complex_noise(n, func=np.random.randn):
     """
     Create a random complex number.
-    todo: make it accept more integers for more dimensions
-
     :param n: number of random complex numbers you need.
-    :param func: the type of random that you want.
-    :return: 
+    :param func: the type of random that you want (Deafult=np.random.randn).
+    :return: n size complex number numpy array.
 """
+
+#    todo: make it accept more integers for more dimensions
     noise = func(2, n)
     noise = 1j * noise[0] + noise[1]
     return noise
@@ -851,8 +905,3 @@ def array_pop(X, idx):
     x_list = list(X)
     x_list.pop(idx)
     return np.array(x_list)
-
-
-print(complex_noise(10))
-
-print(time_delta_to_days(0.1))
