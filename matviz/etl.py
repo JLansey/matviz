@@ -365,7 +365,7 @@ def nan_smooth(y,n=5,ens=[],ignore_nans=True):
 
 
 
-# normalized version of cross correlation - mimiking matlabs'
+# normalized version of cross correlation - mimicking matlabs'
 def xcorr(a, b, ds):
     S = len(a)
     a_norm = (a - np.mean(a)) / np.std(a)
@@ -387,6 +387,27 @@ def xcorr(a, b, ds):
 
     return corrs, lags
 
+
+def max_lag(x1, x2, ds, max_lag_allowed = np.inf):
+    """
+    calculate the cross correlation and get the lag where the highest correlation is
+    :param x1:
+    :param x2:
+    :param ds:
+    :param max_lag_allowed: rule out any lags that are higher than this
+    :return: the lag with the highest correlation, the value of the highest correlation
+    """
+    corrs, lags = xcorr(x1, x2, ds)
+
+    # put bounds on
+    I = np.logical_and(-max_lag_allowed < lags,  lags < max_lag_allowed)
+    corrs = corrs[I]
+    lags = lags[I]
+
+    I = (corrs == np.max(corrs))
+    max_lag = np.mean(lags[I])
+    max_corr = np.mean(corrs[I])
+    return max_lag, max_corr
 
 
 def reverse_dict(tmp_dict):
@@ -561,7 +582,7 @@ def find_dom_freq(x, ds, window = 'hann'):
 
 
 
-def interp_nans(t, y):
+def interp_nans(t, y, t_i=None):
     """
     Interpolate t and y between any nans, and resample to consistent sampling rate
     :param t: time
@@ -571,9 +592,11 @@ def interp_nans(t, y):
     I = np.logical_not(np.isnan(y))
     t = t[I]
     y = y[I]
-    ds = np.nanmedian(np.diff(t))
+    if t_i is None:
+        ds = np.nanmedian(np.diff(t))
+        t_i = np.arange(min(t), max(t), ds)
+
     f = interpolate.PchipInterpolator(t, y)
-    t_i = np.arange(min(t), max(t), ds)
     y_i = f(t_i)
     return t_i, y_i
 
