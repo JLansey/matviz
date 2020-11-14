@@ -359,8 +359,12 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
 
     # check if you only passes one var in
     if y is  None:
-        y = x
-        x = np.array(range(len(y)))
+        if np.iscomplex(x[0]):
+            y = np.imag(x)
+            x = np.real(x)
+        else:
+            y = x
+            x = np.array(range(len(y)))
 
     # convert to floats
     x = np.array(x).astype(float)
@@ -430,7 +434,7 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
             plot(x, y, **marker_style)
     if line_style:
         if type(line_style) == str:
-            plot(ex, yy, '--g', linewidth=3)
+            plot(ex, yy, line_style, linewidth=3)
         else:
             plot(ex, yy, '--g', **line_style)
 
@@ -439,7 +443,7 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
 def test_logfit():
     logfit(np.arange(10), 2 * np.random.randn(10) + np.arange(10),
            marker_style={'color': 'r', 'lw':0,  'marker': 'o'},
-           line_style={'color': 'g', 'lw': 3})
+           line_style={'color': 'g', 'lw': 3, 'linestyle':'--'})
 
 
 # stream_graph
