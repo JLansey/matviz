@@ -365,7 +365,7 @@ def nan_smooth(y,n=5,ens=[],ignore_nans=True):
 
 
 
-# normalized version of cross correlation - mimiking matlabs'
+# normalized version of cross correlation - mimicking matlabs'
 def xcorr(a, b, ds):
     S = len(a)
     a_norm = (a - np.mean(a)) / np.std(a)
@@ -387,6 +387,27 @@ def xcorr(a, b, ds):
 
     return corrs, lags
 
+
+def max_lag(x1, x2, ds, max_lag_allowed = np.inf):
+    """
+    calculate the cross correlation and get the lag where the highest correlation is
+    :param x1:
+    :param x2:
+    :param ds:
+    :param max_lag_allowed: rule out any lags that are higher than this
+    :return: the lag with the highest correlation, the value of the highest correlation
+    """
+    corrs, lags = xcorr(x1, x2, ds)
+
+    # put bounds on
+    I = np.logical_and(-max_lag_allowed < lags,  lags < max_lag_allowed)
+    corrs = corrs[I]
+    lags = lags[I]
+
+    I = (corrs == np.max(corrs))
+    max_lag = np.mean(lags[I])
+    max_corr = np.mean(corrs[I])
+    return max_lag, max_corr
 
 
 def reverse_dict(tmp_dict):
@@ -561,7 +582,7 @@ def find_dom_freq(x, ds, window = 'hann'):
 
 
 
-def interp_nans(t, y):
+def interp_nans(t, y, t_i=None):
     """
     Interpolate t and y between any nans, and resample to consistent sampling rate
     :param t: time
@@ -571,15 +592,20 @@ def interp_nans(t, y):
     I = np.logical_not(np.isnan(y))
     t = t[I]
     y = y[I]
-    ds = np.nanmedian(np.diff(t))
+    if t_i is None:
+        ds = np.nanmedian(np.diff(t))
+        t_i = np.arange(min(t), max(t), ds)
+
     f = interpolate.PchipInterpolator(t, y)
-    t_i = np.arange(min(t), max(t), ds)
     y_i = f(t_i)
     return t_i, y_i
 
 
 def sort_dict_list(dict_list, k, reverse_param = True):
     return sorted(dict_list, key=itemgetter(k), reverse=reverse_param)
+
+def sort_dict_alphabetically(cur_dict):
+    return {k: cur_dict[k] for k in sorted(cur_dict.keys())}
 
 def robust_mkdir(cur_dir):
     if not os.path.exists(cur_dir):
@@ -677,12 +703,33 @@ def complex_dump(x):       # change this to dump anything numpy into pickle
     else:
         return x
 
+
+
 def load_json(file_path):
+    """
+    Load a json file - including complex numpy numbers
+
+    :param file_path:
+    :return:
+    """
     with open(file_path) as json_file:
         data_dict = json.load(json_file)
     #     convert any stored complex numbers back into native format
     data_dict = map_nested_dicts(data_dict, complex_load)
     return data_dict
+
+def loads_json(json_str):
+    """
+    Convert string back to dictionary - including complex numpy numbers
+    :param json_str:
+    :return:
+    """
+    data_dict = json.loads(json_str)
+    #     convert any stored complex numbers back into native format
+    data_dict = map_nested_dicts(data_dict, complex_load)
+    return data_dict
+
+
 
 def dump_json(data_dict, file_path):
     # pickle any complex numbers into strings

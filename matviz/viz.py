@@ -12,6 +12,12 @@ import numpy as np
 import datetime
 from datetime import datetime as dt
 
+# std library
+from itertools import chain
+
+# typing
+from typing import List, Dict, Union, Any, Iterable
+
 from scipy import stats
 import seaborn as sns
 from .etl import nan_smooth
@@ -28,12 +34,9 @@ def list_ize(w):
 
 
 
-def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None):
+def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None, **varargs):
     """
-    This function has two ways to call it:
-    With passing timeseries 't' and list of indices 'events'
 
-    OR passing in event times directly
     :param events: x positions where the range should be plotted
     :param color:
     :param y_offset:
@@ -47,12 +50,15 @@ def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=N
     if height == 'none':
         height = yy[1] - yy[0]
 
+    to_label = 'none'
     # Fill registered cur_event times
     for cur_event in events:
         plt.fill_between([cur_event[0], cur_event[1]],
                          [height + y_offset, height + y_offset],
                          [y_offset, y_offset],
-                         color=color, label='Event', alpha=0.5, zorder=zorder)
+                         color=color, alpha=0.5, zorder=zorder, label=to_label, **varargs)
+        # make sure only one legend item appears for this event series
+        to_label = '_nolegend_'
 
 
 
@@ -78,6 +84,14 @@ def plot_range_idx(t, events, **varargs):
 
     plot_range(event_times, **varargs)
 
+
+
+def plot_cdf(data, *args, **kargs):
+    x = sorted(data)
+    y = 100 * np.arange(len(data)) / len(data)
+    print(kargs)
+    plt.plot(x, y, *args, **kargs)
+    plt.ylim([0,100])
 
 
 
@@ -145,7 +159,7 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
     I1 = np.logical_not(np.isnan(y))
     I2 = np.logical_not(np.isnan(x))
     I = np.logical_and(I1,I2)
-    if sum(I)>3:
+    if sum(I) > 3:
         m, b = np.polyfit(x[I], y[I], 1)
         plt.plot(x, m*np.array(x) + b,**line_styles)
 
@@ -186,17 +200,17 @@ def polar_grid(lw=1, r=False, linecolor='.3', style=':', nrings=2, nrays = 6):
 
 
 # plot a diagonal line with x=y to see if your predictions are biased
-def plot_diag(lw=1):
+def plot_diag(lw=1, color='.5'):
     ax = plt.gca()
     ex = ax.get_xlim()
     yy = ax.get_ylim()
-    if np.diff(ex)[0]>np.diff(yy)[0]:
+    if np.diff(ex)[0] > np.diff(yy)[0]:
         y = yy
         x = yy
     else:
-        y=ex
-        x=ex
-    plt.plot(x,y,'--',color='.5', lw=lw)
+        y = ex
+        x = ex
+    plt.plot(x, y, '--', color=color, lw=lw)
 
 # plot a horizontal line, or a vertical line
 def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):
@@ -218,6 +232,19 @@ def plot_axes(color='.5'):
     plot_zero(axx='x', linecolor=color)
     plot_zero(axx='y', linecolor=color)
 
+
+def plot_pin(x, y, color='k'):
+    """
+    Plot a pin at a specific point on the x axis
+    :param x: position of the pin on the x axis
+    :param y: height of the pin
+    :param color: color of the line and marker
+    :return:
+    """
+    plot([x, x], [0, y], linewidth=3, color=color)
+    plot([x], [y], 'o', color=color, markersize=10)
+
+
 def bar_centered(y,**kwargs):
 #     its like a regular bar plot, except that it is centered on 1:N integers
     x = np.arange(len(y))+1
@@ -227,7 +254,7 @@ def bar_centered(y,**kwargs):
 
 
 
-def subplotter(x,y,n, xlbl=None, ylbl=None):
+def subplotter(x, y, n, xlbl=None, ylbl=None):
     """
     :param x: number of rows
     :param y: number of columns
@@ -240,13 +267,22 @@ def subplotter(x,y,n, xlbl=None, ylbl=None):
     kwargs = {}
     if type(n) != int:
         # note special case y == 1, where rowspan should be used
-        if n[1] == n[0] + 1 and y > 1:
-            kwargs = {'colspan': len(n)}
-        else:
-            kwargs = {'rowspan': len(n)}
-        n = n[0]
+        if len(n) > y:
+            kwargs = {'colspan': y,
+                      'rowspan': len(n) / y}
+            if int(kwargs['rowspan']) != kwargs['rowspan']:
+                raise Exception("this isn't supported yet")
+            else:
+                kwargs['rowspan'] = int(kwargs['rowspan'])
 
-    tupp = (x,y)
+        else:
+            if n[1] == n[0] + 1 and y > 1:
+                kwargs = {'colspan': len(n)}
+            else:
+                kwargs = {'rowspan': len(n)}
+
+        n = n[0]
+    tupp = (x, y)
     cnt = 0
     for ii in range(tupp[0]):
         for jj in range(tupp[1]):
@@ -323,8 +359,12 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
 
     # check if you only passes one var in
     if y is  None:
-        y = x
-        x = np.array(range(len(y)))
+        if np.iscomplex(x[0]):
+            y = np.imag(x)
+            x = np.real(x)
+        else:
+            y = x
+            x = np.array(range(len(y)))
 
     # convert to floats
     x = np.array(x).astype(float)
@@ -394,7 +434,7 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
             plot(x, y, **marker_style)
     if line_style:
         if type(line_style) == str:
-            plot(ex, yy, '--g', linewidth=3)
+            plot(ex, yy, line_style, linewidth=3)
         else:
             plot(ex, yy, '--g', **line_style)
 
@@ -403,7 +443,7 @@ def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_sty
 def test_logfit():
     logfit(np.arange(10), 2 * np.random.randn(10) + np.arange(10),
            marker_style={'color': 'r', 'lw':0,  'marker': 'o'},
-           line_style={'color': 'g', 'lw': 3})
+           line_style={'color': 'g', 'lw': 3, 'linestyle':'--'})
 
 
 # stream_graph
@@ -662,6 +702,7 @@ def set_axis_ticks_pctn(cur_axis = 'x'):
     cur_axis_h.set_major_formatter(ticker_obj)
 
 
+
 def plot_endpoints(endpoints, color='#0093e7'):
 
         x_starts = [w[0] for w in endpoints]
@@ -704,8 +745,9 @@ def plot_endpoints(endpoints, color='#0093e7'):
 def linspecer(n, color='muted'):
     return np.array(sns.color_palette(color, n_colors=n))
 
+
 def format_axis_date(rot=77):
-    plt.xticks(rotation=rot)
+    plt.xticks(rotation=rot, rotation_mode="anchor", ha='right')
     # ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
     # plt.xticks(x,tick_labels)
     # plt.xticks(rotation=70)
@@ -745,3 +787,29 @@ def add_colorbar(Y, C, scale_func):
         plot([0, 1], [y, y], lw=4, color=c[ii])
     xticks([])
     gca().yaxis.tick_right()
+
+
+
+def legend_helper(fig: Union[plt.Figure, plt.Axes],
+                  *args: Iterable[plt.Axes]) -> Dict[str, Any]:
+    """
+    Provides handles and labels of all provided axes.
+
+    David S. Fulford
+
+    https://towardsdatascience.com/easy-matplotlib-legends-with-functional-programming-64615b529118
+    """
+    if isinstance(fig, plt.Figure):
+        handles, labels = [list(chain.from_iterable(seq)) for seq in zip(*(
+            ax.get_legend_handles_labels() for ax in fig.axes
+        ))]
+
+    else:
+        handles, labels = [list(chain.from_iterable(seq)) for seq in zip(*(
+            ax.get_legend_handles_labels() for ax in chain([fig], args)
+        ))]
+
+    return {
+        'handles': handles,
+        'labels': labels,
+    }
