@@ -351,7 +351,7 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
     # this version of the algorithm is very fast - but will artificially include differences in colors
     # could rewrite it somehow to use this and be faster:
     # etl.start_and_ends(diff(counts_ordered) < 0)
-    def count_to_pcnts_fast(counts):
+    def counts_to_pcnts_fast(counts):
         flat_counts = flatten(counts)
         # sort the counts,            [in reverese]
         idxs = np.argsort(flat_counts)[::-1]
@@ -362,6 +362,16 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
         counts_summed = np.cumsum(counts_ordered)
         # convert the counts to a percent of the total N items histogrammed
         flat_norms = 100 * counts_summed / sum(counts_ordered)
+
+        # get unique values of number of elements in each bin
+        unique_values = np.unique(counts_ordered)
+
+        # for each unique bin value, avg the pcnts and assign that avg for every index with that value
+        for value in unique_values:
+            indices_to_avg = np.where(counts_ordered == value)
+            avg_pcnt = np.mean(flat_norms[indices_to_avg])
+            flat_norms[indices_to_avg] = avg_pcnt
+
         # reverse the operations to get back to our original orders and shape
         norms_unsorted = flat_norms[idxs_undo]
         norms = unflatten(norms_unsorted, counts)
@@ -465,7 +475,7 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
 
     # eventually have this be the default if it can be sped up
     if levels:
-        to_plot = counts_to_pcnts(to_plot)
+        to_plot = counts_to_pcnts_fast(to_plot)
         dsx = np.diff(bins_x)[1]
         dsy = np.diff(bins_y)[1]
 
