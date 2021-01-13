@@ -2,6 +2,8 @@
 import os,sys,csv
 import hashlib
 
+from pathlib import Path
+
 # regular pythong stuff
 # redundant form interactive computing
 import collections
@@ -607,12 +609,12 @@ def sort_dict_list(dict_list, k, reverse_param = True):
 def sort_dict_alphabetically(cur_dict):
     return {k: cur_dict[k] for k in sorted(cur_dict.keys())}
 
-def robust_mkdir(cur_dir):
-    if not os.path.exists(cur_dir):
-        lower_dir = os.path.dirname(cur_dir)
-        if not os.path.exists(lower_dir):
-            robust_mkdir(lower_dir)
-        os.mkdir(cur_dir)
+def robust_mkdir(desired_dir):
+    """
+    Create a directory whether or not it exists, and no matter how far down you want
+    """
+    return Path(desired_dir).mkdir(parents=True, exist_ok=True)
+
 
 def robust_rmdir(cur_dir):
     if os.path.exists(cur_dir):
@@ -772,5 +774,11 @@ def array_pop(X, idx):
     x_list.pop(idx)
     return np.array(x_list)
 
-
+def isdigit(s):
+    """
+    check if the number is a digit, including if it has a decimal place in it
+    :param s:
+    :return:
+    """
+    return s.replace('.','',1).isdigit()
 
