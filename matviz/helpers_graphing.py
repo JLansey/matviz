@@ -36,6 +36,8 @@ from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim
 from numpy import mean, log10, log, sqrt, power, linspace, sin, cos, tan,\
                         arcsin, arccos, arctan, inf, nan
 
+from random import random as rand
+
 # load in all the specialized functions.
 from .viz import *
 from .etl import *
