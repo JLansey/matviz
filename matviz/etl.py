@@ -467,6 +467,8 @@ def flatten(values):
     # flatten nested lists of np.ndarray to np.ndarray
     return np.concatenate(list(_flatten(values)))
 
+def flatten_list(list_of_lists):
+    return [val for sublist in list(list_of_lists) for val in sublist]
 
 def unflatten(flat_values, prototype):
     if isinstance(prototype, list):

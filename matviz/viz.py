@@ -594,7 +594,7 @@ def streamgraph(df, smooth=None, normalize=None,
 
 
 def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background = 'white', resize=False, legend_outside=False,
-           expand_y=False, expand_x=False, touch_limits=False):
+           expand_y=False, expand_x=False, touch_limits=False, touch_text=False):
     '''
     make the figure nicer in general, like ready to be printed etc.
     '''
@@ -632,9 +632,10 @@ def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background 
     # [ax.grid(False) for ax in axes]
 
     for ax in axes:
-        ax.xaxis.set_label_text(make_title(ax.xaxis.label.get_text()))
-        ax.yaxis.set_label_text(make_title(ax.yaxis.label.get_text()))
-        ax.set_title(make_title(ax.title.get_text()))
+        if touch_text:
+            ax.xaxis.set_label_text(make_title(ax.xaxis.label.get_text()))
+            ax.yaxis.set_label_text(make_title(ax.yaxis.label.get_text()))
+            ax.set_title(make_title(ax.title.get_text()))
 
         [w.set_fontsize(fsize) for w in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
                                           ax.get_xticklabels() +
@@ -678,6 +679,8 @@ def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background 
     if clean_legend:
         plt.legend(framealpha=0.0)
 
+    # fix titles so they all appear
+    plt.tight_layout()
     # if legend_outside:
     #     gca().legend(loc='center left', bbox_to_anchor=(1, 0.5), framealpha=0.0)
 
