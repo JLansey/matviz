@@ -819,3 +819,13 @@ def isdigit(s):
     """
     return s.replace('.','',1).isdigit()
 
+
+def split_list(cur_list, func):
+    list_true = []
+    list_false = []
+    for w in cur_list:
+        if func(w):
+            list_true.append(w)
+        else:
+            list_false.append(w)
+    return list_true, list_false
