@@ -814,10 +814,11 @@ def array_pop(X, idx):
 def isdigit(s):
     """
     check if the number is a digit, including if it has a decimal place in it
+    Or is numeric
     :param s:
     :return:
     """
-    return s.replace('.','',1).isdigit()
+    return s.replace('.','',1).replace('-', '').isdigit()
 
 
 def split_list(cur_list, func):
