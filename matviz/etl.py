@@ -542,26 +542,26 @@ def start_and_ends(logical_array):
     """
 
     # Padd the array with Falses to get the ends
-    padded_array = np.concatenate(([False],logical_array,[False]))
+    padded_array = np.concatenate(([False], logical_array, [False]))
 
     #
-    idxs = np.array(range(len(padded_array)-1))
+    idxs = np.array(range(len(padded_array) - 1))
     differences = np.diff([np.int(w) for w in padded_array])
-    starts = idxs[differences>0]
-    ends   = idxs[differences<0]
+    starts = idxs[differences > 0]
+    ends   = idxs[differences < 0]
 
     # we added an element, now we take it away
-    starts_shift = np.maximum(starts-1,0)
+    starts_shift = np.maximum(starts - 1, 0)
     # easier than doing a check if its empty
-    ends_shift   = np.maximum(ends-1,0)
+    ends_shift = np.maximum(ends - 1, 0)
 
-    return list(zip(starts_shift,ends_shift))
+    return list(zip(starts_shift, ends_shift))
 
 
 def chop(seq, size):
     """Chop a sequence into chunks of the given size."""
-    chunk = lambda ii: seq[ii:ii+size]
-    return map(chunk,range(0,len(seq),size))
+    chunk = lambda ii: seq[ii:ii + size]
+    return map(chunk,range(0, len(seq), size))
 
 def chopn(seq, n):
     """Chop a sequence into chunks of the given size."""
@@ -570,33 +570,33 @@ def chopn(seq, n):
     return [w for w in chunks if len(w) == size]
 
 # https://gist.github.com/mattjj/5213172
-def chunk_data(data,window_size,overlap_size=0,flatten_inside_window=True):
+def chunk_data(data, window_size, overlap_size=0, flatten_inside_window=True):
     assert data.ndim == 1 or data.ndim == 2
     if data.ndim == 1:
-        data = data.reshape((-1,1))
+        data = data.reshape((-1, 1))
 
     # get the number of overlapping windows that fit into the data
     num_windows = (data.shape[0] - window_size) // (window_size - overlap_size) + 1
-    overhang = data.shape[0] - (num_windows*window_size - (num_windows-1)*overlap_size)
+    overhang = data.shape[0] - (num_windows * window_size - (num_windows - 1) * overlap_size)
 
     # if there's overhang, need an extra window and a zero pad on the data
     if overhang != 0:
         num_windows += 1
-        newdata = np.zeros((num_windows*window_size - (num_windows-1)*overlap_size,data.shape[1]))
+        newdata = np.zeros((num_windows * window_size - (num_windows - 1) * overlap_size, data.shape[1]))
         newdata[:data.shape[0]] = data
         data = newdata
 
     sz = data.dtype.itemsize
     ret = ast(
             data,
-            shape=(num_windows,window_size*data.shape[1]),
-            strides=((window_size-overlap_size)*data.shape[1]*sz,sz)
+            shape=(num_windows, window_size * data.shape[1]),
+            strides=((window_size - overlap_size) * data.shape[1]*sz,sz)
             )
 
     if flatten_inside_window:
         return ret
     else:
-        return ret.reshape((num_windows,-1,data.shape[1]))
+        return ret.reshape((num_windows, -1, data.shape[1]))
 
 def form_day(key):
     return str(key.month) + "/" + str(key.day)
@@ -606,7 +606,7 @@ def form_year(key):
 
 
 def rolling_diff(w, n=1):
-    return w - np.roll(w,n)
+    return w - np.roll(w, n)
 
 
 
