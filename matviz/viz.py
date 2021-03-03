@@ -8,6 +8,7 @@ from matplotlib.pyplot import plot, scatter, hist, figure, clf, cla, xlabel, yla
                               gcf, gca, close, title, legend, grid, bar, suptitle, show,\
                               xticks, yticks, axis
 
+from sklearn.metrics import roc_curve, auc
 import numpy as np
 import datetime
 from datetime import datetime as dt
@@ -705,7 +706,6 @@ def set_axis_ticks_pctn(cur_axis = 'x'):
     cur_axis_h.set_major_formatter(ticker_obj)
 
 
-
 def plot_endpoints(endpoints, color='#0093e7'):
 
         x_starts = [w[0] for w in endpoints]
@@ -816,3 +816,37 @@ def legend_helper(fig: Union[plt.Figure, plt.Axes],
         'handles': handles,
         'labels': labels,
     }
+
+
+
+def calc_plot_ROC(y1, y2):
+    """
+    Take two distributions and plot the ROC curve if you used the difference
+    in those distributions as a binary classifier.
+    :param y1:
+    :param y2:
+    :return:
+    """
+
+    y_score = np.concatenate([y1, y2])
+    y_true = np.concatenate([np.zeros(len(y1)), np.ones(len(y2))])
+
+    return plot_ROC(y_true, y_score)
+
+
+def plot_ROC(y_true, y_score):
+
+    I = np.logical_not(np.isnan(y_score))
+    y_true = y_true[I]
+    y_score = y_score[I]
+
+    fpr, tpr, _ = roc_curve(y_true, y_score)
+    cur_auc = auc(fpr, tpr)
+    plot(fpr, tpr, 'k')
+    plot_diag()
+    xylim([-.01, 1.01])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curve, AUC = ' + '{:.2f}'.format(cur_auc))
+    nicefy()
+    return cur_auc
