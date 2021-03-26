@@ -830,3 +830,7 @@ def split_list(cur_list, func):
         else:
             list_false.append(w)
     return list_true, list_false
+
+
+def rgb2hex(r,g,b):
+    return f"#{r:02x}{g:02x}{b:02x}"
