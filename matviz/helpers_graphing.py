@@ -125,6 +125,10 @@ def silent_toc():
             return None
 
 
+def xticklabels(all_lbl):
+    gca().set_xticklabels(all_lbl)
+
+
 # set some nice defaults for plotting
 plt.rcParams["figure.figsize"] = [12, 9]
 plt.rcParams['image.cmap'] = 'viridis'
