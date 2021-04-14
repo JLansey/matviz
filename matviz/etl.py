@@ -12,6 +12,7 @@ from collections import defaultdict
 from collections import Sequence
 from itertools import chain, count
 from operator import itemgetter
+import numbers
 import glob
 import json
 # import simplejson as json
@@ -818,7 +819,10 @@ def isdigit(s):
     :param s:
     :return:
     """
-    return s.replace('.','',1).replace('-', '').isdigit()
+    if isinstance(s, numbers.Number):
+        return True
+    else:
+        return s.replace('.','',1).replace('-', '').isdigit()
 
 
 def split_list(cur_list, func):
