@@ -31,7 +31,7 @@ import matplotlib.patches as patches
 from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim, \
                               gcf, gca, close, title, legend, grid, bar, suptitle, show,\
                               xticks, yticks, hist2d, pcolor, yscale, xscale, axis, pcolor,\
-                              contour, colorbar, scatter, boxplot, savefig
+                              contour, colorbar, scatter, boxplot, savefig, tight_layout
 
 from numpy import mean, log10, log, sqrt, power, linspace, sin, cos, tan,\
                         arcsin, arccos, arctan, inf, nan
@@ -128,6 +128,14 @@ def silent_toc():
 def xticklabels(all_lbl):
     gca().set_xticklabels(all_lbl)
 
+
+def nhist_multi(cur, **varargs):
+    n = int(np.ceil(np.sqrt(len(cur))))
+    for cnt, k in enumerate(cur.keys()):
+        subplotter(n, n, cnt)
+        nhist(cur[k], **varargs)
+        title(k)
+    tight_layout()
 
 # set some nice defaults for plotting
 plt.rcParams["figure.figsize"] = [12, 9]
