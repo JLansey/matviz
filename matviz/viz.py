@@ -246,48 +246,53 @@ def plot_pin(x, y, color='k'):
     plot([x], [y], 'o', color=color, markersize=10)
 
 
-def bar_centered(y,**kwargs):
+def bar_centered(y, **kwargs):
 #     its like a regular bar plot, except that it is centered on 1:N integers
     x = np.arange(len(y))+1
     h = plt.bar(x,y,align='center',**kwargs)
     plt.xticks(x)
     return h
 
+def subplotter_auto(n, ii, **kwargs):
+    #     automatically select the right number of subplots for n items
+    x = int(np.ceil(np.sqrt(n)))
+    y = x
+    subplotter(x, y, ii, **kwargs)
 
 
-def subplotter(x, y, n, xlbl=None, ylbl=None):
+def subplotter(x, y, nth, xlbl=None, ylbl=None):
     """
     :param x: number of rows
     :param y: number of columns
-    :param n: order, if you pass a list then it spans multiple rows or columns
+    :param nth: order, if you pass a list then it spans multiple rows or columns
     :param xlbl: xlabel, if you want it to appear way on the bottom
     :param ylbl: ylabel, if you want it to appear way on the left only
     :return:
     """
     # a subplotter function that works like the matlab one does but with index starting at 0
     kwargs = {}
-    if type(n) != int:
+    if type(nth) != int:
         # note special case y == 1, where rowspan should be used
-        if len(n) > y:
+        if len(nth) > y:
             kwargs = {'colspan': y,
-                      'rowspan': len(n) / y}
+                      'rowspan': len(nth) / y}
             if int(kwargs['rowspan']) != kwargs['rowspan']:
                 raise Exception("this isn't supported yet")
             else:
                 kwargs['rowspan'] = int(kwargs['rowspan'])
 
         else:
-            if n[1] == n[0] + 1 and y > 1:
-                kwargs = {'colspan': len(n)}
+            if nth[1] == nth[0] + 1 and y > 1:
+                kwargs = {'colspan': len(nth)}
             else:
-                kwargs = {'rowspan': len(n)}
+                kwargs = {'rowspan': len(nth)}
 
-        n = n[0]
+        nth = nth[0]
     tupp = (x, y)
     cnt = 0
     for ii in range(tupp[0]):
         for jj in range(tupp[1]):
-            if cnt==n:
+            if cnt==nth:
                 ax = plt.subplot2grid(tupp, (ii, jj), **kwargs)
                 if jj == 0:
                     if ylbl:
@@ -302,7 +307,7 @@ def subplotter(x, y, n, xlbl=None, ylbl=None):
 
 
 
-    raise Exception("You have only " + str(x*y) + " subplots, but you asked for the " + str(n) + "'th")
+    raise Exception("You have only " + str(x*y) + " subplots, but you asked for the " + str(nth) + "'th")
 
 
 def pop_all():
