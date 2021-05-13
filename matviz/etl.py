@@ -684,6 +684,10 @@ def find_percentile(value, percentiles):
 
     return percentile
 
+def nanpercentile(x, percentiles):
+    return np.percentile(x[~np.isnan(x)], percentiles)
+
+
 
 # kind of like a median in 2D
 # https://stackoverflow.com/a/30305181/3417198
