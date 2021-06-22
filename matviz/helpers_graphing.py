@@ -42,7 +42,7 @@ from random import random as rand
 from .viz import *
 from .etl import *
 from .histogram_utils import nhist, ndhist
-
+from . import cbrt_scale
 
 # If you get JSON serilization errors because of zoomplot, then you might need this
 # python -m pip install --user "git+https://github.com/javadba/mpld3@display_fix"

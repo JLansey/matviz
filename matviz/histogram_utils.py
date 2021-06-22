@@ -284,7 +284,7 @@ and the locations of the left edges of each bin.
     plt.gca().spines['right'].set_visible(False)
 
 
-    return ax, N,bins_in
+    return ax, N, bins_in
 
 
 

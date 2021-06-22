@@ -214,7 +214,14 @@ def plot_diag(lw=1, color='.5'):
     plt.plot(x, y, '--', color=color, lw=lw)
 
 # plot a horizontal line, or a vertical line
-def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):
+def plot_zero(lineheight=0, axx='x', **kwargs):
+
+    if len(kwargs) == 0:
+        kwargs = {'color' : '.5',
+                    'linestyle' : '--',
+                    'lw' : 1
+                    }
+
     ax = plt.gca()
     if axx == 'x':
         ex = ax.get_xlim()
@@ -227,11 +234,12 @@ def plot_zero(lw=1, lineheight=0, linecolor='.5', style='--', axx='x'):
     else:
         raise Exception("you can't plot zero on no axis!")
 
-    return plt.plot(x,y,style, color=linecolor, lw=lw)
+    return plt.plot(x,y, **kwargs)
+    # return plt.plot(x,y,style, lw=lw, **kwargs)
 
 def plot_axes(color='.5'):
-    plot_zero(axx='x', linecolor=color)
-    plot_zero(axx='y', linecolor=color)
+    plot_zero(axx='x', color=color)
+    plot_zero(axx='y', color=color)
 
 
 def plot_pin(x, y, color='k'):
