@@ -129,6 +129,8 @@ and the locations of the left edges of each bin.
             fracylabel_flag = True
             # else:
             #     fracylabel_flag = False
+        elif normalize in {'number', 'none'}:
+            normalize_flag = False
         else:
             normalize_flag = normalize
 
