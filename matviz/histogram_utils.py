@@ -595,18 +595,10 @@ def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False
             bin_widths[k]=total_range/(min_bins) # set so there are ten bins
         if num_bins[k]>max_bins: # if there would be more than 175 bins (way too many)
             bin_widths[k]=total_range/max_bins
-#   Check if it is intbins, becase then:
+#   Check if it is intbins, because then:
         if int_bins[k]:# binwidth must be an integer, and it must be at least 1
             bin_widths[k] = np.max([np.round(bin_widths[k]),1])
-
-        # if numBins>=30 && proportionFlag
-        #     warning('it might not make sense to use ''proportion'' here since you have so many bins')
-        # end
-        # if numBins>=100 && (proportionFlag || numberFlag)
-        #     warning('it might make sense to use ''pdf'' here since you have so many bins')
-        # end
-
-    n_bins=[1.0 * total_range/w for w in bin_widths]
+            x_min = np.floor(x_min)
 
 ##   if there is enough space to plot them, then plot vertical lines.
 ## 30 bins is arbitrarily chosen to be the number after which there are
@@ -632,15 +624,16 @@ def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False
     # Note that in all these conditions the largest histogram bin width
     # divides evenly into the smaller bins. This way the data will line up and
     # you can easily visually compare the values in different bins
-    if sameBinsFlag: # if 'same' is passed then make them all equal to the average reccomended size
+    if sameBinsFlag: # if 'same' is passed then make them all equal to the average recommended size
         only_bin_width = np.mean(bin_widths)
-        bin_widths=[only_bin_width for w in bin_widths]
+        if int_bins_flag:
+            only_bin_width = np.round(only_bin_width)
+        bin_widths=[only_bin_width] * len(bin_widths)
     else: # the bins will be different if neccesary
         for k in range(len(X)):
     #       The 'ceil' rather than 'round' is supposed to make sure that the
     #       ratio is at lease 1 (divisor at least 2).
             bin_widths[k]=big_bin_width/np.ceil(big_bin_width/bin_widths[k])
-
 
     # SXRange(2) = SXRange(2)+max(binWidth)
     if exclude_extremes:
