@@ -90,7 +90,6 @@ def plot_range_idx(t, events, **varargs):
 def plot_cdf(data, *args, **kargs):
     x = sorted(data)
     y = 100 * np.arange(len(data)) / len(data)
-    print(kargs)
     plt.plot(x, y, *args, **kargs)
     plt.ylim([0,100])
 
