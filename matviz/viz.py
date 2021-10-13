@@ -872,3 +872,43 @@ def plot_ROC(y_true, y_score):
     return cur_auc
 
 
+
+
+def jitter(xx, yy, xscale=0.2, exact=False):
+    """
+    in case two point appear at the same value, the jitter function will make
+    them appear slightly separated from each other so you can see the real
+    number of points at a given location.
+    
+    :param xx: 
+    :param yy:
+    :param exact: if you want to jitter exactly
+    :return: 
+    """
+    xx = np.array(xx).astype(float)
+    if exact:
+        pass
+    else:
+        bin_width = (max(yy) - min(yy)) / 10
+        bins = np.arange(min(yy), max(yy) + bin_width, bin_width)
+        # n = np.histogram(yy, bins=bins)[0]
+
+
+    idxs = np.digitize(yy, bins, right=True)
+    for bin_idx in range(len(bins)):
+        I = idxs == bin_idx
+        n = sum(I)
+        push = -(n - 1) / 2 # so it will be centered if there is only one.
+        xx[I] = xx[I] + xscale * (push + np.arange(n))
+        print(xscale * (push + np.arange(n)))
+        print(n)
+    #
+    # for ii in np.unique(xx):
+    #     I = xx == ii
+    #     idxs = find(I)
+    #     push = -(sum(I)-1) / 2 # so it will be centered if there is only one.
+    #     for jj in idxs:
+    #         yy[jj] = yy[jj] + tempY/50 * [push]
+    #         push = push + 1
+    return xx
+
