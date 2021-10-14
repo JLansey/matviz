@@ -932,20 +932,21 @@ def jitter(xx, yy, maxn=4, xscale=None):
 
         return bin_width
 
-    # if len(yy) < 2:
-    #     return xx
-    # else:
-    xx = np.array(xx).astype(float)
+    if len(yy) < 2:
+        # if there is only one point, then you don't need to jitter it
+        return xx
+    else:
+        xx = np.array(xx).astype(float)
 
-    bin_width = get_bin_width(yy, maxn, n_iter=5)
-    bins = get_bins(yy, bin_width)
+        bin_width = get_bin_width(yy, maxn, n_iter=5)
+        bins = get_bins(yy, bin_width)
 
-    idxs = np.digitize(yy, bins, right=True)
-    for bin_idx in range(len(bins)):
-        I = idxs == bin_idx
-        n = sum(I)
-        push = -(n - 1) / 2 # so it will be centered if there is only one.
-        xx[I] = xx[I] + xscale * (push + np.arange(n))
+        idxs = np.digitize(yy, bins, right=True)
+        for bin_idx in range(len(bins)):
+            I = idxs == bin_idx
+            n = sum(I)
+            push = -(n - 1) / 2 # so it will be centered if there is only one.
+            xx[I] = xx[I] + xscale * (push + np.arange(n))
 
     return xx
 
