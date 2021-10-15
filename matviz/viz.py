@@ -39,7 +39,7 @@ def list_ize(w):
 
 
 
-def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None, **varargs):
+def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None, alpha=0.5, **varargs):
     """
 
     :param events: x positions where the range should be plotted
@@ -61,7 +61,7 @@ def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=N
         plt.fill_between([cur_event[0], cur_event[1]],
                          [height + y_offset, height + y_offset],
                          [y_offset, y_offset],
-                         color=color, alpha=0.5, zorder=zorder, label=to_label, **varargs)
+                         color=color, alpha=alpha, zorder=zorder, label=to_label, **varargs)
         # make sure only one legend item appears for this event series
         to_label = '_nolegend_'
 
