@@ -29,7 +29,7 @@ import time # used in tic() toc()
 # import directly a bunch of useful functions from matplotlib and numpy
 import matplotlib.patches as patches
 from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim, \
-                              gcf, gca, close, title, legend, grid, bar, suptitle, show,\
+                              gcf, gca, sca, close, title, legend, grid, bar, suptitle, show,\
                               xticks, yticks, hist2d, pcolor, yscale, xscale, axis, pcolor,\
                               contour, colorbar, scatter, boxplot, savefig, tight_layout,\
                               text

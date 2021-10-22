@@ -288,7 +288,7 @@ def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None):
         y = int((x - nth) % 100)
         x = int((x - y) / 100)
         y = int(y / 10)
-        
+
     kwargs = {}
     if type(nth) != int:
         # note special case y == 1, where rowspan should be used
