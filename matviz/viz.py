@@ -271,8 +271,9 @@ def subplotter_auto(n, ii, **kwargs):
     subplotter(x, y, ii, **kwargs)
 
 
-def subplotter(x, y, nth, xlbl=None, ylbl=None):
+def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None):
     """
+    a subplotter function that works like the matlab one does but with index starting at 0
     :param x: number of rows
     :param y: number of columns
     :param nth: order, if you pass a list then it spans multiple rows or columns
@@ -280,7 +281,14 @@ def subplotter(x, y, nth, xlbl=None, ylbl=None):
     :param ylbl: ylabel, if you want it to appear way on the left only
     :return:
     """
-    # a subplotter function that works like the matlab one does but with index starting at 0
+
+    # allow you to enter input like (220) instead of x=2, y=2, nth =0
+    if x > 99:
+        nth = int(x % 10)
+        y = int((x - nth) % 100)
+        x = int((x - y) / 100)
+        y = int(y / 10)
+        
     kwargs = {}
     if type(nth) != int:
         # note special case y == 1, where rowspan should be used
