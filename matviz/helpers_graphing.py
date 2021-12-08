@@ -30,13 +30,14 @@ import time # used in tic() toc()
 import matplotlib.patches as patches
 from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim, \
                               gcf, gca, sca, close, title, legend, grid, bar, suptitle, show,\
-                              xticks, yticks, hist2d, pcolor, yscale, xscale, axis, pcolor,\
+                              xticks, yticks, hist2d, pcolor, pcolormesh, yscale, xscale, axis,\
                               contour, colorbar, scatter, boxplot, savefig, tight_layout,\
                               text
 
 from numpy import mean, log10, log, sqrt, power, linspace, sin, cos, tan,\
                         arcsin, arccos, arctan, inf, nan
 
+from math import pi
 from random import random as rand
 
 # load in all the specialized functions.
