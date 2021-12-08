@@ -172,6 +172,9 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
 def cplot(z, *args, **kargs):
     plot(np.real(z), np.imag(z), *args, **kargs)
 
+def ctext(z, *args, **kargs):
+    plt.text(np.real(z), np.imag(z), *args, **kargs)
+
 def cscatter(z, *args, **kargs):
     scatter(np.real(z), np.imag(z), *args, **kargs)
 
