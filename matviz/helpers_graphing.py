@@ -90,7 +90,7 @@ def tic():
 
     """
     global startTime_for_tictoc
-    startTime_for_tictoc = time.time()
+    startTime_for_tictoc = time.perf_counter()
 
 def toc():
     """
@@ -103,10 +103,10 @@ def toc():
         print('hey you never hit start')
     else:
         if 'startTime_for_tictoc' in globals():
-            print("Elapsed time is " + str(time.time() - startTime_for_tictoc) + " seconds.")
+            print("Elapsed time is " + str(time.perf_counter() - startTime_for_tictoc) + " seconds.")
         else:
             print("Toc: start time not set")
-        return time.time() - startTime_for_tictoc
+        return time.perf_counter() - startTime_for_tictoc
 
 
 def silent_toc():
