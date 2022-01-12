@@ -27,6 +27,7 @@ from scipy import stats
 import seaborn as sns
 from .etl import nan_smooth
 from .etl import round_time
+from scipy import interpolate
 
 
 # mini function to change a [a, b] into [[a,b]] for use in the for loop later
@@ -961,3 +962,20 @@ def jitter(xx, yy, maxn=4, xscale=None):
 
     return xx
 
+def interp_plot(x, y, *args, **kargs):
+    """
+    if you don't have a lot of x data points, then pchip interpolate to make the graphs look smooth
+    :param x: x
+    :param y: y
+    :param n: number of data points to interpolate with
+    :return:
+    """
+    n = 100
+    I = np.logical_not(np.isnan(y))
+    x = x[I]
+    y = y[I]
+    x_i = np.linspace(np.min(x), np.max(x), n)
+
+    f = interpolate.PchipInterpolator(x, y)
+    y_i = f(x_i)
+    plot(x_i, y_i, *args, **kargs)
