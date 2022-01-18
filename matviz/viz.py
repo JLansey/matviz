@@ -173,6 +173,12 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
 def cplot(z, *args, **kargs):
     plot(np.real(z), np.imag(z), *args, **kargs)
 
+
+def cplot_circle(z_center, r):
+    t = np.linspace(0, 2 * np.pi, 100)
+    z = r * np.exp(1j * t) + z_center
+    cplot(z)
+
 def ctext(z, *args, **kargs):
     plt.text(np.real(z), np.imag(z), *args, **kargs)
 
