@@ -350,34 +350,6 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
             s = f'{self:.1f}'
             return f'{self:.0f}' if s[-1] == '0' else s
 
-    # this version of the algorithm is very fast - but will artificially include differences in colors
-    # could rewrite it somehow to use this and be faster:
-    # etl.start_and_ends(diff(counts_ordered) < 0)
-    def counts_to_pcnts_fast(counts):
-        flat_counts = flatten(counts)
-        # sort the counts,            [in reverese]
-        idxs = np.argsort(flat_counts)[::-1]
-        idxs_undo = np.argsort(idxs)
-        # flip from greatest to smallest
-        counts_ordered = flat_counts[idxs]
-        # this is counting the contents of the bins in order from fullest to least full
-        counts_summed = np.cumsum(counts_ordered)
-        # convert the counts to a percent of the total N items histogrammed
-        flat_norms = 100 * counts_summed / sum(counts_ordered)
-
-        # get unique values of number of elements in each bin
-        unique_values = np.unique(counts_ordered)
-
-        # for each unique bin value, avg the pcnts and assign that avg for every index with that value
-        for value in unique_values:
-            indices_to_avg = np.where(counts_ordered == value)
-            avg_pcnt = np.mean(flat_norms[indices_to_avg])
-            flat_norms[indices_to_avg] = avg_pcnt
-
-        # reverse the operations to get back to our original orders and shape
-        norms_unsorted = flat_norms[idxs_undo]
-        norms = unflatten(norms_unsorted, counts)
-        return norms
 
     if colors == 'none':
         if levels:
@@ -484,7 +456,7 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
         bx = np.append(bins_x[1:-1] - dsx / 2, np.array([bins_x[-2] + dsx / 2]))
         by = np.append(bins_y[1:-1] - dsy / 2, np.array([bins_y[-2] + dsy / 2]))
 
-        if type(levels) == bool:
+        if isinstance(levels, bool):
 
             plt.contourf(bx, by, to_plot, cmap=colors, levels=100)
         else:
@@ -509,7 +481,34 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
     return counts, bins_x, bins_y
 
 
+# this version of the algorithm is very fast - but will artificially include differences in colors
+# could rewrite it somehow to use this and be faster:
+# etl.start_and_ends(diff(counts_ordered) < 0)
+def counts_to_pcnts_fast(counts):
+    flat_counts = flatten(counts)
+    # sort the counts,            [in reverese]
+    idxs = np.argsort(flat_counts)[::-1]
+    idxs_undo = np.argsort(idxs)
+    # flip from greatest to smallest
+    counts_ordered = flat_counts[idxs]
+    # this is counting the contents of the bins in order from fullest to least full
+    counts_summed = np.cumsum(counts_ordered)
+    # convert the counts to a percent of the total N items histogrammed
+    flat_norms = 100 * counts_summed / sum(counts_ordered)
 
+    # get unique values of number of elements in each bin
+    unique_values = np.unique(counts_ordered)
+
+    # for each unique bin value, avg the pcnts and assign that avg for every index with that value
+    for value in unique_values:
+        indices_to_avg = np.where(counts_ordered == value)
+        avg_pcnt = np.mean(flat_norms[indices_to_avg])
+        flat_norms[indices_to_avg] = avg_pcnt
+
+    # reverse the operations to get back to our original orders and shape
+    norms_unsorted = flat_norms[idxs_undo]
+    norms = unflatten(norms_unsorted, counts)
+    return norms
 
 def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False, std_times=4, minx=None, maxx=None,
                 int_bins_flag=None, exclude_extremes=True):
