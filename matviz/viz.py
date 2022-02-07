@@ -270,9 +270,34 @@ def plot_pin(x, y, color='k'):
 def bar_centered(y, **kwargs):
 #     its like a regular bar plot, except that it is centered on 1:N integers
     x = np.arange(len(y))+1
-    h = plt.bar(x,y,align='center',**kwargs)
+    h = plt.bar(x, y, align='center', **kwargs)
     plt.xticks(x)
     return h
+
+
+def errorb(cur_series, serror=True):
+    """
+    Plot mean and standard deviation/standard error, for items in a pandas series.
+    :param cur_series:
+    :param serror: if false then the STD will be used for error bar height instead  of standard error
+    :return:
+    """
+    means = cur_series.apply(np.nanmean)
+    errors = cur_series.apply(np.nanstd)
+    if serror:
+        errors = errors / np.sqrt(len(errors))
+
+    x_pos = np.arange(len(cur_series)) + 1
+    bar(x_pos, means,
+        yerr=errors,
+        align='center',
+        alpha=0.5,
+        color='gray',
+        capsize=4)
+
+    gca().set_xticks(x_pos)
+    format_axis_date()
+
 
 def subplotter_auto(n, ii, **kwargs):
     #     automatically select the right number of subplots for n items
@@ -985,3 +1010,7 @@ def interp_plot(x, y, *args, **kargs):
     f = interpolate.PchipInterpolator(x, y)
     y_i = f(x_i)
     plot(x_i, y_i, *args, **kargs)
+
+
+
+

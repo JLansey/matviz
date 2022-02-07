@@ -846,3 +846,14 @@ def split_list(cur_list, func):
 
 def rgb2hex(r,g,b):
     return f"#{r:02x}{g:02x}{b:02x}"
+
+def first_non_zero_or_nan(x):
+    """
+    Will return the index of the first non-zero element; and will return np.nan if no non-zero elements exist
+    It doesn't seem like any existing functions satesfied this need
+    https://stackoverflow.com/questions/16243955/numpy-first-occurrence-of-value-greater-than-existing-value
+    :param x:
+    :return:
+    """
+    non_zero = np.where(x)[0]
+    return np.int(non_zero[0]) if len(non_zero) else np.nan
