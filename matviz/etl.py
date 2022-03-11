@@ -49,7 +49,13 @@ eps = np.spacing(1)
 def time_delta_to_days(w):
     return w / np.timedelta64(1, 'D')
 
-
+def timestamp_to_fraction(dates):
+    """
+    Convert a pandas timestamp to fractions
+    :param dates:
+    :return:
+    """
+    return (dates - dates.floor('D')) / pd.Timedelta(24, 'H')
 
 def get_object_size(obj):
     """

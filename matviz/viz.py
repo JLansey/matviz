@@ -900,6 +900,11 @@ def calc_plot_ROC(y1, y2):
 
     return plot_ROC(y_true, y_score)
 
+def plot_ROC_hist(y_true, y_score):
+    y_true = np.array(y_true)
+    y_score = np.array(y_score)
+    return nhist({'true': y_score[y_true], 'false': y_score[~y_true]}, normalize='number')
+
 
 def plot_ROC(y_true, y_score):
 
