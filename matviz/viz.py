@@ -959,6 +959,9 @@ def jitter(xx, yy, maxn=4, xscale=None):
     def get_bin_width(yy, maxn, n_iter=5):
         """
         Get the right bin width, do a binary search on histogram bin width
+        checking various bin widths until you've found one where at most 'n' items fall in one bin
+        if everything is equal then the maxn parameter doesn't matter
+        todo: handle the case where y values are equal more elegantly
         :param yy:
         :return:
         """
@@ -967,16 +970,19 @@ def jitter(xx, yy, maxn=4, xscale=None):
         get_max_per_bin = lambda yy, bin_width: np.max(np.histogram(yy, bins=get_bins(yy, bin_width))[0])
 
         # initialize bin width options to be the most and least it could be
-        yy_sort = sorted(yy)
-        bin_width_min = np.min(np.diff(yy_sort))
-        bin_width_max = yy_sort[-1] - yy_sort[0]
-        for cnt in range(n_iter):
-            bin_width = (bin_width_max + bin_width_min) / 2
-            max_per_bin = get_max_per_bin(yy, bin_width)
-            if max_per_bin >= maxn:
-                bin_width_max = bin_width
-            else:
-                bin_width_min = bin_width
+        if np.std(yy) == 0:
+            bin_width = 1
+        else:
+            yy_sort = sorted(yy)
+            bin_width_min = np.min(np.diff(yy_sort))
+            bin_width_max = yy_sort[-1] - yy_sort[0]
+            for cnt in range(n_iter):
+                bin_width = (bin_width_max + bin_width_min) / 2
+                max_per_bin = get_max_per_bin(yy, bin_width)
+                if max_per_bin >= maxn:
+                    bin_width_max = bin_width
+                else:
+                    bin_width_min = bin_width
 
         return bin_width
 
