@@ -19,6 +19,7 @@ from itertools import chain
 import math
 import sys
 from queue import PriorityQueue
+import pandas as pd
 
 # typing
 from typing import List, Dict, Union, Any, Iterable
@@ -1012,15 +1013,32 @@ def interp_plot(x, y, *args, **kargs):
     :param n: number of data points to interpolate with
     :return:
     """
+
+    y = np.array(y)
+
+    if len(x) == 0:
+        return
+
+    date_flag = type(x[0]) == pd._libs.tslibs.timestamps.Timestamp
+    if date_flag:
+        x = np.array([w.value for w in x])
+
     n = 100
-    I = np.logical_not(np.isnan(y))
+    I = np.logical_not(pd.isnull(y))
+
     x = x[I]
     y = y[I]
+
     x_i = np.linspace(np.min(x), np.max(x), n)
 
     f = interpolate.PchipInterpolator(x, y)
     y_i = f(x_i)
+
+    if date_flag:
+        x_i = np.array([pd.Timestamp(w) for w in x_i])
+
     plot(x_i, y_i, *args, **kargs)
+
 
 
 
