@@ -1015,6 +1015,7 @@ def interp_plot(x, y, *args, **kargs):
     """
 
     y = np.array(y)
+    x = np.array(x)
 
     if len(x) == 0:
         return
