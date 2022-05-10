@@ -9,7 +9,7 @@ from numpy.lib.stride_tricks import as_strided as ast
 # redundant form interactive computing
 import collections
 from collections import defaultdict
-from collections import Sequence
+from collections.abc import Sequence
 from itertools import chain, count
 from operator import itemgetter
 import numbers
@@ -633,7 +633,7 @@ def interp_nans(t, y, t_i=None):
     Interpolate t and y between any nans, and resample to consistent sampling rate
     :param t: time
     :param y: key variable
-    :return:
+    :return: t_i, y_i
     """
     I = np.logical_not(np.isnan(y))
     t = t[I]
@@ -728,7 +728,7 @@ def geometric_median(X, eps=1e-5):
 # ***** MOVE THIS OVER TO ETL PLZ
 # https://stackoverflow.com/questions/32935232/python-apply-function-to-values-in-nested-dictionary
 def map_nested_dicts(ob, func):
-    if isinstance(ob, collections.Mapping):
+    if isinstance(ob, collections.abc.Mapping):
         return {k: map_nested_dicts(v, func) for k, v in ob.items()}
     else:
         return func(ob)

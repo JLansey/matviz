@@ -215,7 +215,7 @@ def polar_grid(lw=1, r=False, linecolor='.3', style=':', nrings=2, nrays = 6):
 
 
 # plot a diagonal line with x=y to see if your predictions are biased
-def plot_diag(lw=1, color='.5'):
+def plot_diag(lw=1, color='.5', reverse=False):
     ax = plt.gca()
     ex = ax.get_xlim()
     yy = ax.get_ylim()
@@ -225,6 +225,9 @@ def plot_diag(lw=1, color='.5'):
     else:
         y = ex
         x = ex
+
+    if reverse:
+        x = np.flip(x)
     plt.plot(x, y, '--', color=color, lw=lw)
 
 # plot a horizontal line, or a vertical line
@@ -279,6 +282,7 @@ def bar_centered(y, **kwargs):
 def errorb(cur_series, serror=True):
     """
     Plot mean and standard deviation/standard error, for items in a pandas series.
+    boxplot
     :param cur_series:
     :param serror: if false then the STD will be used for error bar height instead  of standard error
     :return:
@@ -296,7 +300,9 @@ def errorb(cur_series, serror=True):
         color='gray',
         capsize=4)
 
-    gca().set_xticks(x_pos)
+    ax = gca()
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(cur_series.index)
     format_axis_date()
 
 
@@ -1039,6 +1045,8 @@ def interp_plot(x, y, *args, **kargs):
         x_i = np.array([pd.Timestamp(w) for w in x_i])
 
     plot(x_i, y_i, *args, **kargs)
+
+    return x_i, y_i
 
 
 
