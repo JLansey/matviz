@@ -299,7 +299,8 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
                                     markertype=None,
                                     normr = False,
                                     colors = 'none',
-                                    levels=False):
+                                    levels=False,
+                                    level_color=None):
     """
 
     :param x: the x values of data, or y values if no y is passed, or complex numbers where x=real and y=imag
@@ -465,6 +466,9 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
             CS = plt.contour(bx, by, to_plot, colors=colors, levels=levels)
             CS.levels = [nf(val) for val in CS.levels]
             ax.clabel(CS, CS.levels, inline=True, fmt='%r %%', fontsize=10, colors = 'k')
+
+            if level_color is not None:
+                plt.contourf(bx, by, to_plot, levels=[0, level_color['level']], cmap=level_color['cmap'])
 
         # fig, ax = plt.subplots()
 

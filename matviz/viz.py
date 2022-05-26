@@ -228,7 +228,7 @@ def plot_diag(lw=1, color='.5', reverse=False):
 
     if reverse:
         x = np.flip(x)
-    plt.plot(x, y, '--', color=color, lw=lw)
+    plt.plot(x, y, '--', color=color, lw=lw, label='_nolegend_')
 
 # plot a horizontal line, or a vertical line
 def plot_zero(lineheight=0, axx='x', **kwargs):
@@ -308,8 +308,8 @@ def errorb(cur_series, serror=True):
 
 def subplotter_auto(n, ii, **kwargs):
     #     automatically select the right number of subplots for n items
-    x = int(np.ceil(np.sqrt(n)))
-    y = x
+    y = int(np.ceil(np.sqrt(n)))
+    x = int(np.ceil(n / y))
     subplotter(x, y, ii, **kwargs)
 
 
@@ -358,6 +358,7 @@ def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None):
                 if jj == 0:
                     if ylbl:
                         ylabel(ylbl)
+
                 if ii + 1 == x:
                     if xlbl is not None:
                         xlabel(xlbl)
@@ -912,8 +913,7 @@ def plot_ROC_hist(y_true, y_score):
     y_score = np.array(y_score)
     return nhist({'true': y_score[y_true], 'false': y_score[~y_true]}, normalize='number')
 
-
-def plot_ROC(y_true, y_score):
+def plot_ROC(y_true, y_score, c='k'):
 
     I = np.logical_not(np.isnan(y_score))
     y_true = y_true[I]
@@ -921,7 +921,7 @@ def plot_ROC(y_true, y_score):
 
     fpr, tpr, _ = roc_curve(y_true, y_score)
     cur_auc = auc(fpr, tpr)
-    plot(fpr, tpr, 'k')
+    plot(fpr, tpr, c)
     plot_diag()
     xylim([-.01, 1.01])
     plt.xlabel('False Positive Rate')
