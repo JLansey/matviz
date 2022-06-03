@@ -1030,7 +1030,7 @@ def interp_plot(x, y, *args, **kargs):
     if date_flag:
         x = np.array([w.value for w in x])
 
-    n = 100
+    n = 400
     I = np.logical_not(pd.isnull(y))
 
     x = x[I]
