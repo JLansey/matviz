@@ -466,7 +466,6 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
             CS = plt.contour(bx, by, to_plot, colors=colors, levels=levels)
             CS.levels = [nf(val) for val in CS.levels]
             ax.clabel(CS, CS.levels, inline=True, fmt='%r %%', fontsize=10, colors = 'k')
-
             if level_color is not None:
                 plt.contourf(bx, by, to_plot, levels=[0, level_color['level']], cmap=level_color['cmap'])
 
@@ -568,6 +567,7 @@ def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False
                 maxS[k]=np.max(Values)
                 # warning(['user parameter maxx=' num2str(maxX) ' override since it put all your data out of bounds']);
     #
+
     # if intbins(k)
     #     maxS(k)=round(maxS(k))+.5;
     #     minS(k)=round(minS(k))-.5; # subtract 1/2 to make the bin peaks appear on the numbers.
@@ -582,26 +582,36 @@ def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False
 # totalRange=diff(SXRange); % if the range is zero, then make it eps instead.
 
 
-    total_range = x_max-x_min
+    total_range = x_max - x_min
+
     if int_bins_flag is not None:
         int_bins = [int_bins_flag for x in X]
     else:
         int_bins = [isdiscrete(x) for x in X]
 
-    bin_widths = [3.5*np.std(x)/(bin_factor*np.power(len(x),1.0/3)) for x in X]
+    # scotts choice bin width
+    bin_widths = [3.5 * np.std(x) / (bin_factor * np.power(len(x), 1.0 / 3)) for x in X]
 
   # Instate a mininum and maximum number of bins
     num_bins = [1.0 * total_range/bin_width for bin_width in bin_widths] # Approx number of bins
-
+    num_bins = np.round(num_bins)
     for k in range(S):
         if num_bins[k]<min_bins: # if this will imply less than 10 bins
-            bin_widths[k]=total_range/(min_bins) # set so there are ten bins
+            num_bins[k] = min_bins
+            bin_widths[k] = total_range / (min_bins) # set so there are ten bins
+
         if num_bins[k]>max_bins: # if there would be more than 175 bins (way too many)
-            bin_widths[k]=total_range/max_bins
+            num_bins[k] = max_bins
+            bin_widths[k]=total_range / max_bins
+
+        # This will make the span of bins have edges that go up to and include the extreme-most data
+        bin_widths[k] = total_range / num_bins[k] + eps * 100
+
 #   Check if it is intbins, because then:
-        if int_bins[k]:# binwidth must be an integer, and it must be at least 1
-            bin_widths[k] = np.max([np.round(bin_widths[k]),1])
+        if int_bins[k]: # binwidth must be an integer, and it must be at least 1
+            bin_widths[k] = np.max([np.round(bin_widths[k]), 1])
             x_min = np.floor(x_min)
+
 
 ##   if there is enough space to plot them, then plot vertical lines.
 ## 30 bins is arbitrarily chosen to be the number after which there are
@@ -640,10 +650,9 @@ def choose_bins(X, min_bins=10, max_bins=175, bin_factor=1.5, sameBinsFlag=False
 
     # SXRange(2) = SXRange(2)+max(binWidth)
     if exclude_extremes:
-        bins = [np.arange(x_min,x_max+big_bin_width,w) for w in bin_widths]
+        bins = [np.arange(x_min, x_max + big_bin_width, w) for w in bin_widths]
     else:
-        bins = [np.concatenate([[-np.inf],np.arange(x_min,x_max+big_bin_width,w), [np.inf]]) for w in bin_widths]
-
+        bins = [np.concatenate([[-np.inf], np.arange(x_min, x_max + big_bin_width, w), [np.inf]]) for w in bin_widths]
 
     return bins, bin_widths
 
