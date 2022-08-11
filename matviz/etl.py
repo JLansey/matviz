@@ -778,11 +778,11 @@ def loads_json(json_str):
 
 
 
-def dump_json(data_dict, file_path):
+def dump_json(data_dict, file_path, to_indent=None):
     # pickle any complex numbers into strings
     data_dict = map_nested_dicts(data_dict, complex_dump)
     with open(file_path, 'w') as json_file:
-        json.dump(data_dict, json_file)
+        json.dump(data_dict, json_file, indent=to_indent)
     # txt = json.dumps(data_dict)
     # write_string(file_path, txt)
     return True
