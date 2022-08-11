@@ -768,6 +768,27 @@ def xyscale(w):
     plt.xscale(w)
     plt.yscale(w)
 
+def axis_robust(AX):
+    """
+    change the axis limits, but only change one at a time, without changing any of the others
+    :param AX:
+    :return:
+
+    For example, if you want only to set the lower x limit to zero but not change anything else
+    axis_robust([0, None, None, None])
+    """
+    AX_orig = axis()
+    for ii in range(4):
+        if AX[ii] is None:
+            AX[ii] = AX_orig[ii]
+    axis(AX)
+
+def xlim_robust(AX):
+    axis_robust([AX, *ylim()])
+
+def ylim_robust(AX):
+    axis_robust([*xlim(), AX])
+
 
 def set_axis_ticks_pctn(cur_axis = 'x'):
     fmt = '%.0f%%'  # Format you want the ticks, e.g. '40%'
