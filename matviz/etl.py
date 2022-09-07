@@ -35,6 +35,10 @@ import pandas as pd
 from scipy.spatial.distance import cdist, euclidean
 from scipy import interpolate
 
+from numpy.random import MT19937
+from numpy.random import RandomState, SeedSequence
+
+
 # useful stuffs:
 from numpy import diff
 
@@ -863,3 +867,7 @@ def first_non_zero_or_nan(x):
     """
     non_zero = np.where(x)[0]
     return np.int(non_zero[0]) if len(non_zero) else np.nan
+
+def get_random_state(seed=12345):
+    rs = RandomState(MT19937(SeedSequence(seed)))
+    return rs
