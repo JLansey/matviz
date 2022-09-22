@@ -15,6 +15,7 @@ import pickle
 import glob
 import mpld3
 import time # used in tic() toc()
+import copy
 
 
 # # use these in notebooks
