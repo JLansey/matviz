@@ -236,7 +236,8 @@ def plot_zero(lineheight=0, axx='x', **kwargs):
     if len(kwargs) == 0:
         kwargs = {'color' : '.5',
                     'linestyle' : '--',
-                    'lw' : 1
+                    'lw' : 1,
+                    'label': '_nolegend_'
                     }
 
     ax = plt.gca()

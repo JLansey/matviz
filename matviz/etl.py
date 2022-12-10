@@ -53,6 +53,9 @@ eps = np.spacing(1)
 def time_delta_to_days(w):
     return w / np.timedelta64(1, 'D')
 
+def time_delta_to_seconds(w):
+    return w / np.timedelta64(1, 's')
+
 def timestamp_to_fraction(dates):
     """
     Convert a pandas timestamp to fractions
@@ -783,7 +786,6 @@ def loads_json(json_str):
 
 
 def dump_json(data_dict, file_path, to_indent=None):
-    # pickle any complex numbers into strings
     data_dict = map_nested_dicts(data_dict, complex_dump)
     with open(file_path, 'w') as json_file:
         json.dump(data_dict, json_file, indent=to_indent)
