@@ -64,6 +64,9 @@ def timestamp_to_fraction(dates):
     """
     return (dates - dates.floor('D')) / pd.Timedelta(24, 'H')
 
+def microsoft_to_timestamp(ts):
+    return pd.Timestamp((ts - 116444736000000000)*100)
+
 def get_object_size(obj):
     """
     Get the number of megabytes bytes that the object is
