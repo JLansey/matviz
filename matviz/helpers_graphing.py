@@ -130,6 +130,8 @@ def silent_toc():
 
 def xticklabels(all_lbl):
     gca().set_xticklabels(all_lbl)
+def yticklabels(all_lbl):
+    gca().set_yticklabels(all_lbl)
 
 
 def nhist_multi(cur, **varargs):

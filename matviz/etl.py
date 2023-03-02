@@ -24,6 +24,7 @@ import matplotlib.dates as md # for handledates
 import datetime
 from pytz import timezone
 import pickle
+from decimal import Decimal
 
 
 # regular anaconda stuff
@@ -127,7 +128,7 @@ def remove_tz(cur_datetime):
         naive_datetime = cur_datetime.replace(tzinfo=None)
     return naive_datetime
 
-def tz_to_utc(cur_datetime,local_tz='US/Eastern',native=True):
+def tz_to_utc(cur_datetime, local_tz='US/Eastern',native=True):
     local_datetime = timezone(local_tz).localize(cur_datetime)
     utc_datetime = local_datetime.astimezone(timezone('UTC'))
 
@@ -136,26 +137,35 @@ def tz_to_utc(cur_datetime,local_tz='US/Eastern',native=True):
     else:
         return utc_datetime
 
-def utc_to_tz(cur_utc,local_tz='US/Eastern'):
+def utc_to_tz(cur_utc, local_tz='US/Eastern'):
     # this is a UTC time but without timezone information
     utc_datetime = timezone('UTC').localize(cur_utc)
     local_datetime = utc_datetime.astimezone(timezone(local_tz))
     naive_datetime = local_datetime.replace(tzinfo=None)
     return naive_datetime
 
-def to_tz(cur_tz,local_tz='US/Eastern'):
+def to_tz(cur_tz, local_tz='US/Eastern'):
     # if there is already time zone information associated here, then just go with it
     local_datetime = cur_tz.astimezone(timezone(local_tz))
     naive_datetime = local_datetime.replace(tzinfo=None)
     return naive_datetime
 
 def round_time(ts, round_by='H'):
-    ts_no_tz = remove_tz(ts)
-    return pd.Series(ts_no_tz).dt.round(round_by)
+    # check if time format includes time zone information
+    if hasattr(ts,"tzinfo"):
+        ts = remove_tz(ts)
+
+    return pd.Series(ts).dt.round(round_by)
 
 
 
 def average_times(time_1,time_2):
+    """
+    Average two times
+    :param time_1:
+    :param time_2:
+    :return:
+    """
     dummy_time = datetime.datetime(2000, 1, 1, 0, 0)
     return dummy_time + datetime.timedelta(seconds=((time_1-dummy_time).total_seconds()+(time_2-dummy_time).total_seconds())/2)
 
@@ -796,6 +806,27 @@ def dump_json(data_dict, file_path, to_indent=None):
     # write_string(file_path, txt)
     return True
 
+def encode_floats(nums, decimals=3):
+    """
+    Convert numpy numbers to ones ready for dumping with simplejson
+    useful when you don't want your json exports to be bloated with too many
+    significant figures
+    :param nums: list of numbers
+    :param decimals: number of decimals you want to output
+    """
+    def convert_to_rounded_dec(num):
+        # convert to decimal
+        num_dec = Decimal(np.float64(num))
+        # create decimal number for quantizing
+        round_dec = Decimal("".join(['0.'] + ['0'] * (decimals - 1) + ['1']))
+        # actually round the number here
+        num_round = num_dec.quantize(round_dec, rounding='ROUND_HALF_UP')
+        return num_round
+    # apply the function to the list of numbers
+    func = (np.vectorize(convert_to_rounded_dec))
+    # remove the numpy data type by converting to a list
+    return func(nums).tolist()
+
 #Useful in Python 2, (or 3.4 or lower)
 # https://stackoverflow.com/questions/38987/how-to-merge-two-dictionaries-in-a-single-expression
 def merge_two_dicts(x, y):
@@ -876,3 +907,13 @@ def first_non_zero_or_nan(x):
 def get_random_state(seed=12345):
     rs = RandomState(MT19937(SeedSequence(seed)))
     return rs
+
+def numpy_mode(x):
+    """
+    compute the mode of a numpy array
+    :param x:
+    :return:
+    """
+    values, counts = np.unique(x, return_counts=True)
+    return values[np.argmax(counts)]
+
