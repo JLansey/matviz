@@ -33,10 +33,13 @@ from scipy import interpolate
 
 # mini function to change a [a, b] into [[a,b]] for use in the for loop later
 def list_ize(w):
-    if hasattr(w[0], "__len__"):
-        return w
+    if len(w) > 0:
+        if hasattr(w[0], "__len__"):
+            return w
+        else:
+            return [w]
     else:
-        return [w]
+        return []
 
 
 

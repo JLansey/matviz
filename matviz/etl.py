@@ -876,7 +876,10 @@ def robust_floater(w):
     """
     If w could be numeric, then convert it to a float, otherwise leave it as is
     """
-    return float(w) if isdigit(w) else w
+    if w is None:
+        return np.nan
+    else:
+         return float(w) if isdigit(w) else w
 
 
 def split_list(cur_list, func):
