@@ -22,7 +22,7 @@ MAINTAINER_EMAIL = 'jonathan@lansey.net'
 URL = 'https://github.com/JLansey/matviz'
 LICENSE = 'BSD (3-clause)'
 DOWNLOAD_URL = 'https://github.com/JLansey/matviz'
-VERSION = 'v0.0.7'
+VERSION = 'v0.0.8'
 
 INSTALL_REQUIRES = [
     'numpy>=1.9.3',
@@ -43,6 +43,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.9',
     'License :: OSI Approved :: BSD License',
     'Topic :: Scientific/Engineering :: Visualization',
     'Topic :: Multimedia :: Graphics',
