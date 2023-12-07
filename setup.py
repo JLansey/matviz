@@ -31,7 +31,8 @@ INSTALL_REQUIRES = [
     'matplotlib>=1.4.3',
     'seaborn>=0.5.1',
     'simplejson',
-    'mpld3'
+    'mpld3',
+    'scikit-learn'
 ]
 
 PACKAGES = [
