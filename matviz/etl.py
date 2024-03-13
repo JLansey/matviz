@@ -231,7 +231,7 @@ def full_group_by(l, key=lambda x: x):
     return d
 
 
-def read_csv(name,qt = 1):
+def read_csv(name, qt=1): # a for append
   return list(csv.reader(open(name),quoting = qt))
 
 def write_csv(name,array,param='w'):
@@ -240,12 +240,33 @@ def write_csv(name,array,param='w'):
         writer.writerows(array)
     return True
 
+def write_csv_safe(name, array, param='w'):
+    """
+    Description:
+    This script contains the function write_csv_safe which writes an array of data to a new CSV file.
+    The function ensures that no existing files are overwritten during the process. If the specified file
+    already exists, the function will raise a FileExistsError, indicating that the file was not modified.
 
-def write_csv2(name,array,param='w'): # a for append
+    Functions:
+        safe_write_csv(name, array, param='w'):
+            - 'name': String representing the filename or path to which the CSV data will be written.
+            - 'array': List of lists where each inner list represents a row in the CSV file.
+            - 'param': File writing mode. Default is 'w' (write). Though typically not modified to ensure
+              no existing files are overwritten, it is included for flexibility.
+
+    Exceptions:
+        FileExistsError: Raised if the function attempts to write to a file that already exists.
+    """
+
+    # Check if the file already exists
+    if os.path.exists(name):
+        raise FileExistsError(f"The file '{name}' already exists.")
+
     with open(name, param) as f:
-        writer = csv.writer(f,quoting =1)
+        writer = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
         writer.writerows(array)
     return True
+
 
 def read_string(name):
     with open(name, 'r') as file:
@@ -904,6 +925,27 @@ def split_list(cur_list, func):
 
 def rgb2hex(r,g,b):
     return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def hex2rgb(color_input):
+    """
+    Convert a color input (hex string or hex integer) to a normalized RGB list.
+    """
+    # If the input is a string, assume it's a hex string and strip the '#' if present
+    if isinstance(color_input, str):
+        color_input = color_input.lstrip('#')
+        rgb = [int(color_input[i:i + 2], 16) / 255.0 for i in (0, 2, 4)]
+
+    # If the input is an integer, assume it's a hex integer
+    elif isinstance(color_input, int):
+        rgb = [(color_input >> 16) & 255, (color_input >> 8) & 255, color_input & 255]
+        rgb = [value / 255.0 for value in rgb]
+
+    else:
+        raise ValueError("Invalid color input type. Must be a hex string or hex integer.")
+
+    return rgb
+
 
 def first_non_zero_or_nan(x):
     """
