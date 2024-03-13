@@ -22,7 +22,7 @@ MAINTAINER_EMAIL = 'jonathan@lansey.net'
 URL = 'https://github.com/JLansey/matviz'
 LICENSE = 'BSD (3-clause)'
 DOWNLOAD_URL = 'https://github.com/JLansey/matviz'
-VERSION = 'v0.0.8'
+VERSION = 'v0.0.9'
 
 INSTALL_REQUIRES = [
     'numpy>=1.9.3',
@@ -31,7 +31,8 @@ INSTALL_REQUIRES = [
     'matplotlib>=1.4.3',
     'seaborn>=0.5.1',
     'simplejson',
-    'mpld3'
+    'mpld3',
+    'scikit-learn'
 ]
 
 PACKAGES = [
