@@ -603,7 +603,7 @@ def start_and_ends(logical_array):
 
     #
     idxs = np.array(range(len(padded_array) - 1))
-    differences = np.diff([np.int(w) for w in padded_array])
+    differences = np.diff([int(w) for w in padded_array])
     starts = idxs[differences > 0]
     ends   = idxs[differences < 0]
 
@@ -956,7 +956,7 @@ def first_non_zero_or_nan(x):
     :return:
     """
     non_zero = np.where(x)[0]
-    return np.int(non_zero[0]) if len(non_zero) else np.nan
+    return int(non_zero[0]) if len(non_zero) else np.nan
 
 def get_random_state(seed=12345):
     rs = RandomState(MT19937(SeedSequence(seed)))
