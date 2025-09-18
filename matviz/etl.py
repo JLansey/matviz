@@ -481,7 +481,7 @@ def reverse_dict(tmp_dict):
     return {v: k for k, v in tmp_dict.items()}
 
 
-def recurse_func(my_list,my_func,stop_level=False):
+def recurse_func(my_list, my_func, stop_level=False):
     """
     Will compute some function, at some level down. or all the way down
     Args:
