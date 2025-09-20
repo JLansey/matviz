@@ -309,6 +309,26 @@ def errorb(cur_series, serror=True):
     ax.set_xticklabels(cur_series.index)
     format_axis_date()
 
+def bplot(X):
+    if type(X) == dict:
+        keys = X.keys()
+        S = len(keys)
+        for idx, k in enumerate(keys):
+            x = X[k]
+            x = x.astype(float)
+            x = x[~np.isnan(x)]
+            boxplot(x, positions=[idx], patch_artist=True, boxprops=dict(facecolor='lightblue', lw=1, color='k'),
+             widths=0.6, whiskerprops=dict(linewidth=2, color='k', linestyle='-'),
+             medianprops=dict(linewidth=2))
+
+        xticks(range(S))
+        xticklabels(keys)
+
+        if type(keys) == str:
+            format_axis_date()
+
+        nicefy()
+
 
 def subplotter_auto(n, ii, **kwargs):
     #     automatically select the right number of subplots for n items
@@ -849,6 +869,7 @@ def linspecer(n, color='muted'):
     return np.array(sns.color_palette(color, n_colors=n))
 
 
+# rotate the axis tick labels to be at an angle
 def format_axis_date(rot=77):
     plt.xticks(rotation=rot, rotation_mode="anchor", ha='right')
     # ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
