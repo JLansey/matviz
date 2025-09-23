@@ -326,7 +326,7 @@ def csvify_dict(weird_dict):
 
 
 
-def nan_smooth(y,n=5,ens=[],ignore_nans=True):
+def nan_smooth(y, n=5, ens=[], ignore_nans=True):
     """
     Args:
         y: your timeseries (don't need x)
