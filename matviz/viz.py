@@ -97,12 +97,12 @@ def plot_range_idx(t, events, **varargs):
 
 
 def plot_cdf(data, *args, **kargs):
-    x = sorted(data)
-    y = 100 * np.arange(len(data)) / len(data)
+    data = np.asarray(data)
+    data = data[~np.isnan(data)]
+    x = np.sort(data)
+    y = 100 * np.arange(len(x)) / len(x)
     plt.plot(x, y, *args, **kargs)
     plt.ylim([0,100])
-
-
 
 
 def set_fontsize(f_size=15):
