@@ -28,6 +28,7 @@ from scipy import stats
 import seaborn as sns
 from .etl import nan_smooth
 from .etl import round_time
+from .histogram_utils import nhist
 from scipy import interpolate
 
 
