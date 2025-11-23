@@ -32,7 +32,8 @@ INSTALL_REQUIRES = [
     'seaborn>=0.5.1',
     'simplejson',
     'mpld3',
-    'scikit-learn'
+    'scikit-learn',
+    'PyMuPDF'
 ]
 
 PACKAGES = [
