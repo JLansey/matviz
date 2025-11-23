@@ -35,6 +35,7 @@ import pandas as pd
 # for geometric median
 from scipy.spatial.distance import cdist, euclidean
 from scipy import interpolate
+from scipy.stats import mode
 
 from numpy.random import MT19937
 from numpy.random import RandomState, SeedSequence
@@ -961,13 +962,3 @@ def first_non_zero_or_nan(x):
 def get_random_state(seed=12345):
     rs = RandomState(MT19937(SeedSequence(seed)))
     return rs
-
-def numpy_mode(x):
-    """
-    compute the mode of a numpy array
-    :param x:
-    :return:
-    """
-    values, counts = np.unique(x, return_counts=True)
-    return values[np.argmax(counts)]
-
