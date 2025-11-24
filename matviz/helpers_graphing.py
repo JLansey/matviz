@@ -3,11 +3,13 @@ This file is to make your working environment pretty similar to the matlab worki
 functions imported so you don't need to worry about typing 'plt.' beforehand. It also imports several custom functions
 '''
 import os
-import joblib
 import matplotlib
-# matplotlib.use('Agg')
+import sys
+import yaml
+import json
+import joblib
+
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
 import collections
 import datetime
@@ -17,7 +19,7 @@ import glob
 import mpld3
 import time # used in tic() toc()
 import copy
-
+from scipy.stats import mode
 
 # # use these in notebooks
 # %load_ext autoreload
@@ -28,13 +30,15 @@ import copy
 # import warnings
 # warnings.filterwarnings('ignore')
 
+import matplotlib.pyplot as plt
+
 # import directly a bunch of useful functions from matplotlib and numpy
 import matplotlib.patches as patches
 from matplotlib.pyplot import plot, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim, \
                               gcf, gca, sca, close, title, legend, grid, bar, suptitle, show,\
                               xticks, yticks, hist2d, pcolor, pcolormesh, yscale, xscale, axis,\
                               contour, colorbar, scatter, boxplot, savefig, tight_layout,\
-                              text
+                              text, imshow
 
 from numpy import mean, log10, log, sqrt, power, linspace, sin, cos, tan,\
                         arcsin, arccos, arctan, inf, nan

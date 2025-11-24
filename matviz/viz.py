@@ -28,6 +28,7 @@ from scipy import stats
 import seaborn as sns
 from .etl import nan_smooth
 from .etl import round_time
+from .histogram_utils import nhist
 from scipy import interpolate
 
 
@@ -97,12 +98,12 @@ def plot_range_idx(t, events, **varargs):
 
 
 def plot_cdf(data, *args, **kargs):
-    x = sorted(data)
-    y = 100 * np.arange(len(data)) / len(data)
+    data = np.asarray(data)
+    data = data[~np.isnan(data)]
+    x = np.sort(data)
+    y = 100 * np.arange(len(x)) / len(x)
     plt.plot(x, y, *args, **kargs)
     plt.ylim([0,100])
-
-
 
 
 def set_fontsize(f_size=15):
@@ -337,7 +338,7 @@ def subplotter_auto(n, ii, **kwargs):
     subplotter(x, y, ii, **kwargs)
 
 
-def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None):
+def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None, y_ticks=False):
     """
     a subplotter function that works like the matlab one does but with index starting at 0
     :param x: number of rows
@@ -345,6 +346,7 @@ def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None):
     :param nth: order, if you pass a list then it spans multiple rows or columns
     :param xlbl: xlabel, if you want it to appear way on the bottom
     :param ylbl: ylabel, if you want it to appear way on the left only
+    :param yticks: yticks, if you want it to appear way on the left only
     :return:
     """
 
@@ -382,6 +384,10 @@ def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None):
                 if jj == 0:
                     if ylbl:
                         ylabel(ylbl)
+                    
+                else:
+                    if not y_ticks:
+                        yticklabels([])
 
                 if ii + 1 == x:
                     if xlbl is not None:
