@@ -338,6 +338,13 @@ def subplotter_auto(n, ii, **kwargs):
     subplotter(x, y, ii, **kwargs)
 
 
+def xticklabels(all_lbl):
+    gca().set_xticklabels(all_lbl)
+    
+def yticklabels(all_lbl):
+    gca().set_yticklabels(all_lbl)
+
+
 def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None, y_ticks=False):
     """
     a subplotter function that works like the matlab one does but with index starting at 0
