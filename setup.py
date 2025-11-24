@@ -2,6 +2,7 @@
 #
 # Copyright (C) 2017-2019 Jonathan Lansey
 
+from setuptools import setup
 
 DESCRIPTION = "matviz: matrix data visualization"
 LONG_DESCRIPTION = """\
@@ -41,23 +42,13 @@ PACKAGES = [
 
 CLASSIFIERS = [
     'Intended Audience :: Science/Research',
-    'Programming Language :: Python :: 3.5',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
-    'License :: OSI Approved :: BSD License',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
     'Topic :: Scientific/Engineering :: Visualization',
-    'Topic :: Multimedia :: Graphics',
-    'Operating System :: POSIX',
-    'Operating System :: Unix',
-    'Operating System :: MacOS'
 ]
-
-try:
-    from setuptools import setup
-    _has_setuptools = True
-except ImportError:
-    from distutils.core import setup
 
 if __name__ == "__main__":
 
