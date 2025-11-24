@@ -22,7 +22,6 @@ MAINTAINER_EMAIL = 'jonathan@lansey.net'
 URL = 'https://github.com/JLansey/matviz'
 LICENSE = 'BSD (3-clause)'
 DOWNLOAD_URL = 'https://github.com/JLansey/matviz'
-VERSION = 'v0.1.0'
 
 INSTALL_REQUIRES = [
     'numpy>=1.9.3',
@@ -72,7 +71,8 @@ if __name__ == "__main__":
         long_description=LONG_DESCRIPTION,
         license=LICENSE,
         url=URL,
-        version=VERSION,
+        use_scm_version={'write_to': 'matviz/_version.py'},
+        setup_requires=['setuptools_scm'],
         download_url=DOWNLOAD_URL,
         install_requires=INSTALL_REQUIRES,
         packages=PACKAGES,
