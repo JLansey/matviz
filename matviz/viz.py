@@ -345,7 +345,7 @@ def yticklabels(all_lbl):
     gca().set_yticklabels(all_lbl)
 
 
-def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None, y_ticks=False):
+def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None, y_ticks=None):
     """
     a subplotter function that works like the matlab one does but with index starting at 0
     :param x: number of rows
@@ -393,8 +393,11 @@ def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None, y_ticks=False):
                         ylabel(ylbl)
                     
                 else:
-                    if not y_ticks:
-                        yticklabels([])
+                    if y_ticks is not None:
+                        if y_ticks == False:
+                            yticklabels([])
+                        else:
+                            yticklabels(y_ticks)
 
                 if ii + 1 == x:
                     if xlbl is not None:
