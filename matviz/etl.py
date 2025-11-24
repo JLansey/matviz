@@ -426,12 +426,12 @@ def nan_smooth(y, n=5, ens=[], ignore_nans=True):
 
 
 # normalized version of cross correlation - mimicking matlabs'
-def xcorr(a, b, ds):
+def xcorr(a, b, dt):
     """
 
     :param a: x1
     :param b: x2
-    :param ds: sampling rate
+    :param ds: time step
     :return: corrs, lags
     """
     S = len(a)
@@ -439,7 +439,7 @@ def xcorr(a, b, ds):
     b_norm = (b - np.mean(b)) / np.std(b)
     corrs = np.correlate(a_norm, b_norm / S, 'full')
 
-    lags_half = np.arange(0, ds * S, ds)
+    lags_half = np.arange(0, dt * S, dt)
     lags = np.concatenate([-np.flip(lags_half[1:]), lags_half])
 
 
@@ -467,14 +467,14 @@ def max_lag(x1, x2, ds, max_lag_allowed = np.inf):
     corrs, lags = xcorr(x1, x2, ds)
 
     # put bounds on
-    I = np.logical_and(-max_lag_allowed < lags,  lags < max_lag_allowed)
+    I = np.abs(lags) < max_lag_allowed
     corrs = corrs[I]
     lags = lags[I]
 
     I = (corrs == np.max(corrs))
-    max_lag = np.mean(lags[I])
+    max_lag_out = np.mean(lags[I])
     max_corr = np.mean(corrs[I])
-    return max_lag, max_corr
+    return max_lag_out, max_corr
 
 
 def reverse_dict(tmp_dict):
