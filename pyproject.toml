@@ -31,6 +31,7 @@ dependencies = [
     "pandas>=1.3.0",
     "matplotlib>=3.4.0",
     "seaborn>=0.11.0",
+    "scikit-learn>=0.24.0",
     "python-dateutil>=2.8.0",
 ]
 
@@ -70,9 +71,6 @@ addopts = [
     "--verbose",
     "--tb=short",
 ]
-filterwarnings = [
-    "ignore::DeprecationWarning",
-]
 
 [tool.coverage.run]
 source = ["matviz"]
@@ -86,8 +84,8 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
 ]
-
 [tool.setuptools_scm]
 write_to = "matviz/_version.py"
-version_scheme = "post-release"
+version_scheme = "guess-next-dev"
 local_scheme = "no-local-version"
+

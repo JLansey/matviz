@@ -8,7 +8,7 @@ import os
 
 from matviz.etl import (
     nan_smooth, flatten, unflatten, handle_dates,
-    isdiscrete, clean_whitespace, robust_floater, isdigit,
+    clean_whitespace, robust_floater, isdigit,
     hex2rgb, rgb2hex
 )
 
