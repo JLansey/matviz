@@ -376,7 +376,7 @@ def nan_smooth(y, n=5, ens=[], ignore_nans=True):
         # tmp = np.linspace(-1.96,1.96,n)
         # window = np.exp(-np.power(tmp,2))/sum(np.exp(-np.power(tmp,2)))
         # so that n=1 represents window [0 1 0]
-        window = signal.hann(n+2)
+        window = signal.windows.hann(n+2)
     else:
         window = n
         if round(sum(window)*100000)/100000 != 1:
@@ -534,7 +534,7 @@ def unflatten(flat_values, prototype):
     def _unflatten(flat_values, prototype, offset):
         if isinstance(prototype, np.ndarray):
             shape = prototype.shape
-            new_offset = offset + np.product(shape)
+            new_offset = offset + np.prod(shape)
             value = flat_values[offset:new_offset].reshape(shape)
             return value, new_offset
         else:

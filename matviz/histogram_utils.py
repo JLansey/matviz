@@ -10,7 +10,7 @@ import seaborn as sns
 from .etl import handle_dates
 from .etl import eps
 from .etl import flatten, unflatten
-from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage import gaussian_filter
 
 import logging
 
