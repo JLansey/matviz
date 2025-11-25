@@ -10,8 +10,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  test:
+    uses: ./.github/workflows/test.yml  # Call the reusable test workflow
 
+  deploy:
+    needs: test  # This ensures deploy only runs if all test matrix jobs pass
     runs-on: ubuntu-latest
 
     steps:

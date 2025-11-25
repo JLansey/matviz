@@ -5,6 +5,7 @@ on:
     branches: [ main, dev ]
   pull_request:
     branches: [ main, dev ]
+  workflow_call:  # Allows this workflow to be called by other workflows
 
 jobs:
   test:
