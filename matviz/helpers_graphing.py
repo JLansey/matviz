@@ -16,7 +16,11 @@ import datetime
 from datetime import datetime as dt
 import pickle
 import glob
-import mpld3
+try:
+    import mpld3
+    HAS_MPLD3 = True
+except ImportError:
+    HAS_MPLD3 = False
 import time # used in tic() toc()
 import copy
 from scipy.stats import mode
@@ -55,6 +59,8 @@ from . import cbrt_scale
 # If you get JSON serilization errors because of zoomplot, then you might need this
 # python -m pip install --user "git+https://github.com/javadba/mpld3@display_fix"
 def zoom_plot(enable = True):
+    if not HAS_MPLD3:
+        raise ImportError("mpld3 is required for zoom_plot(). Install with: pip install mpld3 or pip install matviz[notebook]")
     if enable:
         mpld3.enable_notebook()
     else:
