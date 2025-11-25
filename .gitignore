@@ -4,12 +4,13 @@ __pycache__/
 *$py.class
 *.pyc
 
+# Auto-generated version file
+matviz/_version.py
+
 # Virtual environments
 venv/
 env/
 ENV/
-vizenv/
-.vizenv
 .venv/
 *.egg-info/
 

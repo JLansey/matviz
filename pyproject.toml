@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0", "setuptools_scm>=8.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "matviz"
-version = "0.1.0"
+dynamic = ["version"]
 description = "matviz: matrix data visualization"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -86,3 +86,8 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
 ]
+
+[tool.setuptools_scm]
+write_to = "matviz/_version.py"
+version_scheme = "post-release"
+local_scheme = "no-local-version"
