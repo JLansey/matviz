@@ -1,9 +1,51 @@
-.DS_Store
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 *.pyc
+
+# Virtual environments
+venv/
+env/
+ENV/
+vizenv/
+.vizenv
+.venv/
+*.egg-info/
+
+# Distribution / packaging
 build/
-__pycache__
-.idea
-*.pyc
 dist/
-matviz.egg-info/
-examples/.ipynb_checkpoints/
+*.egg-info/
+.eggs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.cover
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation builds
+docs/_build/
+docs/build/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
