@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.pyplot import plot, scatter, hist, figure, clf, cla, xlabel, ylabel, xlim, ylim,\
                               gcf, gca, close, title, legend, grid, bar, suptitle, show,\
-                              xticks, yticks, axis
+                              xticks, yticks, axis, boxplot
 
 from sklearn.metrics import roc_curve, auc
 import numpy as np
