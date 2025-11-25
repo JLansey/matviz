@@ -534,7 +534,7 @@ def unflatten(flat_values, prototype):
     def _unflatten(flat_values, prototype, offset):
         if isinstance(prototype, np.ndarray):
             shape = prototype.shape
-            new_offset = offset + np.product(shape)
+            new_offset = offset + np.prod(shape)
             value = flat_values[offset:new_offset].reshape(shape)
             return value, new_offset
         else:
