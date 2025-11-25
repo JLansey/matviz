@@ -1,0 +1,5 @@
+# Development dependencies
+# Install with: pip install -e ".[dev]"
+# Or for all extras: pip install -e ".[all]"
+
+-e .

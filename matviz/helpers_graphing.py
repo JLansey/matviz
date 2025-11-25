@@ -133,12 +133,6 @@ def silent_toc():
             return None
 
 
-def xticklabels(all_lbl):
-    gca().set_xticklabels(all_lbl)
-def yticklabels(all_lbl):
-    gca().set_yticklabels(all_lbl)
-
-
 def nhist_multi(cur, **varargs):
     n = int(np.ceil(np.sqrt(len(cur))))
     for cnt, k in enumerate(cur.keys()):
