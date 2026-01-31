@@ -25,6 +25,7 @@ import datetime
 from pytz import timezone
 import pickle
 from decimal import Decimal
+from numbers import Number
 
 
 # regular anaconda stuff
@@ -905,13 +906,26 @@ def isdigit(s):
 
 def robust_floater(w):
     """
-    If w could be numeric, then convert it to a float, otherwise leave it as is
+    Convert a value to a numeric type where possible.
+    
+    - null/NaN values → np.nan
+    - Timestamps/datetimes → Unix timestamp (float)
+    - Numeric strings → float
+    - Non-numeric strings → unchanged
+    - Numbers (int, float, complex, etc.) → unchanged
+    - Everything else (lists, dicts, etc.) → np.nan
     """
-    if w is None:
-        return np.nan
+    if pd.isnull(w):
+        result = np.nan
+    elif isinstance(w, (pd.Timestamp, datetime.datetime)):
+        result = w.timestamp()
+    elif isinstance(w, str):
+        result = float(w) if isdigit(w) else w
+    elif isinstance(w, Number):
+        result = w
     else:
-         return float(w) if isdigit(w) else w
-
+        result = np.nan
+    return result
 
 def split_list(cur_list, func):
     list_true = []
