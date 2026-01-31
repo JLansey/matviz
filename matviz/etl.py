@@ -920,7 +920,7 @@ def robust_floater(w):
     elif isinstance(w, (pd.Timestamp, datetime.datetime)):
         result = w.timestamp()
     elif isinstance(w, str):
-        result = float(w) if isdigit(w) else w
+        result = float(w) if isdigit(w) else np.nan
     elif isinstance(w, Number):
         result = w
     else:
