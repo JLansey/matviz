@@ -89,7 +89,7 @@ class TestUtilityFunctions:
     def test_robust_floater(self):
         """Test robust_floater function."""
         assert robust_floater("3.14") == 3.14
-        assert robust_floater("hello") == "hello"
+        assert np.isnan(robust_floater("hello"))
         assert np.isnan(robust_floater(None))
         assert robust_floater("-2.5") == -2.5
 
