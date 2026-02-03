@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.2.5
+## [v0.2.5] - 2026-02-03
 
-### Breaking Change
-- `robust_floater()` now returns `np.nan` instead of the original string when given a non-numeric string. This ensures consistent numeric output and avoids mixed-type issues downstream.
+### Changed
+- `robust_floater()` now returns `np.nan` instead of the original string when given a non-numeric string. Previously, passing `"hello"` would return `"hello"`, which could cause mixed-type issues in pandas/numpy operations. Now it returns `nan` for consistent numeric output.
