@@ -58,9 +58,13 @@ class TestNdhist:
     def test_ndhist_basic(self, sample_2d_data):
         """Test basic ndhist functionality."""
         x, y = sample_2d_data
-        counts, bins_x, bins_y = ndhist(x, y)
+        fig = ndhist(x, y)
         plt.close()
-        
+
+        assert isinstance(fig, plt.Figure)
+        counts = fig.ndhist['counts']
+        bins_x = fig.ndhist['bins_x']
+        bins_y = fig.ndhist['bins_y']
         assert counts.shape[0] > 0
         assert counts.shape[1] > 0
         assert len(bins_x) == counts.shape[0] + 1
@@ -70,22 +74,24 @@ class TestNdhist:
         """Test ndhist with timeseries (no y provided)."""
         np.random.seed(42)
         y = np.cumsum(np.random.randn(100))
-        
-        counts, bins_x, bins_y = ndhist(y)
+
+        fig = ndhist(y)
         plt.close()
-        
-        assert counts.shape[0] > 0
-        assert counts.shape[1] > 0
+
+        assert isinstance(fig, plt.Figure)
+        assert fig.ndhist['counts'].shape[0] > 0
+        assert fig.ndhist['counts'].shape[1] > 0
 
     def test_ndhist_complex_numbers(self):
         """Test ndhist with complex numbers."""
         np.random.seed(42)
         z = np.random.randn(100) + 1j * np.random.randn(100)
-        
-        counts, bins_x, bins_y = ndhist(z)
+
+        fig = ndhist(z)
         plt.close()
-        
-        assert counts.shape[0] > 0
+
+        assert isinstance(fig, plt.Figure)
+        assert fig.ndhist['counts'].shape[0] > 0
 
 
 class TestChooseBins:
