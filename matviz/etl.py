@@ -224,6 +224,25 @@ def clean_whitespace(my_str):
 
     return my_str
 
+
+def drop_mostly_na(df, threshold=0.1, axis=1):
+    """
+    Drop columns or rows that are mostly NA.
+    
+    Parameters:
+        df: DataFrame
+        threshold: float, drop if NA percentage >= threshold (default 0.1)
+        axis: 0 or 'rows' to drop rows, 1 or 'columns' to drop columns (default 1)
+    """
+    if axis in (1, 'columns'):
+        na_percent = df.isna().mean(axis=0)
+        return df.loc[:, na_percent <= threshold]
+    elif axis in (0, 'rows'):
+        na_percent = df.isna().mean(axis=1)
+        return df.loc[na_percent <= threshold, :]
+    else:
+        raise ValueError("axis must be 0/'rows' or 1/'columns'")
+
 # This essentially splits a giant list by
 # some function.
 def full_group_by(l, key=lambda x: x):
