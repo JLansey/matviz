@@ -285,8 +285,9 @@ and the locations of the left edges of each bin.
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
 
-
-    return ax, N, bins_in
+    fig = plt.gcf()
+    fig.nhist = {'N': N, 'bins': bins_in, 'rawN': rawN}
+    return fig
 
 
 

@@ -12,21 +12,22 @@ class TestNhist:
 
     def test_nhist_single_array(self, sample_data):
         """Test nhist with a single array."""
-        ax, N, bins = nhist(sample_data['normal'])
+        fig = nhist(sample_data['normal'])
         plt.close()
-        
-        assert ax is not None
-        assert isinstance(N, list) and len(N) == 1
-        assert len(bins[0]) > 0
+
+        assert isinstance(fig, plt.Figure)
+        assert isinstance(fig.nhist['N'], list) and len(fig.nhist['N']) == 1
+        assert len(fig.nhist['bins'][0]) > 0
 
     def test_nhist_multiple_arrays(self, sample_data):
         """Test nhist with multiple arrays."""
         data = [sample_data['normal'], sample_data['uniform']]
-        ax, N, bins = nhist(data, labels=['Normal', 'Uniform'])
+        fig = nhist(data, labels=['Normal', 'Uniform'])
         plt.close()
-        
-        assert len(N) == 2
-        assert len(bins) == 2
+
+        assert isinstance(fig, plt.Figure)
+        assert len(fig.nhist['N']) == 2
+        assert len(fig.nhist['bins']) == 2
 
     def test_nhist_dictionary_input(self, sample_data):
         """Test nhist with dictionary input."""
@@ -34,20 +35,21 @@ class TestNhist:
             'Normal': sample_data['normal'][:500],
             'Uniform': sample_data['uniform'][:500]
         }
-        ax, N, bins = nhist(data_dict)
+        fig = nhist(data_dict)
         plt.close()
-        
-        assert len(N) == 2
-        assert len(bins) == 2
+
+        assert isinstance(fig, plt.Figure)
+        assert len(fig.nhist['N']) == 2
+        assert len(fig.nhist['bins']) == 2
 
     def test_nhist_integer_bins(self, sample_data):
         """Test integer bins flag."""
         data = sample_data['integers']
-        ax, N, bins = nhist(data, int_bins_flag=True)
+        fig = nhist(data, int_bins_flag=True)
         plt.close()
-        
-        # Bins should be on integer boundaries
-        assert len(bins[0]) > 0
+
+        assert isinstance(fig, plt.Figure)
+        assert len(fig.nhist['bins'][0]) > 0
 
 
 class TestNdhist:
