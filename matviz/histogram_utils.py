@@ -482,7 +482,9 @@ def ndhist(x, y=None, log_colorbar_flag=False, maxx=None, maxy=None, minx=None, 
         plt.plot(x, y, markertype)
 
     # plt.axis('tight')
-    return counts, bins_x, bins_y
+    fig = plt.gcf()
+    fig.ndhist = {'counts': counts, 'bins_x': bins_x, 'bins_y': bins_y}
+    return fig
 
 
 # this version of the algorithm is very fast - but will artificially include differences in colors
