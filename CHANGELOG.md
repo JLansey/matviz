@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.2.7] - 2026-02-03
+
+### Added
+- `re` module now included in standard imports via `helpers`.
+
 ## [v0.2.6] - 2026-02-03
 
 ### Changed
