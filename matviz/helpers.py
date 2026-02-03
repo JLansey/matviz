@@ -16,6 +16,8 @@ import datetime
 from datetime import datetime as dt
 import pickle
 import glob
+import re
+
 try:
     import mpld3
     HAS_MPLD3 = True
