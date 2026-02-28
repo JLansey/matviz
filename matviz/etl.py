@@ -61,18 +61,33 @@ def time_delta_to_seconds(w):
 
 def timestamp_to_fraction(dates):
     """
-    Convert a pandas timestamp to fractions
-    :param dates:
-    :return:
+    Convert pandas Timestamps to fraction of day (0.0 to 1.0).
+
+    Parameters
+    ----------
+    dates : Series of Timestamp
+        Timestamps to convert.
+
+    Returns
+    -------
+    Series of float
+        Fraction of day elapsed.
     """
     return (dates - dates.floor('D')) / pd.Timedelta(24, 'H')
 
 def microsoft_to_timestamp(ts):
     """
-    Convert a microsoft timestamp to a pandas timestamp
-    converting base years from 1601 to 1970
-    :param ts:
-    :return:
+    Convert a Microsoft timestamp (100-ns ticks since 1601) to pandas Timestamp.
+
+    Parameters
+    ----------
+    ts : int
+        Microsoft timestamp value.
+
+    Returns
+    -------
+    pandas.Timestamp
+        Equivalent pandas Timestamp.
     """
     return pd.Timestamp((ts - 116444736000000000)*100)
 
@@ -81,9 +96,17 @@ def microsoft_to_timestamp(ts):
 
 def get_object_size(obj):
     """
-    Get the number of megabytes bytes that the object is
-    :param obj:
-    :return:
+    Get the size of a Python object in megabytes.
+
+    Parameters
+    ----------
+    obj : object
+        Any Python object.
+
+    Returns
+    -------
+    str
+        Human-readable size string.
     """
     the_size = sys.getsizeof(obj)*1e-6
     return "Object size in MB: {0:.2f}".format(the_size)
@@ -97,13 +120,19 @@ def pprint_entire_df(df):
 
 def sql(query, db):
     """
-    Parameters:
-        query: A sql query written in normal sql language inside quotes,
-            type = string
-        db: from_db.sql_connection()
+    Execute a SQL query and return results.
 
-    Returns:
-        a dictof sql data
+    Parameters
+    ----------
+    query : str
+        SQL query string.
+    db : cursor
+        Database cursor from a connection.
+
+    Returns
+    -------
+    list
+        Query results.
     """
     db.execute(query)
     results = db.fetchall()
@@ -162,6 +191,22 @@ def to_tz(cur_tz, local_tz='US/Eastern'):
     return naive_datetime
 
 def round_time(ts, round_by='H'):
+    """
+    Round timestamps to a given frequency.
+
+    Parameters
+    ----------
+    ts : datetime or array-like
+        Timestamp(s) to round.
+    round_by : str, optional
+        Pandas frequency string (e.g. ``'H'``, ``'T'``, ``'D'``).
+        Default is ``'H'``.
+
+    Returns
+    -------
+    Series
+        Rounded timestamps.
+    """
     # check if time format includes time zone information
     if hasattr(ts,"tzinfo"):
         ts = remove_tz(ts)
@@ -172,10 +217,19 @@ def round_time(ts, round_by='H'):
 
 def average_times(time_1,time_2):
     """
-    Average two times
-    :param time_1:
-    :param time_2:
-    :return:
+    Compute the midpoint between two datetime objects.
+
+    Parameters
+    ----------
+    time_1 : datetime
+        First time.
+    time_2 : datetime
+        Second time.
+
+    Returns
+    -------
+    datetime
+        Midpoint.
     """
     dummy_time = datetime.datetime(2000, 1, 1, 0, 0)
     return dummy_time + datetime.timedelta(seconds=((time_1-dummy_time).total_seconds()+(time_2-dummy_time).total_seconds())/2)
@@ -184,7 +238,21 @@ def average_times(time_1,time_2):
 
 
 def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
+    """
+    Yield successive n-sized chunks from a sequence.
+
+    Parameters
+    ----------
+    l : sequence
+        Input sequence to chunk.
+    n : int
+        Chunk size.
+
+    Yields
+    ------
+    sequence
+        Successive chunks of length *n* (last chunk may be shorter).
+    """
     for i in range(0, len(l), n):
         yield l[i:i+n]
 
@@ -228,11 +296,21 @@ def clean_whitespace(my_str):
 def drop_mostly_na(df, threshold=0.1, axis=1):
     """
     Drop columns or rows that are mostly NA.
-    
-    Parameters:
-        df: DataFrame
-        threshold: float, drop if NA percentage >= threshold (default 0.1)
-        axis: 0 or 'rows' to drop rows, 1 or 'columns' to drop columns (default 1)
+
+    Parameters
+    ----------
+    df : DataFrame
+        Input DataFrame.
+    threshold : float, optional
+        Drop if NA fraction exceeds this value. Default is 0.1.
+    axis : {0, 1, 'rows', 'columns'}, optional
+        0 or ``'rows'`` to drop rows, 1 or ``'columns'`` to drop
+        columns. Default is 1.
+
+    Returns
+    -------
+    DataFrame
+        DataFrame with sparse columns/rows removed.
     """
     if axis in (1, 'columns'):
         na_percent = df.isna().mean(axis=0)
@@ -263,20 +341,26 @@ def write_csv(name,array,param='w'):
 
 def write_csv_safe(name, array, param='w'):
     """
-    Description:
-    This script contains the function write_csv_safe which writes an array of data to a new CSV file.
-    The function ensures that no existing files are overwritten during the process. If the specified file
-    already exists, the function will raise a FileExistsError, indicating that the file was not modified.
+    Write an array to a CSV file, refusing to overwrite existing files.
 
-    Functions:
-        safe_write_csv(name, array, param='w'):
-            - 'name': String representing the filename or path to which the CSV data will be written.
-            - 'array': List of lists where each inner list represents a row in the CSV file.
-            - 'param': File writing mode. Default is 'w' (write). Though typically not modified to ensure
-              no existing files are overwritten, it is included for flexibility.
+    Parameters
+    ----------
+    name : str
+        Output file path.
+    array : list of lists
+        Rows to write.
+    param : str, optional
+        File mode. Default is ``'w'``.
 
-    Exceptions:
-        FileExistsError: Raised if the function attempts to write to a file that already exists.
+    Returns
+    -------
+    bool
+        True on success.
+
+    Raises
+    ------
+    FileExistsError
+        If the file already exists.
     """
 
     # Check if the file already exists
@@ -308,14 +392,22 @@ def dictify_cols2(df):
 
 
 def dictify_csv(weird_array,headers = None):
-    # turns a csv into a dictionary with long columns
-    '''
-    Args:
-        weird_array: just an array with items in the rows
+    """
+    Convert a CSV-like list of rows into a column-oriented dictionary.
 
-    Returns:
-        a dictionary where the header row becomes the keys for the dict
-    '''
+    Parameters
+    ----------
+    weird_array : list of lists
+        Row-oriented data. First row is used as keys unless *headers*
+        is provided.
+    headers : list of str, optional
+        Column names. If given, prepended to *weird_array*.
+
+    Returns
+    -------
+    dict
+        Keys are column names, values are lists of column values.
+    """
     if headers:
         dicto = dictify_csv([headers]+weird_array)
     else:
@@ -325,16 +417,19 @@ def dictify_csv(weird_array,headers = None):
 
 
 def csvify_dict(weird_dict):
-    '''
-    # turn a dictionary with long columns into a thing you can print
-    Args:
-        weird_dict:
-         just a dictionary
+    """
+    Convert a column-oriented dictionary into a CSV-like list of rows.
 
-    Returns:
-        a list of lists ready to be turned into a csv
+    Parameters
+    ----------
+    weird_dict : dict
+        Keys are column names, values are lists of column values.
 
-    '''
+    Returns
+    -------
+    list of lists
+        First row is headers, followed by data rows.
+    """
     # initialize it to be on more
     headers = []
     csvo = [[] for w in next(iter(weird_dict.values()))] # [[]]+
@@ -349,16 +444,25 @@ def csvify_dict(weird_dict):
 
 def nan_smooth(y, n=5, ens=[], ignore_nans=True):
     """
-    Args:
-        y: your timeseries (don't need x)
-        n: int-> window is hanning length n
-           list-> window is exactly the list you pass,[1,1,1,1]/4 for moving average
-        ens: weighting of the points in 'y' in
-        ignore_nans: if you want to ignore nans, or exclude data that has nans in it
+    Smooth a time series using convolution, handling NaN values gracefully.
 
-    Returns:
-        Smoothed values, centered, and same dimension as input
+    Parameters
+    ----------
+    y : array-like
+        Time series to smooth. Supports complex values.
+    n : int or array-like, optional
+        If int, uses a Hanning window of length ``n + 2``. If array-like,
+        uses it directly as the convolution window. Default is 5.
+    ens : array-like, optional
+        Per-point weights (same length as *y*). Default is ones with
+        zeros at NaN positions.
+    ignore_nans : bool, optional
+        If True (default), treat NaN positions as missing data.
 
+    Returns
+    -------
+    ndarray
+        Smoothed values, centered, same length as input.
     """
 
     if np.array(y).dtype == 'complex128':
@@ -446,14 +550,25 @@ def nan_smooth(y, n=5, ens=[], ignore_nans=True):
 
 
 
-# normalized version of cross correlation - mimicking matlabs'
 def xcorr(a, b, dt):
     """
+    Normalized cross-correlation (MATLAB-style).
 
-    :param a: x1
-    :param b: x2
-    :param ds: time step
-    :return: corrs, lags
+    Parameters
+    ----------
+    a : array-like
+        First signal.
+    b : array-like
+        Second signal.
+    dt : float
+        Time step between samples.
+
+    Returns
+    -------
+    corrs : ndarray
+        Normalized correlation values.
+    lags : ndarray
+        Lag values in the same units as *dt*.
     """
     S = len(a)
     a_norm = (a - np.mean(a)) / np.std(a)
@@ -478,12 +593,25 @@ def xcorr(a, b, dt):
 
 def max_lag(x1, x2, ds, max_lag_allowed = np.inf):
     """
-    calculate the cross correlation and get the lag where the highest correlation is
-    :param x1:
-    :param x2:
-    :param ds:
-    :param max_lag_allowed: rule out any lags that are higher than this
-    :return: the lag with the highest correlation, the value of the highest correlation
+    Find the lag with the highest cross-correlation.
+
+    Parameters
+    ----------
+    x1 : array-like
+        First signal.
+    x2 : array-like
+        Second signal.
+    ds : float
+        Time step between samples.
+    max_lag_allowed : float, optional
+        Maximum allowable lag. Default is infinity.
+
+    Returns
+    -------
+    max_lag_out : float
+        Lag at the peak correlation.
+    max_corr : float
+        Value of the peak correlation.
     """
     corrs, lags = xcorr(x1, x2, ds)
 
@@ -504,15 +632,22 @@ def reverse_dict(tmp_dict):
 
 def recurse_func(my_list, my_func, stop_level=False):
     """
-    Will compute some function, at some level down. or all the way down
-    Args:
-        my_list: a list or list of lists
-        my_func: the function to apply
-        stop_level: the level inside the list that you want to apply the function, default
-                    the very bottom of the list
+    Recursively apply a function at a given nesting depth.
 
-    Returns: list in the same shape as my_list but with the function applied
+    Parameters
+    ----------
+    my_list : list
+        A list or nested list.
+    my_func : callable
+        Function to apply.
+    stop_level : int or False, optional
+        Nesting level at which to apply *my_func*. False applies at
+        the deepest level. Default is False.
 
+    Returns
+    -------
+    list
+        Same structure as *my_list* with *my_func* applied.
     """
     if hasattr(my_list,"__len__"):
         if list_depth(my_list) == stop_level:
@@ -534,6 +669,19 @@ def list_depth(seq):
 # reversably flatten - then uflatten lists
 # https://stackoverflow.com/questions/27982432/flattening-and-unflattening-a-nested-list-of-numpy-arrays/48008710#48008710
 def flatten(values):
+    """
+    Flatten nested arrays/lists into a single 1D NumPy array.
+
+    Parameters
+    ----------
+    values : array-like or nested list
+        Nested structure of arrays to flatten.
+
+    Returns
+    -------
+    ndarray
+        Concatenated 1D array.
+    """
     if isinstance(values, list):
         values = np.array(values)
     def _flatten(values):
@@ -604,19 +752,17 @@ def handle_dates(X):
 
 def start_and_ends(logical_array):
     """
-     Return the starts and end times for when the logical
-     array True
-    :param logical_array:
-    :return:
-    list of (start,end) tuples of the indexes
+    Find contiguous True regions in a boolean array.
 
-    Note: if the array starts with a [True, False], you completely
-          miss it because it technically *ended at that point
-          and started before the logical array began
-          If the array starts with [True,True, False]
-          then you get [(0,1),...]
-    #
+    Parameters
+    ----------
+    logical_array : array-like of bool
+        Boolean array to scan.
 
+    Returns
+    -------
+    list of (int, int)
+        Start and end index pairs for each contiguous True region.
     """
 
     # Padd the array with Falses to get the ends
@@ -701,10 +847,24 @@ def find_dom_freq(x, ds, window = 'hann'):
 
 def interp_nans(t, y, t_i=None):
     """
-    Interpolate t and y between any nans, and resample to consistent sampling rate
-    :param t: time
-    :param y: key variable
-    :return: t_i, y_i
+    Interpolate over NaN gaps using PCHIP and optionally resample.
+
+    Parameters
+    ----------
+    t : array-like
+        Time axis.
+    y : array-like
+        Values (NaN positions are interpolated over).
+    t_i : array-like, optional
+        New time axis for resampling. Default auto-generates from
+        median spacing.
+
+    Returns
+    -------
+    t_i : ndarray
+        Interpolated time axis.
+    y_i : ndarray
+        Interpolated values.
     """
     I = np.logical_not(np.isnan(y))
     t = t[I]
@@ -726,7 +886,12 @@ def sort_dict_alphabetically(cur_dict):
 
 def robust_mkdir(desired_dir):
     """
-    Create a directory whether or not it exists, and no matter how far down you want
+    Create a directory and all parents, ignoring if it already exists.
+
+    Parameters
+    ----------
+    desired_dir : str or Path
+        Directory path to create.
     """
     return Path(desired_dir).mkdir(parents=True, exist_ok=True)
 
@@ -743,17 +908,19 @@ def complex_dot(a,b):
 
 def find_percentile(value, percentiles):
     """
-    Find the index where your value appears in a list of percentiles
-    :param value:
-    :param percentiles:
-    :return:
+    Find which percentile bin a value falls into.
 
+    Parameters
+    ----------
+    value : float
+        The value to look up.
+    percentiles : array-like
+        Sorted percentile boundaries.
 
-
-    example:
-
-
-
+    Returns
+    -------
+    int
+        Index of the closest percentile.
     """
     diffs = abs(value - percentiles)
     ii = np.argmin(diffs)
@@ -763,9 +930,25 @@ def find_percentile(value, percentiles):
 
 
 
-# kind of like a median in 2D
-# https://stackoverflow.com/a/30305181/3417198
 def geometric_median(X, eps=1e-5):
+    """
+    Compute the geometric median of a set of points.
+
+    The geometric median minimizes the sum of Euclidean distances to
+    all points -- like a median in 2D or higher dimensions.
+
+    Parameters
+    ----------
+    X : ndarray of shape (n, d)
+        Point cloud.
+    eps : float, optional
+        Convergence threshold. Default is 1e-5.
+
+    Returns
+    -------
+    ndarray of shape (d,)
+        The geometric median.
+    """
     y = np.mean(X, 0)
 
     while True:
@@ -825,10 +1008,17 @@ def complex_dump(x):       # change this to dump anything numpy into pickle
 
 def load_json(file_path):
     """
-    Load a json file - including complex numpy numbers
+    Load a JSON file, restoring any embedded NumPy/complex values.
 
-    :param file_path:
-    :return:
+    Parameters
+    ----------
+    file_path : str
+        Path to the JSON file.
+
+    Returns
+    -------
+    dict
+        Parsed data with complex numbers restored.
     """
     with open(file_path) as json_file:
         data_dict = json.load(json_file)
@@ -838,9 +1028,17 @@ def load_json(file_path):
 
 def loads_json(json_str):
     """
-    Convert string back to dictionary - including complex numpy numbers
-    :param json_str:
-    :return:
+    Parse a JSON string, restoring any embedded NumPy/complex values.
+
+    Parameters
+    ----------
+    json_str : str
+        JSON string.
+
+    Returns
+    -------
+    dict
+        Parsed data with complex numbers restored.
     """
     data_dict = json.loads(json_str)
     #     convert any stored complex numbers back into native format
@@ -850,6 +1048,23 @@ def loads_json(json_str):
 
 
 def dump_json(data_dict, file_path, to_indent=None):
+    """
+    Save a dict to JSON, encoding NumPy/complex values for round-tripping.
+
+    Parameters
+    ----------
+    data_dict : dict
+        Data to save.
+    file_path : str
+        Output file path.
+    to_indent : int, optional
+        JSON indentation level. Default is None (compact).
+
+    Returns
+    -------
+    bool
+        True on success.
+    """
     data_dict = map_nested_dicts(data_dict, complex_dump)
     with open(file_path, 'w') as json_file:
         json.dump(data_dict, json_file, indent=to_indent)
@@ -859,11 +1074,19 @@ def dump_json(data_dict, file_path, to_indent=None):
 
 def encode_floats(nums, decimals=3):
     """
-    Convert numpy numbers to ones ready for dumping with simplejson
-    useful when you don't want your json exports to be bloated with too many
-    significant figures
-    :param nums: list of numbers
-    :param decimals: number of decimals you want to output
+    Round numeric arrays to fixed decimal places for JSON export.
+
+    Parameters
+    ----------
+    nums : array-like
+        Numbers to round.
+    decimals : int, optional
+        Number of decimal places. Default is 3.
+
+    Returns
+    -------
+    list
+        Rounded Decimal values as a list.
     """
     def convert_to_rounded_dec(num):
         # convert to decimal
@@ -894,11 +1117,19 @@ def computeMD5hash(my_string):
 
 def complex_noise(n, func=np.random.randn):
     """
-    create a random complex number.
-    todo: make it accept more integers for more dimensions
-    :param n: number of random complex numbers you need
-    :param func: the type of random that you want
-    :return:
+    Generate random complex numbers.
+
+    Parameters
+    ----------
+    n : int
+        Number of complex values to generate.
+    func : callable, optional
+        Random number generator. Default is ``np.random.randn``.
+
+    Returns
+    -------
+    ndarray
+        Array of *n* complex random values.
     """
     noise = func(2, n)
     noise = 1j * noise[0] + noise[1]
@@ -912,10 +1143,17 @@ def array_pop(X, idx):
 
 def isdigit(s):
     """
-    check if the number is a digit, including if it has a decimal place in it
-    Or is numeric
-    :param s:
-    :return:
+    Check if a value is numeric, including decimal strings.
+
+    Parameters
+    ----------
+    s : any
+        Value to test.
+
+    Returns
+    -------
+    bool
+        True if *s* is a number or a numeric string.
     """
     if isinstance(s, numbers.Number):
         return True
@@ -926,13 +1164,21 @@ def isdigit(s):
 def robust_floater(w):
     """
     Convert a value to a numeric type where possible.
-    
-    - null/NaN values → np.nan
-    - Timestamps/datetimes → Unix timestamp (float)
-    - Numeric strings → float
-    - Non-numeric strings → unchanged
-    - Numbers (int, float, complex, etc.) → unchanged
-    - Everything else (lists, dicts, etc.) → np.nan
+
+    Parameters
+    ----------
+    w : any
+        Value to convert.
+
+    Returns
+    -------
+    float or numeric
+        - null/NaN values -> np.nan
+        - Timestamps/datetimes -> Unix timestamp (float)
+        - Numeric strings -> float
+        - Non-numeric strings -> np.nan
+        - Numbers -> unchanged
+        - Everything else -> np.nan
     """
     if pd.isnull(w):
         result = np.nan
@@ -963,7 +1209,17 @@ def rgb2hex(r,g,b):
 
 def hex2rgb(color_input):
     """
-    Convert a color input (hex string or hex integer) to a normalized RGB list.
+    Convert a hex color (string or integer) to normalized RGB.
+
+    Parameters
+    ----------
+    color_input : str or int
+        Hex string (e.g. ``'#FF8800'``) or hex integer (e.g. ``0xFF8800``).
+
+    Returns
+    -------
+    list of float
+        ``[r, g, b]`` values normalized to 0-1.
     """
     # If the input is a string, assume it's a hex string and strip the '#' if present
     if isinstance(color_input, str):
@@ -983,11 +1239,17 @@ def hex2rgb(color_input):
 
 def first_non_zero_or_nan(x):
     """
-    Will return the index of the first non-zero element; and will return np.nan if no non-zero elements exist
-    It doesn't seem like any existing functions satesfied this need
-    https://stackoverflow.com/questions/16243955/numpy-first-occurrence-of-value-greater-than-existing-value
-    :param x:
-    :return:
+    Return the index of the first non-zero element, or NaN if none.
+
+    Parameters
+    ----------
+    x : array-like
+        Array to search.
+
+    Returns
+    -------
+    int or float
+        Index of the first non-zero element, or ``np.nan``.
     """
     non_zero = np.where(x)[0]
     return int(non_zero[0]) if len(non_zero) else np.nan

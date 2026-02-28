@@ -52,8 +52,14 @@ dev = [
 
 # Documentation dependencies
 docs = [
-    "sphinx>=5.0.0",
-    "sphinx-rtd-theme>=1.0.0",
+    "sphinx>=7.0,<8.1",
+    "pydata-sphinx-theme>=0.15",
+    "myst-parser>=2.0,<4",
+    "myst-nb>=1.0",
+    "numpydoc>=1.6",
+    "sphinx-copybutton>=0.5",
+    "sphinx-design>=0.5",
+    "ipykernel>=6.0",
 ]
 
 # Notebook/interactive dependencies
@@ -69,7 +75,7 @@ all = [
 [project.urls]
 Homepage = "https://github.com/JLansey/matviz"
 Repository = "https://github.com/JLansey/matviz"
-Documentation = "https://github.com/JLansey/matviz"
+Documentation = "https://matviz.readthedocs.io/en/latest/"
 
 [tool.setuptools]
 packages = ["matviz"]
