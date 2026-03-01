@@ -47,12 +47,22 @@ def list_ize(w):
 
 def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=None, alpha=0.5, **varargs):
     """
+    Shade vertical regions on the current axes.
 
-    :param events: x positions where the range should be plotted
-    :param color:
-    :param y_offset:
-    :param height:
-    :return:
+    Parameters
+    ----------
+    events : list of [start, end] pairs
+        X positions defining the regions to shade.
+    color : str, optional
+        Fill color. Default is ``'#0093e7'``.
+    y_offset : float, optional
+        Bottom of the shaded region. Default uses current y-axis lower limit.
+    height : float, optional
+        Height of the shaded region. Default spans the full y-axis.
+    zorder : int, optional
+        Drawing order.
+    alpha : float, optional
+        Transparency. Default is 0.5.
     """
     events = list_ize(events)
     yy = ylim()
@@ -76,11 +86,19 @@ def plot_range(events, color='#0093e7', y_offset='none', height='none', zorder=N
 
 def plot_range_idx(t, events, **varargs):
     """
-    Plot range - for timeseries t, and events=indexed points in t
+    Shade regions by index into a time series.
 
-    :param t: timeseries
-    :param events: indexes in that series
-    :return:
+    Converts index pairs into time-domain ranges and calls
+    `plot_range`.
+
+    Parameters
+    ----------
+    t : array-like
+        Time series (x-axis values).
+    events : list of [start_idx, end_idx] pairs
+        Index pairs into *t* defining the regions.
+    **varargs
+        Passed to `plot_range`.
     """
     # if it is a series, get the values
     if str(type(t)) == "<class 'pandas.core.series.Series'>":
@@ -98,6 +116,16 @@ def plot_range_idx(t, events, **varargs):
 
 
 def plot_cdf(data, *args, **kargs):
+    """
+    Plot the empirical cumulative distribution function (CDF).
+
+    Parameters
+    ----------
+    data : array-like
+        Input data. NaN values are removed.
+    *args, **kargs
+        Passed to ``plt.plot``.
+    """
     data = np.asarray(data)
     data = data[~np.isnan(data)]
     x = np.sort(data)
@@ -107,6 +135,19 @@ def plot_cdf(data, *args, **kargs):
 
 
 def set_fontsize(f_size=15):
+    """
+    Set the font size of the current axes' title, labels, and tick labels.
+
+    Parameters
+    ----------
+    f_size : int, optional
+        Font size in points. Default is 15.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+        The current axes.
+    """
     ax = plt.gca()
     [w.set_fontsize(f_size) for w in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
                                                     ax.get_xticklabels() +
@@ -146,14 +187,33 @@ def make_title(title_str,format=False):
     return combined_words
 
 def large_fig(fig_num=1):
+    """
+    Create a large figure (15 x 8 inches).
+
+    Parameters
+    ----------
+    fig_num : int, optional
+        Figure number. Default is 1.
+    """
     plt.figure(fig_num,figsize=(15,8))
 
 
 def fancy_plotter(x,y,marker_style='o',line_styles=None):
-    '''
-    will plot x and y along with a fancy trend line
+    """
+    Plot x vs y with a linear trend line overlay.
 
-    '''
+    Parameters
+    ----------
+    x : array-like
+        X data.
+    y : array-like
+        Y data.
+    marker_style : str, optional
+        Marker format string. Default is ``'o'``.
+    line_styles : dict, optional
+        Keyword arguments for the trend line. Default is
+        ``{'color': '0.4', 'lw': 3}``.
+    """
 
     if line_styles is None:
         line_styles = {'color':'0.4','lw':3}
@@ -174,8 +234,17 @@ def fancy_plotter(x,y,marker_style='o',line_styles=None):
         plt.plot(x, m*np.array(x) + b,**line_styles)
 
 
-# plot complex numbers in an arg and diagram
 def cplot(z, *args, **kargs):
+    """
+    Plot complex numbers on the real/imaginary plane.
+
+    Parameters
+    ----------
+    z : complex array-like
+        Complex data to plot (real -> x, imag -> y).
+    *args, **kargs
+        Passed to ``plt.plot``.
+    """
     plot(np.real(z), np.imag(z), *args, **kargs)
 
 
@@ -185,13 +254,57 @@ def cplot_circle(z_center, r):
     cplot(z)
 
 def ctext(z, *args, **kargs):
+    """
+    Place text at a position given by a complex number.
+
+    Parameters
+    ----------
+    z : complex
+        Position (real -> x, imag -> y).
+    *args, **kargs
+        Passed to ``plt.text``.
+    """
     plt.text(np.real(z), np.imag(z), *args, **kargs)
 
 def cscatter(z, *args, **kargs):
+    """
+    Scatter plot of complex numbers on the real/imaginary plane.
+
+    Parameters
+    ----------
+    z : complex array-like
+        Complex data (real -> x, imag -> y).
+    *args, **kargs
+        Passed to ``plt.scatter``.
+    """
     scatter(np.real(z), np.imag(z), *args, **kargs)
 
-# add a bulls-eye to the graph, polar grid lines
 def polar_grid(lw=1, r=False, linecolor='.3', style=':', nrings=2, nrays = 6):
+    """
+    Overlay a polar grid (rings and rays) on the current axes.
+
+    Useful for complex-plane plots.
+
+    Parameters
+    ----------
+    lw : float, optional
+        Line width. Default is 1.
+    r : float, optional
+        Radius of the grid. Default is auto-detected from axis limits.
+    linecolor : str, optional
+        Color of grid lines. Default is ``'.3'``.
+    style : str, optional
+        Line style. Default is ``':'``.
+    nrings : int, optional
+        Number of concentric rings. Default is 2.
+    nrays : int, optional
+        Number of radial rays. Default is 6.
+
+    Returns
+    -------
+    line : list of Line2D
+        The plotted grid lines.
+    """
     ax = plt.gca()
     axis('equal')
     ex = ax.get_xlim()
@@ -218,8 +331,19 @@ def polar_grid(lw=1, r=False, linecolor='.3', style=':', nrings=2, nrays = 6):
     return cur_plt
 
 
-# plot a diagonal line with x=y to see if your predictions are biased
 def plot_diag(lw=1, color='.5', reverse=False):
+    """
+    Plot a diagonal x=y reference line on the current axes.
+
+    Parameters
+    ----------
+    lw : float, optional
+        Line width. Default is 1.
+    color : str, optional
+        Line color. Default is ``'.5'``.
+    reverse : bool, optional
+        If True, plot x = -y instead. Default is False.
+    """
     ax = plt.gca()
     ex = ax.get_xlim()
     yy = ax.get_ylim()
@@ -234,8 +358,19 @@ def plot_diag(lw=1, color='.5', reverse=False):
         x = np.flip(x)
     plt.plot(x, y, '--', color=color, lw=lw, label='_nolegend_')
 
-# plot a horizontal line, or a vertical line
 def plot_zero(lineheight=0, axx='x', **kwargs):
+    """
+    Plot a horizontal or vertical reference line.
+
+    Parameters
+    ----------
+    lineheight : float, optional
+        Position of the line. Default is 0.
+    axx : {'x', 'y'}, optional
+        ``'x'`` for a horizontal line, ``'y'`` for vertical. Default is ``'x'``.
+    **kwargs
+        Passed to ``plt.plot``. Defaults to a gray dashed line.
+    """
 
     if len(kwargs) == 0:
         kwargs = {'color' : '.5',
@@ -260,24 +395,51 @@ def plot_zero(lineheight=0, axx='x', **kwargs):
     # return plt.plot(x,y,style, lw=lw, **kwargs)
 
 def plot_axes(color='.5'):
+    """
+    Plot both horizontal and vertical reference lines at zero.
+
+    Parameters
+    ----------
+    color : str, optional
+        Line color. Default is ``'.5'``.
+    """
     plot_zero(axx='x', color=color)
     plot_zero(axx='y', color=color)
 
 
 def plot_pin(x, y, color='k'):
     """
-    Plot a pin at a specific point on the x axis
-    :param x: position of the pin on the x axis
-    :param y: height of the pin
-    :param color: color of the line and marker
-    :return:
+    Plot a pin (vertical line with dot) at a specific x position.
+
+    Parameters
+    ----------
+    x : float
+        X position of the pin.
+    y : float
+        Height of the pin.
+    color : str, optional
+        Color of the line and marker. Default is ``'k'``.
     """
     plot([x, x], [0, y], linewidth=3, color=color)
     plot([x], [y], 'o', color=color, markersize=10)
 
 
 def bar_centered(y, **kwargs):
-#     its like a regular bar plot, except that it is centered on 1:N integers
+    """
+    Bar plot centered on integers 1 through N.
+
+    Parameters
+    ----------
+    y : array-like
+        Bar heights.
+    **kwargs
+        Passed to ``plt.bar``.
+
+    Returns
+    -------
+    container : BarContainer
+        The bar container.
+    """
     x = np.arange(len(y))+1
     h = plt.bar(x, y, align='center', **kwargs)
     plt.xticks(x)
@@ -286,11 +448,16 @@ def bar_centered(y, **kwargs):
 
 def errorb(cur_series, serror=True):
     """
-    Plot mean and standard deviation/standard error, for items in a pandas series.
-    boxplot
-    :param cur_series:
-    :param serror: if false then the STD will be used for error bar height instead  of standard error
-    :return:
+    Bar plot with error bars from a pandas Series of arrays.
+
+    Parameters
+    ----------
+    cur_series : pandas.Series
+        Each element is an array-like of values. The index provides
+        x-tick labels.
+    serror : bool, optional
+        If True (default), use standard error. If False, use standard
+        deviation.
     """
     means = cur_series.apply(np.nanmean)
     errors = cur_series.apply(np.nanstd)
@@ -332,7 +499,21 @@ def bplot(X):
 
 
 def subplotter_auto(n, ii, **kwargs):
-    #     automatically select the right number of subplots for n items
+    """
+    Create a subplot with automatically chosen grid dimensions.
+
+    Computes a near-square grid that fits *n* subplots and activates
+    the *ii*-th one.
+
+    Parameters
+    ----------
+    n : int
+        Total number of subplots.
+    ii : int
+        Index of the subplot to activate (0-based).
+    **kwargs
+        Passed to `subplotter`.
+    """
     y = int(np.ceil(np.sqrt(n)))
     x = int(np.ceil(n / y))
     subplotter(x, y, ii, **kwargs)
@@ -347,14 +528,28 @@ def yticklabels(all_lbl):
 
 def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None, y_ticks=None):
     """
-    a subplotter function that works like the matlab one does but with index starting at 0
-    :param x: number of rows
-    :param y: number of columns
-    :param nth: order, if you pass a list then it spans multiple rows or columns
-    :param xlbl: xlabel, if you want it to appear way on the bottom
-    :param ylbl: ylabel, if you want it to appear way on the left only
-    :param yticks: yticks, if you want it to appear way on the left only
-    :return:
+    MATLAB-style subplot with 0-based indexing and spanning support.
+
+    Parameters
+    ----------
+    x : int
+        Number of rows, or a 3-digit integer like ``220`` meaning
+        2 rows, 2 columns, 0th subplot.
+    y : int, optional
+        Number of columns.
+    nth : int or list of int, optional
+        Subplot index (0-based). Pass a list to span multiple cells.
+    xlbl : str, optional
+        X-axis label, shown only on the bottom row.
+    ylbl : str, optional
+        Y-axis label, shown only on the left column.
+    y_ticks : list or False, optional
+        Y-tick labels for non-left columns. False hides them.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+        The created subplot axes.
     """
 
     # allow you to enter input like (220) instead of x=2, y=2, nth =0
@@ -413,10 +608,16 @@ def subplotter(x, y=None, nth=None, xlbl=None, ylbl=None, y_ticks=None):
 
 
 def pop_all():
-    '''
-    bring all the figures hiding in the background to the foreground
-    useful when using ipython in the terminal
-    '''
+    """
+    Bring all matplotlib figures to the foreground.
+
+    Useful when using IPython in the terminal.
+
+    Returns
+    -------
+    int
+        Number of figures shown.
+    """
     all_figures=[manager.canvas.figure for manager in matplotlib.\
         _pylab_helpers.Gcf.get_all_fig_managers()]
     [fig.canvas.manager.show() for fig in all_figures]
@@ -425,15 +626,24 @@ def pop_all():
 def suplabel(axis,label,label_prop=None,
              labelpad=5,
              ha='center',va='center'):
-    ''' Add super ylabel or xlabel to the figure
-    Similar to matplotlib.suptitle
-    axis       - string: "x" or "y"
-    label      - string
-    label_prop - keyword dictionary for Text
-    labelpad   - padding from the axis (default: 5)
-    ha         - horizontal alignment (default: "center")
-    va         - vertical alignment (default: "center")
-    '''
+    """
+    Add a shared xlabel or ylabel to the figure, similar to ``suptitle``.
+
+    Parameters
+    ----------
+    axis : {'x', 'y'}
+        Which axis to label.
+    label : str
+        The label text.
+    label_prop : dict, optional
+        Keyword arguments for ``plt.text``.
+    labelpad : float, optional
+        Padding from the axis in points. Default is 5.
+    ha : str, optional
+        Horizontal alignment. Default is ``'center'``.
+    va : str, optional
+        Vertical alignment. Default is ``'center'``.
+    """
     fig = plt.gcf()
     xmin = []
     ymin = []
@@ -464,6 +674,33 @@ def suplabel(axis,label,label_prop=None,
 # https://www.mathworks.com/matlabcentral/fileexchange/29545-power-law-exponential-and-logarithmic-fit?s_tid=prof_contriblnk
 def logfit(x, y=None, graph_type='linear', ftir=.05, marker_style='.k', line_style='--g',
            skip_begin = 0, skip_end = 0):
+    """
+    Fit and plot a line through data on linear, semi-log, or log-log axes.
+
+    Parameters
+    ----------
+    x : array-like
+        X data (or y data if *y* is None, or complex with real=x, imag=y).
+    y : array-like, optional
+        Y data.
+    graph_type : {'linear', 'logy', 'loglog'}, optional
+        Fit type. Default is ``'linear'``.
+    ftir : float, optional
+        Fraction to extend the fit line beyond the data. Default is 0.05.
+    marker_style : str or dict, optional
+        Marker style for data points. Default is ``'.k'``.
+    line_style : str or dict, optional
+        Line style for the fit. Default is ``'--g'``.
+    skip_begin, skip_end : int, optional
+        Number of points to skip at the beginning/end of the fit.
+
+    Returns
+    -------
+    slope : float
+        Slope of the fit.
+    intercept : float
+        Intercept of the fit.
+    """
 
     # check if you only passes one var in
     if y is  None:
@@ -554,10 +791,40 @@ def test_logfit():
            line_style={'color': 'g', 'lw': 3, 'linestyle':'--'})
 
 
-# stream_graph
 def streamgraph(df, smooth=None, normalize=None,
                 wiggle=None, label_dict=None, color=None,
                 order=True, linewidth=0.5, round_time=False, legend_flag=True):
+    """
+    Create a streamgraph (stacked area chart with wiggle baseline).
+
+    Parameters
+    ----------
+    df : DataFrame
+        Two-column DataFrame: first column is the time/x axis,
+        second column is the categorical variable to stack.
+    smooth : int, optional
+        Smoothing window width. Default is None (no smoothing).
+    normalize : bool, optional
+        If True, normalize to 100%. Default is None.
+    wiggle : bool or str, optional
+        Baseline mode. True for wiggle, False for zero baseline,
+        or ``'stream'``/``'river'`` for weighted wiggle. Default is auto.
+    color : str, dict, or palette, optional
+        Seaborn palette name, dict of label->color, or palette object.
+    order : bool or list, optional
+        True to sort by peak height, or a list of labels. Default is True.
+    linewidth : float, optional
+        Edge line width. Default is 0.5.
+    round_time : str, optional
+        Pandas frequency string to round the time column. Default is False.
+    legend_flag : bool, optional
+        Show legend. Default is True.
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+        The axes with the streamgraph.
+    """
     # reorder a list from inside out, for use with streamgraph
     def reorder_idx(idxs):
         idxs = list(np.flip(idxs))
@@ -703,9 +970,33 @@ def streamgraph(df, smooth=None, normalize=None,
 
 def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background = 'white', resize=False, legend_outside=False,
            expand_y=False, expand_x=False, touch_limits=False, touch_text=False):
-    '''
-    make the figure nicer in general, like ready to be printed etc.
-    '''
+    """
+    Make the current figure publication-ready.
+
+    Adjusts font sizes, removes top/right spines, applies tight layout,
+    and optionally sets background color and cleans up legends.
+
+    Parameters
+    ----------
+    fsize : int, optional
+        Font size for all text elements. Default is 15.
+    f_size : int, optional
+        Deprecated alias for *fsize*.
+    clean_legend : bool, optional
+        If True, make the legend background transparent. Default is False.
+    cur_fig : Figure, optional
+        Figure to nicefy. Default is the current figure.
+    background : str, optional
+        ``'white'``, ``'black'``, or a matplotlib style name.
+        Default is ``'white'``.
+    touch_limits : bool, optional
+        If True, enable tight autoscaling. Default is False.
+    expand_y, expand_x : bool or str, optional
+        Expand axis limits slightly. ``True`` expands both directions,
+        ``'top'`` expands only the upper end. Default is False.
+    touch_text : bool, optional
+        If True, auto-format axis label and title text. Default is False.
+    """
 
     # backwards compatability for this change
     if f_size != False:
@@ -794,10 +1085,13 @@ def nicefy(fsize=15, f_size=False, clean_legend=False, cur_fig=None, background 
 
 def xylim(w):
     """
-    Sets x and y limits to be w[0], w[1]
-    if w is a single number then axes are set to -w, w
-    :param w: 
-    :return:
+    Set both x and y axis limits to the same range.
+
+    Parameters
+    ----------
+    w : float or array-like
+        If scalar, sets limits to ``[-w, w]``. If a pair, sets limits
+        to ``[w[0], w[1]]``.
     """
     if not hasattr(w, '__len__'):
         w = [-w, w]
@@ -810,12 +1104,17 @@ def xyscale(w):
 
 def axis_robust(AX):
     """
-    change the axis limits, but only change one at a time, without changing any of the others
-    :param AX:
-    :return:
+    Set axis limits selectively, leaving ``None`` entries unchanged.
 
-    For example, if you want only to set the lower x limit to zero but not change anything else
-    axis_robust([0, None, None, None])
+    Parameters
+    ----------
+    AX : list of 4 floats or None
+        ``[xmin, xmax, ymin, ymax]``. Use ``None`` for any limit you
+        want to keep at its current value.
+
+    Examples
+    --------
+    >>> axis_robust([0, None, None, None])  # only set xmin to 0
     """
     AX_orig = axis()
     for ii in range(4):
@@ -879,14 +1178,34 @@ def plot_endpoints(endpoints, color='#0093e7'):
         # plt.legend(loc='lower left', borderaxespad=0., prop={'size': 12},
         #            ncol=3, fancybox=True, shadow=True, handles=[red_patch])
 
-# fix it to depend on N like this:
-# https://www.mathworks.com/matlabcentral/fileexchange/42673-beautiful-and-distinguishable-line-colors-colormap
 def linspecer(n, color='muted'):
+    """
+    Generate *n* distinguishable colors from a seaborn palette.
+
+    Parameters
+    ----------
+    n : int
+        Number of colors.
+    color : str, optional
+        Seaborn palette name. Default is ``'muted'``.
+
+    Returns
+    -------
+    colors : ndarray of shape (n, 3)
+        RGB color values.
+    """
     return np.array(sns.color_palette(color, n_colors=n))
 
 
-# rotate the axis tick labels to be at an angle
 def format_axis_date(rot=77):
+    """
+    Rotate x-axis tick labels for date readability.
+
+    Parameters
+    ----------
+    rot : float, optional
+        Rotation angle in degrees. Default is 77.
+    """
     plt.xticks(rotation=rot, rotation_mode="anchor", ha='right')
     # ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
     # plt.xticks(x,tick_labels)
@@ -904,9 +1223,23 @@ def logpcolor(x, y, C):
     return plt.pcolor(x, y, C)
 
 
-# brighten a color c
-# the smaller the frac, the brighter it will be
 def brighten(c, frac = .5):
+    """
+    Brighten an RGB color by blending it toward white.
+
+    Parameters
+    ----------
+    c : array-like
+        RGB color (values 0-1).
+    frac : float, optional
+        Blend fraction. Smaller values produce brighter colors.
+        Default is 0.5.
+
+    Returns
+    -------
+    color : ndarray
+        Brightened RGB color.
+    """
     return np.array(c) * frac + 1 - frac
 
 
@@ -933,11 +1266,19 @@ def add_colorbar(Y, C, scale_func):
 def legend_helper(fig: Union[plt.Figure, plt.Axes],
                   *args: Iterable[plt.Axes]) -> Dict[str, Any]:
     """
-    Provides handles and labels of all provided axes.
+    Collect legend handles and labels from multiple axes.
 
-    David S. Fulford
+    Parameters
+    ----------
+    fig : Figure or Axes
+        A matplotlib Figure (collects from all its axes) or a single Axes.
+    *args : Axes
+        Additional axes to collect from (when *fig* is an Axes).
 
-    https://towardsdatascience.com/easy-matplotlib-legends-with-functional-programming-64615b529118
+    Returns
+    -------
+    dict
+        Dict with ``'handles'`` and ``'labels'`` lists.
     """
     if isinstance(fig, plt.Figure):
         handles, labels = [list(chain.from_iterable(seq)) for seq in zip(*(
@@ -958,11 +1299,19 @@ def legend_helper(fig: Union[plt.Figure, plt.Axes],
 
 def calc_plot_ROC(y1, y2):
     """
-    Take two distributions and plot the ROC curve if you used the difference
-    in those distributions as a binary classifier.
-    :param y1:
-    :param y2:
-    :return:
+    Plot an ROC curve from two distributions used as a binary classifier.
+
+    Parameters
+    ----------
+    y1 : array-like
+        Scores for the negative class.
+    y2 : array-like
+        Scores for the positive class.
+
+    Returns
+    -------
+    auc : float
+        Area under the ROC curve.
     """
 
     y_score = np.concatenate([y1, y2])
@@ -976,6 +1325,23 @@ def plot_ROC_hist(y_true, y_score):
     return nhist({'true': y_score[y_true], 'false': y_score[~y_true]}, normalize='number')
 
 def plot_ROC(y_true, y_score, c='k'):
+    """
+    Plot an ROC curve from true labels and predicted scores.
+
+    Parameters
+    ----------
+    y_true : array-like
+        Binary ground-truth labels.
+    y_score : array-like
+        Predicted scores (higher = more likely positive).
+    c : str, optional
+        Line color. Default is ``'k'``.
+
+    Returns
+    -------
+    auc : float
+        Area under the ROC curve.
+    """
 
     I = np.logical_not(np.isnan(y_score))
     y_true = y_true[I]
@@ -995,15 +1361,23 @@ def plot_ROC(y_true, y_score, c='k'):
 
 def jitter(xx, yy, maxn=4, xscale=None):
     """
-    in case two point appear at the same value, the jitter function will make
-    them appear slightly separated from each other so you can see the real
-    number of points at a given location.
-    
-    :param xx: 
-    :param yy:
-    :param maxn: the maximum number of dots wide
-    :param exact: if you want to jitter exactly
-    :return:
+    Horizontally jitter overlapping points so they are visible.
+
+    Parameters
+    ----------
+    xx : array-like
+        X positions.
+    yy : array-like
+        Y positions (used to detect overlap).
+    maxn : int, optional
+        Maximum number of dots wide per bin. Default is 4.
+    xscale : float, optional
+        Horizontal spacing between jittered points. Default is auto.
+
+    Returns
+    -------
+    xx : ndarray
+        Jittered x positions.
     """
 
     if xscale is None:
@@ -1075,11 +1449,23 @@ def jitter(xx, yy, maxn=4, xscale=None):
 
 def interp_plot(x, y, *args, **kargs):
     """
-    if you don't have a lot of x data points, then pchip interpolate to make the graphs look smooth
-    :param x: x
-    :param y: y
-    :param n: number of data points to interpolate with
-    :return:
+    Plot with PCHIP interpolation for smooth curves from sparse data.
+
+    Parameters
+    ----------
+    x : array-like
+        X data (supports pandas Timestamps).
+    y : array-like
+        Y data. NaN values are removed before interpolation.
+    *args, **kargs
+        Passed to ``plt.plot``.
+
+    Returns
+    -------
+    x_i : ndarray
+        Interpolated x values.
+    y_i : ndarray
+        Interpolated y values.
     """
 
     y = np.array(y)

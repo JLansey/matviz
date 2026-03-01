@@ -38,9 +38,18 @@ def remove_nans(z):
 
 def cget_area(z):
     """
-    wrapper around scipy convex hull - to get the area
-    :param z:
-    :return:
+    Compute the convex hull area of complex-valued points.
+
+    Parameters
+    ----------
+    z : complex array-like
+        Points as complex numbers (real=x, imag=y). NaN values
+        are removed.
+
+    Returns
+    -------
+    float
+        Convex hull area, or 0 if fewer than 4 unique points.
     """
     z = remove_nans(z)
 
@@ -56,10 +65,17 @@ def cget_area(z):
 
 def cmake_circle2(z):
     """
+    Find the smallest enclosing circle, returning [x, y, r].
 
-    :param z: z points you want to encircle
-    :return: z_center: the center of your circle
-             r: radius of the circle
+    Parameters
+    ----------
+    z : complex array-like
+        Points as complex numbers. NaN values are removed.
+
+    Returns
+    -------
+    list of [float, float, float]
+        ``[center_x, center_y, radius]``.
     """
     # remove nans
     z = remove_nans(z)
@@ -77,9 +93,19 @@ def cmake_circle2(z):
 
 def cmake_circle(z):
     """
-    :param z: z points you want to encircle
-    :return: z_center: the center of your circle
-             r: radius of the circle
+    Find the smallest enclosing circle, returning complex center and radius.
+
+    Parameters
+    ----------
+    z : complex array-like
+        Points as complex numbers. NaN values are removed.
+
+    Returns
+    -------
+    z_center : complex
+        Center of the enclosing circle.
+    r : float
+        Radius.
     """
     # convert x, y back into z for the center
     [x, y, r] = cmake_circle2(z)

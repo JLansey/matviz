@@ -19,12 +19,8 @@ class DateCodec:
     """
     Single-value, reversible timestamp <-> integer nanoseconds codec.
 
-    - to_number(ts) -> int (ns since UNIX epoch, UTC)
-    - from_number(ns) -> same type as input (datetime | np.datetime64 | pd.Timestamp)
-      and same tz-awareness:
-        * Python datetime: tz-aware restored to original zone if available; else naive
-        * pandas Timestamp: tz-aware restored to original zone if available; else naive
-        * numpy.datetime64: tz-naive (as original)
+    - ``to_number(ts)`` -> int (ns since UNIX epoch, UTC)
+    - ``from_number(ns)`` -> same type as input and same tz-awareness
     """
 
     def __init__(self):

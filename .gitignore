@@ -45,6 +45,7 @@ Thumbs.db
 # Documentation builds
 docs/_build/
 docs/build/
+docs/source/api/_autosummary/
 
 # MyPy
 .mypy_cache/
