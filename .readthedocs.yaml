@@ -8,7 +8,7 @@ build:
     pre_install:
       - pip install uv
     install:
-      - uv pip install --system -e ".[docs]"
+      - uv pip install --python $READTHEDOCS_VIRTUALENV_PATH/bin/python -e ".[docs]"
 
 sphinx:
   configuration: docs/source/conf.py
