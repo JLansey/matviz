@@ -75,7 +75,7 @@ all = [
 [project.urls]
 Homepage = "https://github.com/JLansey/matviz"
 Repository = "https://github.com/JLansey/matviz"
-Documentation = "https://matviz.readthedocs.io/en/stable/"
+Documentation = "https://matviz.readthedocs.io/en/latest/"
 
 [tool.setuptools]
 packages = ["matviz"]
