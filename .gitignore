@@ -51,3 +51,7 @@ docs/source/api/_autosummary/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# uv
+uv.lock
+.python-version
