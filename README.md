@@ -3,12 +3,12 @@
 [![PyPI](https://img.shields.io/pypi/v/matviz)](https://pypi.org/project/matviz/)
 [![Python](https://img.shields.io/pypi/pyversions/matviz)](https://pypi.org/project/matviz/)
 [![Tests](https://github.com/JLansey/matviz/actions/workflows/test.yml/badge.svg)](https://github.com/JLansey/matviz/actions/workflows/test.yml)
-[![Docs](https://readthedocs.org/projects/matviz/badge/?version=latest)](https://matviz.readthedocs.io/en/latest/)
+[![Docs](https://readthedocs.org/projects/matviz/badge/?version=stable)](https://matviz.readthedocs.io/en/stable/)
 [![License](https://img.shields.io/pypi/l/matviz)](https://github.com/JLansey/matviz/blob/main/LICENSE)
 
 **Data visualization for scientists, made easy.** Smart histograms, publication-ready plots, and data wrangling utilities.
 
-![matviz example output](docs/source/images/front.png)
+![matviz example output](https://raw.githubusercontent.com/JLansey/matviz/main/docs/source/images/front.png)
 
 ## Installation
 
@@ -45,7 +45,7 @@ ndhist(z, smooth=1)
 
 ## Documentation
 
-Full documentation at **[matviz.readthedocs.io](https://matviz.readthedocs.io/en/latest/)**.
+Full documentation at **[matviz.readthedocs.io](https://matviz.readthedocs.io/en/stable/)**.
 
 ## License
 
