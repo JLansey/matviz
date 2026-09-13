@@ -263,34 +263,25 @@ def parse_min_sec(time_str):
     gosh, surprising that there wasn't already some way to do this robustly
     in python. Note that this does not work if you've got hours
     '''
-    min_sec = time_str.split(":")
-    if len(min_sec)>2:
-        raise Exception("we don't do hours yet folks")
-    elif len(min_sec)>1:
-        minn = 60*float(min_sec[0])
-        secc = min_sec[1]
+    parts = time_str.split(":")
+    if len(parts) > 2:
+        hours = 3600 * float(parts[0])
+        minn = 60 * float(parts[1])
+        secc = float(parts[2])
+        return hours + minn + secc
+    elif len(parts) > 1:
+        minn = 60 * float(parts[0])
+        secc = float(parts[1])
+        return minn + secc
     else:
-        minn = 0
-        secc = min_sec[0]
-    return minn + float(secc)
+        return float(parts[0])
 
 
 
+import re
 def clean_whitespace(my_str):
-
-    my_str = my_str.replace('\n','')
-    my_str = my_str.replace('\r','')
-    my_str = my_str.replace('\t',' ')
-    for ii in range(10):
-        my_str = my_str.replace('  ',' ')
-
-    if my_str:
-        if my_str[0] == ' ':
-            my_str = my_str[1:]
-        if my_str[-1] == ' ':
-            my_str = my_str[:-1]
-
-    return my_str
+    my_str = my_str.replace('\n', '').replace('\r', '')
+    return re.sub(r'[ \t]+', ' ', my_str).strip()
 
 
 def drop_mostly_na(df, threshold=0.1, axis=1):

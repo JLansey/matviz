@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "matviz: matrix data visualization"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "BSD-3-Clause"}
+license = {text = "MIT"}
 authors = [
     {name = "Jonathan Lansey", email = "jonathan@lansey.net"}
 ]
@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Visualization",
-    "License :: OSI Approved :: BSD License",
+    "License :: OSI Approved :: MIT License",
 ]
 
 # Core dependencies - only what's actually needed

@@ -131,14 +131,10 @@ def silent_toc():
     The silent version does not print any statements, just returns the value
 
     """
-    if not startTime_for_tictoc:
+    if 'startTime_for_tictoc' not in globals() or not startTime_for_tictoc:
         return 0
     else:
-        import time
-        if 'startTime_for_tictoc' in globals():
-            return time.time() - startTime_for_tictoc
-        else:
-            return None
+        return time.perf_counter() - startTime_for_tictoc
 
 
 def nhist_multi(cur, **varargs):
