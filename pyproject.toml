@@ -78,7 +78,10 @@ Repository = "https://github.com/JLansey/matviz"
 Documentation = "https://matviz.readthedocs.io/en/latest/"
 
 [tool.setuptools]
-packages = ["matviz"]
+packages = ["matviz", "matviz._assets"]
+
+[tool.setuptools.package-data]
+"matviz._assets" = ["*.js"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

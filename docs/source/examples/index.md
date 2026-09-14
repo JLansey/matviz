@@ -6,4 +6,5 @@
 histograms
 visualization
 etl_utilities
+pebble_bar
 ```
