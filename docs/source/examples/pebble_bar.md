@@ -122,10 +122,10 @@ categories = [
 | `show_count` | True | Show item count next to labels |
 | `open_browser` | False | Open the file in the default browser |
 
-## Real-world example
+## Real-world examples
 
-The pebble bar chart was used to visualize urban infrastructure data in
-[What Blocks Bike Lanes?](https://bikeresearch.net/articles/en/what-blocks-bike-lanes/)
+- [What Blocks Bike Lanes?](https://bikeresearch.net/articles/en/what-blocks-bike-lanes/) — urban infrastructure data
+- [Pottery Collection](https://jonathan.lansey.net/pottery/) — ceramic artwork catalog
 
 ## Full example
 
