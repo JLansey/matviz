@@ -124,8 +124,19 @@ categories = [
 
 ## Real-world examples
 
-- [What Blocks Bike Lanes?](https://bikeresearch.net/articles/en/what-blocks-bike-lanes/) — urban infrastructure data
-- [Pottery Collection](https://jonathan.lansey.net/pottery/) — ceramic artwork catalog
+### Freer Gallery Japanese Ceramics
+
+[![Pebble bar chart of Freer Gallery Japanese Ceramics](../images/pebble_bar_pottery.png)](https://jonathan.lansey.net/pottery/)
+
+251 objects from the Smithsonian — each pebble is a clickable thumbnail.
+[View the live chart →](https://jonathan.lansey.net/pottery/)
+
+### What Blocks Bike Lanes?
+
+[![Pebble bar chart of bike lane obstructions](../images/pebble_bar_bike_lanes.png)](https://bikeresearch.net/articles/en/what-blocks-bike-lanes/)
+
+Urban infrastructure data visualized as a pebble bar chart.
+[View the article →](https://bikeresearch.net/articles/en/what-blocks-bike-lanes/)
 
 ## Full example
 
