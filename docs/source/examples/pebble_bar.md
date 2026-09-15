@@ -122,6 +122,11 @@ categories = [
 | `show_count` | True | Show item count next to labels |
 | `open_browser` | False | Open the file in the default browser |
 
+## Real-world example
+
+The pebble bar chart was used to visualize urban infrastructure data in
+[What Blocks Bike Lanes?](https://bikeresearch.net/articles/en/what-blocks-bike-lanes/)
+
 ## Full example
 
 See `examples/pebble_bar_example.py` in the repository for a complete working
