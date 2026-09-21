@@ -5,3 +5,4 @@ except ImportError:
     __version__ = "0.0.0+dev"
 
 from .pebble_bar import pebble_bar_chart
+from .euler_bar import euler_bar_chart
