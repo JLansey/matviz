@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [v1.1.0] - 2026-10-01
 
 ### Changed
 - **Breaking:** pebble bar charts are now drawn in Python (numpy + Pillow)
