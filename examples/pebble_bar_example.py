@@ -4,17 +4,21 @@ Pebble Bar Chart — example
 
 Generates a pebble bar chart showing fictional fleet vehicle categories.
 Each bar stacks items with logarithmic density: large visible squares at
-the bottom, tiny ones at the top. The watercolor mode adds a hand-painted
-SVG texture.
+the bottom, tiny ones at the top. Every bar gets a hand-painted watercolor
+wash by default.
 
-Run this script to generate pebble_bar_demo.html in the current directory.
+Run this script to write, in the current directory:
+
+- pebble_bar_demo.html — the interactive chart (one self-contained file);
+- pebble_bar_demo.png  — the same chart as a static matplotlib figure.
 """
 
-from matviz import pebble_bar_chart
+from matviz import pebble_bar_chart, pebble_bar_figure
 
 # ── Build some sample data ──────────────────────────────────────────
 # Each category has a name, display label, colors, and a list of items.
-# Items can optionally carry link (URL), src (image), and label (tooltip).
+# Items can optionally carry link (URL), label (tooltip), and src (a local
+# image file drawn in the square; relative paths resolve against image_dir).
 
 categories = [
     {
@@ -76,17 +80,29 @@ for cat in categories:
         # item["link"] = f"https://example.com/fleet/{item['id']}"
 
 # ── Render ──────────────────────────────────────────────────────────
-html = pebble_bar_chart(
-    categories,
-    "pebble_bar_demo.html",
-    title="Fleet Composition",
-    subtitle="Vehicle categories · Each square = one vehicle",
+# The bars are drawn in Python. seed fixes the overlap order and watercolor
+# texture, so re-running gives identical output; scale is image pixels per
+# CSS pixel (2 = sharp on high-density screens).
+options = dict(
     bar_width=150,
     log_base=1.1,
     item_offset=16,
     h_squeeze=0.7,
     bar_gap=21,
+    seed=0,
+    scale=2,
 )
 
+html = pebble_bar_chart(
+    categories,
+    "pebble_bar_demo.html",
+    title="Fleet Composition",
+    subtitle="Vehicle categories · Each square = one vehicle",
+    **options,
+)
 print(f"Written: pebble_bar_demo.html ({len(html):,} bytes)")
-print("Open in a browser to see the chart.")
+
+# The same bars as a static matplotlib figure.
+fig = pebble_bar_figure(categories, **options)
+fig.savefig("pebble_bar_demo.png", dpi=144, bbox_inches="tight")
+print("Written: pebble_bar_demo.png")

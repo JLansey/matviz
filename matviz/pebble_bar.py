@@ -7,8 +7,15 @@ tiny. This creates a natural visual hierarchy that simultaneously shows exact
 counts and relative magnitude — like a histogram, but every data point is
 individually visible and optionally clickable.
 
-The chart is rendered as a self-contained HTML file with inline JavaScript,
-making it ideal for interactive reports where items can link to detail pages.
+Every bar is drawn ahead of time in Python (numpy + Pillow) to one image, see
+:mod:`matviz.pebble_render`. The same drawing feeds three outputs:
+
+- :func:`pebble_bar_figure` — a static matplotlib figure (save it as PNG/PDF,
+  or put it in a notebook);
+- :func:`pebble_bar_chart` — an interactive HTML page where every pebble
+  shows its tooltip and opens its link; one self-contained file by default;
+- :func:`write_pebble_assets` — one image per bar plus ``manifest.json``, for
+  websites that load ``pebble-view.js`` themselves.
 
 Basic usage::
 
@@ -22,219 +29,251 @@ Basic usage::
     ]
     pebble_bar_chart(categories, "my_chart.html", title="My Chart")
 
-Items can include ``link`` (URL opened on click), ``src`` (image URL),
-and ``label`` (tooltip text) fields.
+Items can include ``link`` (URL opened on click), ``label`` (tooltip text),
+and ``src`` (a local image file drawn in the cell) or ``image`` (a PIL image).
 """
 
+import base64
+import html as html_lib
+import io
 import json
-import os
+import math
+import re
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+
+from .pebble_layout import bar_height, log_ticks
+from .pebble_render import PebbleBar, name_seed, render_bar
 
 
 _ASSETS_DIR = Path(__file__).parent / "_assets"
 
+# Chart frame around the bars (CSS px), shared by the HTML view and the figure.
+_TOP_PAD = 32
+_LABEL_HEIGHT = 36
+_AXIS_WIDTH = 48
+
 
 def _load_js() -> str:
-    """Load the pebble-bar JavaScript engine."""
-    js_path = _ASSETS_DIR / "pebble-bar.js"
-    return js_path.read_text(encoding="utf-8")
+    """Load the pebble-view JavaScript (displays pre-rendered bars)."""
+    return (_ASSETS_DIR / "pebble-view.js").read_text(encoding="utf-8")
 
 
-def _build_html(
+def _slug(name):
+    return re.sub(r"[^A-Za-z0-9_.-]+", "_", str(name)).strip("_") or "bar"
+
+
+@dataclass
+class PebbleChart:
+    """Rendered bars plus everything needed to lay out a chart around them."""
+
+    categories: List[Dict[str, Any]]
+    bars: List[PebbleBar]
+    max_height: float
+    ticks: List[Tuple[int, float]]
+    bar_gap: float
+    show_count: bool
+
+    def manifest(self, images: Sequence[str],
+                 item_fields: Sequence[str] = ("id", "link", "label")) -> Dict[str, Any]:
+        """The data block read by ``pebble-view.js``; ``images`` are the URLs
+        (or data URIs) of the bar images, in bar order."""
+        def r3(v):
+            return round(v, 3)
+
+        cats = []
+        for cat, bar, image in zip(self.categories, self.bars, images):
+            cats.append({
+                "name": cat.get("name", ""),
+                "label": cat.get("label", cat.get("name", "")),
+                "count": len(cat.get("items", [])),
+                "image": image,
+                "box": [r3(v) for v in bar.box],
+                "width": r3(bar.width),
+                "height": r3(bar.height),
+                # Top-down; item in column c sits at x0 + c*step, index first + c.
+                "rows": [[r3(r.y), r3(r.size), r.cols, r.first, r3(r.x0), r3(r.step)]
+                         for r in reversed(bar.rows)],
+                "items": [{k: item[k] for k in item_fields if item.get(k) not in (None, "")}
+                          for item in cat.get("items", [])],
+            })
+        return {
+            "options": {"barGap": self.bar_gap, "maxHeight": r3(self.max_height),
+                        "topPad": _TOP_PAD, "labelHeight": _LABEL_HEIGHT,
+                        "axisWidth": _AXIS_WIDTH, "showCount": self.show_count},
+            "ticks": [{"value": v, "height": r3(h)} for v, h in self.ticks],
+            "categories": cats,
+        }
+
+
+def render_pebble_chart(
     categories: Sequence[Dict[str, Any]],
     *,
-    title: str = "",
-    subtitle: str = "",
-    bar_width: int = 120,
-    log_base: float = 1.414,
+    bar_width: float = 120,
+    log_base: float = math.sqrt(2),
     item_offset: int = 0,
     h_squeeze: float = 1.0,
-    bar_gap: int = 8,
+    gutter: float = 0,
+    bar_gap: float = 8,
     sort_desc: bool = True,
     show_count: bool = True,
-    outline_radius: float = 2,
-    font_family: str = "system-ui, -apple-system, sans-serif",
-    extra_css: str = "",
-    extra_js: str = "",
-) -> str:
-    """Build the full HTML string for a pebble bar chart.
+    outline_radius: float = 1,
+    background: str = "#faf8f2",
+    scale: int = 2,
+    supersample: int = 4,
+    seed: int = 0,
+    image_dir: Union[str, Path, None] = None,
+    image_loader=None,
+    min_tick: int = 3,
+    skip_ticks: Sequence[int] = (1000,),
+) -> PebbleChart:
+    """Render every bar of a pebble chart (the shared step of all outputs).
 
     Parameters
     ----------
     categories : list of dict
-        Each dict has keys:
-
-        - ``name`` (str): internal identifier
-        - ``label`` (str): display label under the bar
-        - ``color`` (str): hex color for the bar; also used as the watercolor
-          wash by default
-        - ``watercolor_color`` (str, optional): override the watercolor wash
-          color (defaults to ``color``).  Set to ``None`` or ``""`` to opt out
-          of watercolor and get flat solid squares instead.
-        - ``items`` (list of dict): each item can have ``id``, ``label``,
-          ``link`` (URL), and ``src`` (image URL)
-
-    title : str
-        Chart heading.
-    subtitle : str
-        Subtitle / description line.
-    bar_width : int
-        Pixel width of each bar column (before squeeze).
-    log_base : float
-        Logarithmic base controlling density growth.  Default √2 ≈ 1.414 means
-        columns double every 2 rows.  Lower values (e.g. 1.1) produce taller,
-        skinnier pyramids; higher values (e.g. 2.0) produce shorter, wider ones.
-    item_offset : int
-        Number of invisible padding items prepended to skip the sparse bottom rows.
-    h_squeeze : float
-        Horizontal squeeze factor (0–1). At 1.0 bars use their full width;
-        at 0.7 they are 70% as wide, leaving breathing room.
-    bar_gap : int
-        Pixel gap between adjacent bars.
+        Each dict has ``name``, ``label``, ``color`` (flat fill and default
+        watercolor), optional ``watercolor_color`` (falsy for no wash) and
+        ``items``. Items are drawn bottom-first in list order.
+    bar_width, log_base, item_offset, h_squeeze, gutter
+        Layout; see :func:`matviz.pebble_layout.bar_rows`.
+    bar_gap : float
+        CSS px between bars.
     sort_desc : bool
         Sort categories by item count, largest first.
     show_count : bool
-        Show item count next to each label.
+        Show each bar's item count beside its label.
     outline_radius : float
-        Pixel radius of the white outline drawn around image items (follows the
-        alpha mask).  Set to 0 to disable.  Default 2.
-    font_family : str
-        CSS font-family for the chart.
-    extra_css : str
-        Additional CSS injected into the ``<style>`` block.
-    extra_js : str
-        Additional JavaScript injected after the chart renders.
-
-    Returns
-    -------
-    str
-        A complete HTML document string.
+        White outline around pictures, in CSS px (0 = none).
+    background : str
+        Page colour the watercolor is blended onto.
+    scale : int
+        Image pixels per CSS px. 2 is sharp on most high-density screens; 3 is
+        a little sharper on some phones at about twice the file size.
+    supersample : int
+        Drawing resolution multiplier before shrinking to ``scale``; higher
+        keeps more of the tiny top-row pebbles.
+    seed : int
+        Seed for the overlap order and the watercolor texture. Each bar uses
+        ``seed`` mixed with its name, so rebuilding gives the same images.
+    image_dir : path, optional
+        Base directory for relative item ``src`` paths.
+    image_loader : callable, optional
+        ``image_loader(item) -> PIL.Image`` to load pictures some other way.
+    min_tick, skip_ticks
+        Y-axis ticks: 1-2-5 values from ``min_tick`` up, minus ``skip_ticks``.
     """
-    # Normalize Python keys to JS camelCase
-    cats_js = []
-    for cat in categories:
-        c = {
-            "name": cat.get("name", ""),
-            "label": cat.get("label", cat.get("name", "")),
-            "color": cat.get("color", "#888"),
-            "items": cat.get("items", []),
-        }
-        # Watercolor is the default look — use the category's color if no
-        # explicit watercolor_color is provided.  Set watercolor_color=None
-        # or watercolor_color="" to opt out and get flat solid squares.
-        wc = cat.get("watercolor_color", cat.get("watercolorColor", cat.get("color", "#888")))
-        if wc:
-            c["watercolorColor"] = wc
-        cats_js.append(c)
+    cats = [dict(c) for c in categories]
+    if sort_desc:
+        cats.sort(key=lambda c: len(c.get("items", [])), reverse=True)
+    layout = dict(bar_width=bar_width, log_base=log_base,
+                  item_offset=item_offset, gutter=gutter)
+    bars = []
+    for cat in cats:
+        name = cat.get("name", "")
+        wash = cat.get("watercolor_color", cat.get("watercolorColor", cat.get("color", "#888")))
+        bar_seed = name_seed(name, seed)
+        bars.append(render_bar(
+            cat.get("items", []), h_squeeze=h_squeeze, color=cat.get("color", "#888"),
+            watercolor_color=wash or None, background=background,
+            outline_radius=outline_radius, scale=scale, supersample=supersample,
+            seed=bar_seed, wash_seeds=(name_seed(name + ":grain", seed),
+                                       name_seed(name + ":warp", seed)),
+            image_dir=image_dir, image_loader=image_loader, **layout))
+    counts = [len(c.get("items", [])) for c in cats]
+    max_count = max(counts, default=0)
+    ticks = [(t, bar_height(t, **layout)) for t in log_ticks(max_count, min_tick)
+             if t not in skip_ticks]
+    return PebbleChart(cats, bars, bar_height(max_count, **layout), ticks,
+                       bar_gap, show_count)
 
-    opts_js = {
-        "barWidth": bar_width,
-        "logBase": log_base,
-        "itemOffset": item_offset,
-        "hSqueeze": h_squeeze,
-        "barGap": bar_gap,
-        "sortDesc": sort_desc,
-        "showCount": show_count,
-        "outlineRadius": outline_radius,
-        "fontFamily": font_family,
-        "title": title,
-        "subtitle": subtitle,
-    }
 
-    js_engine = _load_js()
-    cats_json = json.dumps(cats_js, indent=2)
-    opts_json = json.dumps(opts_js, indent=2)
+def _encode(image, fmt="webp", quality=90):
+    buf = io.BytesIO()
+    if fmt == "webp":
+        image.save(buf, "WEBP", quality=quality, method=6)
+    else:
+        image.save(buf, fmt.upper())
+    return buf.getvalue()
 
-    html = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{title or 'Pebble Bar Chart'}</title>
-<style>
-  :root {{
-    --pebble-bg: #faf8f2;
-    --pebble-surface: #ffffff;
-    --pebble-border: #e2e0db;
-    --pebble-text: #1a1a1c;
-    --pebble-text-secondary: #5a5852;
-    --pebble-text-muted: #8a8780;
-    --pebble-grid: #87867F;
-  }}
-  @media (prefers-color-scheme: dark) {{
-    :root:not([data-theme="light"]) {{
-      --pebble-bg: #141416;
-      --pebble-surface: #1e1e22;
-      --pebble-border: #2e2e34;
-      --pebble-text: #e8e6e2;
-      --pebble-text-secondary: #a8a6a0;
-      --pebble-text-muted: #6a6862;
-      --pebble-grid: #55554F;
-    }}
-  }}
-  :root[data-theme="dark"] {{
-    --pebble-bg: #141416;
-    --pebble-surface: #1e1e22;
-    --pebble-border: #2e2e34;
-    --pebble-text: #e8e6e2;
-    --pebble-text-secondary: #a8a6a0;
-    --pebble-text-muted: #6a6862;
-    --pebble-grid: #55554F;
-  }}
 
-  body {{
-    font-family: {font_family};
-    background: var(--pebble-bg);
-    color: var(--pebble-text);
-    padding: 24px 20px 60px;
-    margin: 0 auto;
-    max-width: 1200px;
-  }}
+def write_pebble_assets(
+    categories: Sequence[Dict[str, Any]],
+    out_dir: Union[str, Path],
+    *,
+    manifest_name: str = "manifest.json",
+    image_format: str = "webp",
+    quality: int = 90,
+    item_fields: Sequence[str] = ("id", "link", "label"),
+    **opts,
+) -> Dict[str, Any]:
+    """Write one image per bar and a manifest for ``pebble-view.js``.
 
-  #pebble-chart {{
-    overflow-x: auto;
-    /* Note: when overflow-x is not 'visible', browsers force overflow-y
-       to 'auto' per CSS spec, so overflow-y: visible has no effect here.
-       We use generous padding-bottom instead to keep labels in view. */
-    padding-bottom: 60px;
-    padding-left: 6px;
-  }}
+    Writes ``<out_dir>/<name>.<image_format>`` for each category and
+    ``<out_dir>/<manifest_name>``. Image paths in the manifest are relative to
+    the manifest, so pass ``baseUrl`` (the manifest's folder URL) to
+    ``renderPebbleView``. Other keyword arguments go to
+    :func:`render_pebble_chart`. Returns the manifest.
+    """
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    chart = render_pebble_chart(categories, **opts)
+    names = []
+    for cat, bar in zip(chart.categories, chart.bars):
+        fname = f"{_slug(cat.get('name', ''))}.{image_format}"
+        (out_dir / fname).write_bytes(_encode(bar.image, image_format, quality))
+        names.append(fname)
+    manifest = chart.manifest(names, item_fields)
+    (out_dir / manifest_name).write_text(
+        json.dumps(manifest, separators=(",", ":")), encoding="utf-8")
+    return manifest
 
-  .pebble-bar-wrapper {{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    flex-shrink: 0;
-  }}
 
-  .pebble-bar-label {{
-    font-size: 0.75rem;
-    color: var(--pebble-text-secondary);
-    text-align: center;
-    white-space: nowrap;
-  }}
-  {extra_css}
-</style>
-</head>
-<body>
-<div id="pebble-chart"></div>
-<script>
-{js_engine}
-</script>
-<script>
-(function() {{
-  var categories = {cats_json};
-  var opts = {opts_json};
-  var container = document.getElementById('pebble-chart');
-  renderPebbleChart(container, categories, opts);
-  {extra_js}
-}})();
-</script>
-</body>
-</html>"""
-    return html
+def pebble_bar_figure(categories: Sequence[Dict[str, Any]], *, ax=None,
+                      figsize=None, label_rotation=0, **opts):
+    """Draw a static pebble bar chart with matplotlib.
+
+    Takes the same options as :func:`render_pebble_chart`. Pass ``ax`` to draw
+    into existing axes. One axes unit is one CSS pixel of the HTML chart.
+    Returns the figure.
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    chart = render_pebble_chart(categories, **opts)
+    background = opts.get("background", "#faf8f2")
+    widths = [b.width for b in chart.bars]
+    step = (max(widths, default=0)) + chart.bar_gap
+    total_w = max(len(chart.bars) * step - chart.bar_gap, 1)
+    if ax is None:
+        figsize = figsize or ((total_w + _AXIS_WIDTH + 40) / 72,
+                              (chart.max_height + _TOP_PAD + _LABEL_HEIGHT + 30) / 72)
+        fig, ax = plt.subplots(figsize=figsize, facecolor=background)
+    fig = ax.figure
+    ax.set_facecolor(background)
+    centres = []
+    for i, (cat, bar) in enumerate(zip(chart.categories, chart.bars)):
+        left = i * step + (step - chart.bar_gap - bar.width) / 2
+        bx, by, bw, bh = bar.box
+        top = bar.height - by
+        ax.imshow(np.asarray(bar.image), extent=(left + bx, left + bx + bw, top - bh, top),
+                  interpolation="antialiased", zorder=2)
+        centres.append(left + bar.width / 2)
+    ax.set_xlim(-12, total_w + 12)
+    ax.set_ylim(0, chart.max_height + _TOP_PAD / 2)
+    ax.set_aspect("equal")
+    labels = [cat.get("label", cat.get("name", "")) +
+              (f"\n{len(cat.get('items', []))}" if chart.show_count else "")
+              for cat in chart.categories]
+    ax.set_xticks(centres, labels, rotation=label_rotation, fontweight="bold")
+    ax.set_yticks([h for _, h in chart.ticks], [str(v) for v, _ in chart.ticks])
+    ax.grid(axis="y", color="#87867F", alpha=0.28, linewidth=0.75, zorder=0)
+    ax.tick_params(length=0, colors="#5a5852")
+    for side in ("top", "right", "left"):
+        ax.spines[side].set_visible(False)
+    ax.spines["bottom"].set_color("#8a8780")
+    return fig
 
 
 def pebble_bar_chart(
@@ -243,132 +282,150 @@ def pebble_bar_chart(
     *,
     title: str = "",
     subtitle: str = "",
-    bar_width: int = 120,
-    log_base: float = 1.414,
-    item_offset: int = 0,
-    h_squeeze: float = 1.0,
-    bar_gap: int = 8,
-    sort_desc: bool = True,
-    show_count: bool = True,
-    outline_radius: float = 2,
+    embed_images: bool = True,
     font_family: str = "system-ui, -apple-system, sans-serif",
     extra_css: str = "",
     extra_js: str = "",
     open_browser: bool = False,
+    **opts,
 ) -> str:
-    """Generate a pebble bar chart as a self-contained HTML file.
+    """Generate an interactive pebble bar chart as an HTML page.
 
-    A pebble bar chart is a logarithmic-density stacked bar chart where each
-    data point is individually visible. Items stack from large squares at the
-    bottom to tiny ones at the top, creating a natural visual hierarchy that
-    shows both exact counts and relative magnitudes.
+    The bars are drawn in Python; the page only shows the bar images and
+    maps the pointer to the item under it (tooltip from ``label`` or ``id``,
+    click opens ``link``).
 
     Parameters
     ----------
     categories : list of dict
-        Each category dict should have:
-
-        - ``name`` (str): internal identifier
-        - ``label`` (str): display label shown under the bar
-        - ``color`` (str): hex color, e.g. ``"#4a90d9"``; also used as the
-          watercolor wash by default
-        - ``watercolor_color`` (str, optional): override the watercolor wash
-          color.  Set to ``None`` or ``""`` to disable watercolor and get
-          flat solid squares instead.
-        - ``items`` (list of dict): the data points.  Each item dict can have:
-
-          - ``id`` (str): unique identifier
-          - ``label`` (str): tooltip text
-          - ``link`` (str): URL opened on click
-          - ``src`` (str): image URL to display in the cell
-
+        Each category dict has ``name``, ``label``, ``color`` (also the
+        default watercolor wash), optional ``watercolor_color`` (``None`` or
+        ``""`` for flat squares without a wash), and ``items``: dicts with
+        ``id``, ``label`` (tooltip), ``link`` (URL) and ``src`` (local image
+        path) or ``image`` (PIL image).
     output : str or Path or None
-        Path to write the HTML file.  If None, the HTML string is returned
+        Path to write the HTML file. If None, the HTML string is returned
         without writing to disk.
-    title : str
-        Chart title displayed as a heading.
-    subtitle : str
-        Description line below the title.
-    bar_width : int
-        Pixel width of each bar (before horizontal squeeze).  Default 120.
-    log_base : float
-        Logarithmic base that controls density growth.  Default √2 ≈ 1.414
-        doubles columns every 2 rows.  Lower values make taller, skinnier bars.
-    item_offset : int
-        Invisible padding items at the bottom, hiding the sparse low rows.
-    h_squeeze : float
-        Horizontal squeeze (0–1).  Default 1.0 (no squeeze).
-    bar_gap : int
-        Pixels between bars.  Default 8.
-    sort_desc : bool
-        Sort categories largest-first.  Default True.
-    show_count : bool
-        Show item count next to labels.  Default True.
-    outline_radius : float
-        Pixel radius of the white outline drawn around image items (follows the
-        alpha mask).  Set to 0 to disable.  Default 2.
-    font_family : str
-        CSS font stack.
-    extra_css : str
-        Extra CSS injected into the page.
-    extra_js : str
-        Extra JavaScript run after chart render.
+    title, subtitle : str
+        Heading and description line.
+    embed_images : bool
+        True (default) inlines the bar images as data URIs so the chart is a
+        single file. False writes them to ``<output stem>_files/`` beside
+        the page (requires ``output``).
+    font_family, extra_css, extra_js
+        Page styling and extra script run after the chart is drawn
+        (``chart`` holds the return value of ``renderPebbleView``).
     open_browser : bool
         Open the file in the default browser after writing.
+    **opts
+        Chart options for :func:`render_pebble_chart`: ``bar_width``
+        (default 120), ``log_base`` (√2), ``item_offset`` (0), ``h_squeeze``
+        (1.0), ``bar_gap`` (8), ``sort_desc``, ``show_count``,
+        ``outline_radius`` (1), ``scale`` (2), ``supersample`` (4),
+        ``seed`` (0), ``image_dir``, ...
 
     Returns
     -------
     str
-        The HTML string.  Also written to ``output`` if provided.
+        The HTML string. Also written to ``output`` if provided.
 
     Examples
     --------
-    Simple chart with colored bars:
-
     >>> categories = [
     ...     {"name": "trucks", "label": "Trucks", "color": "#b87200",
     ...      "items": [{"id": str(i)} for i in range(45)]},
     ...     {"name": "vans", "label": "Vans", "color": "#186b4e",
     ...      "items": [{"id": str(i)} for i in range(30)]},
-    ...     {"name": "sedans", "label": "Sedans", "color": "#4e82b8",
-    ...      "items": [{"id": str(i)} for i in range(18)]},
     ... ]
     >>> html = pebble_bar_chart(categories, "fleet.html",
     ...                         title="Vehicle Fleet", log_base=1.1,
     ...                         item_offset=16, h_squeeze=0.7)
-
-    Watercolor mode for a hand-painted look:
-
-    >>> categories = [
-    ...     {"name": "a", "label": "Category A", "color": "#888",
-    ...      "watercolor_color": "#b87200",
-    ...      "items": [{"id": str(i)} for i in range(60)]},
-    ... ]
-    >>> pebble_bar_chart(categories, "watercolor.html")
     """
-    html = _build_html(
-        categories,
-        title=title,
-        subtitle=subtitle,
-        bar_width=bar_width,
-        log_base=log_base,
-        item_offset=item_offset,
-        h_squeeze=h_squeeze,
-        bar_gap=bar_gap,
-        sort_desc=sort_desc,
-        show_count=show_count,
-        outline_radius=outline_radius,
-        font_family=font_family,
-        extra_css=extra_css,
-        extra_js=extra_js,
-    )
+    if not embed_images and output is None:
+        raise ValueError("embed_images=False needs an output path to write images next to")
+    chart = render_pebble_chart(categories, **opts)
+    if embed_images:
+        images = ["data:image/webp;base64," + base64.b64encode(_encode(b.image)).decode()
+                  for b in chart.bars]
+    else:
+        output = Path(output)
+        files = output.parent / f"{output.stem}_files"
+        files.mkdir(parents=True, exist_ok=True)
+        images = []
+        for cat, bar in zip(chart.categories, chart.bars):
+            fname = f"{_slug(cat.get('name', ''))}.webp"
+            (files / fname).write_bytes(_encode(bar.image))
+            images.append(f"{files.name}/{fname}")
+    manifest = json.dumps(chart.manifest(images)).replace("</", "<\\/")
+    background = opts.get("background", "#faf8f2")
+    heading = (f"<h2 class=\"pebble-title\">{html_lib.escape(title)}</h2>" if title else "") + \
+        (f"<p class=\"pebble-subtitle\">{html_lib.escape(subtitle)}</p>" if subtitle else "")
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{html_lib.escape(title or 'Pebble Bar Chart')}</title>
+<style>
+  :root {{
+    color-scheme: light;
+    --pebble-bg: {background};
+    --pebble-text: #1a1a1c;
+    --pebble-text-secondary: #5a5852;
+    --pebble-text-muted: #8a8780;
+    --pebble-grid: #87867F;
+  }}
+  body {{
+    font-family: {font_family};
+    background: var(--pebble-bg);
+    color: var(--pebble-text);
+    padding: 24px 20px 60px;
+    margin: 0 auto;
+    max-width: 1200px;
+  }}
+  .pebble-title {{ font-size: 1.5rem; font-weight: 700; margin: 0 0 4px; }}
+  .pebble-subtitle {{ color: var(--pebble-text-secondary); font-size: 0.875rem; margin: 0 0 28px; }}
+  #pebble-chart {{
+    overflow-x: auto;
+    padding-bottom: 60px;
+    padding-left: 6px;
+  }}
+  .pebble-bar-wrapper {{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }}
+  .pebble-bar-label {{
+    color: var(--pebble-text-secondary);
+    text-align: center;
+    white-space: nowrap;
+  }}
+  {extra_css}
+</style>
+</head>
+<body>
+{heading}
+<div id="pebble-chart"></div>
+<script>
+{_load_js()}
+</script>
+<script>
+(function() {{
+  var data = {manifest};
+  var chart = renderPebbleView(document.getElementById('pebble-chart'), data,
+                               {{ fontFamily: {json.dumps(font_family)} }});
+  {extra_js}
+}})();
+</script>
+</body>
+</html>"""
 
     if output is not None:
         output = Path(output)
         output.write_text(html, encoding="utf-8")
-
         if open_browser:
             import webbrowser
             webbrowser.open(output.resolve().as_uri())
-
     return html
